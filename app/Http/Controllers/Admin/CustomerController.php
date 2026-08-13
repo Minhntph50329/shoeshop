@@ -1,0 +1,237 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+
+class CustomerController extends Controller
+{
+    /**
+     * Danh sách người dùng
+     */
+    public function index(Request $request)
+    {
+        $query = User::query();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('fullname', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone_number', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $customers = $query->latest()->paginate(10)->withQueryString();
+
+        return view('admin.customers.index', compact('customers'));
+    }
+
+    /**
+     * Form tạo người dùng mới
+     */
+    public function create()
+    {
+        return view('admin.customers.create');
+    }
+
+    /**
+     * Lưu người dùng mới
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'fullname' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'phone_number' => 'nullable|string|max:20',
+            'password' => 'required|string|min:6',
+            'role' => 'required|in:admin,client',
+            'status' => 'required|in:active,locked',
+            'gender' => 'nullable|in:male,female,other',
+            'birthday' => 'nullable|date',
+            'bank_name' => 'nullable|string|max:255',
+            'user_bank_name' => 'nullable|string|max:255',
+            'bank_account' => 'nullable|string|max:255',
+            'reason_lock' => 'nullable|string',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ], [
+            'fullname.required' => 'Vui lòng nhập họ tên.',
+            'email.required' => 'Vui lòng nhập email.',
+            'email.unique' => 'Email đã tồn tại.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.min' => 'Mật khẩu phải từ 6 ký tự trở lên.',
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $validated['avatar'] = $request->file('avatar')->store('users', 'public');
+        }
+
+        $validated['password'] = Hash::make($validated['password']);
+
+        User::create($validated);
+
+        return redirect()->route('admin.customers.index')->with('success', 'Thêm mới người dùng thành công!');
+    }
+
+    /**
+     * Chi tiết người dùng (Thông tin cá nhân, địa chỉ, đơn hàng, ngân hàng...)
+     */
+    public function show($id)
+    {
+        $customer = User::withTrashed()->with(['addresses', 'carts.items.product', 'carts.items.variant'])->findOrFail($id);
+        return view('admin.customers.show', compact('customer'));
+    }
+
+    /**
+     * Form chỉnh sửa thông tin người dùng
+     */
+    public function edit($id)
+    {
+        $customer = User::findOrFail($id);
+        return view('admin.customers.edit', compact('customer'));
+    }
+
+    /**
+     * Cập nhật thông tin người dùng
+     */
+    public function update(Request $request, $id)
+    {
+        $customer = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'fullname' => 'required|string|max:255',
+            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($customer->id)],
+            'phone_number' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:6',
+            'role' => 'required|in:admin,client',
+            'status' => 'required|in:active,locked',
+            'gender' => 'nullable|in:male,female,other',
+            'birthday' => 'nullable|date',
+            'bank_name' => 'nullable|string|max:255',
+            'user_bank_name' => 'nullable|string|max:255',
+            'bank_account' => 'nullable|string|max:255',
+            'reason_lock' => 'nullable|string',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            if ($customer->avatar) {
+                Storage::disk('public')->delete($customer->avatar);
+            }
+            $validated['avatar'] = $request->file('avatar')->store('users', 'public');
+        }
+
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $customer->update($validated);
+
+        return redirect()->route('admin.customers.index')->with('success', 'Cập nhật thông tin người dùng thành công!');
+    }
+
+    /**
+     * Xóa mềm người dùng (Soft Delete)
+     */
+    public function destroy($id)
+    {
+        $customer = User::findOrFail($id);
+
+        if ($customer->id === auth()->id()) {
+            return back()->with('error', 'Bạn không thể tự xóa tài khoản của chính mình!');
+        }
+
+        $customer->delete();
+
+        return redirect()->route('admin.customers.index')->with('success', 'Đã chuyển tài khoản người dùng vào thùng rác!');
+    }
+
+    /**
+     * Thùng rác tài khoản (Danh sách tài khoản đã xóa mềm)
+     */
+    public function trash(Request $request)
+    {
+        $query = User::onlyTrashed();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('fullname', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone_number', 'like', "%{$search}%");
+            });
+        }
+
+        $trashed = $query->latest('deleted_at')->paginate(10)->withQueryString();
+
+        return view('admin.customers.trash', compact('trashed'));
+    }
+
+    /**
+     * Khôi phục tài khoản từ thùng rác
+     */
+    public function restore($id)
+    {
+        $customer = User::onlyTrashed()->findOrFail($id);
+        $customer->restore();
+
+        return redirect()->route('admin.customers.trash')->with('success', 'Khôi phục tài khoản thành công!');
+    }
+
+    /**
+     * Xóa vĩnh viễn (Xóa cứng)
+     */
+    public function forceDelete($id)
+    {
+        $customer = User::onlyTrashed()->findOrFail($id);
+
+        if ($customer->avatar) {
+            Storage::disk('public')->delete($customer->avatar);
+        }
+
+        $customer->forceDelete();
+
+        return redirect()->route('admin.customers.trash')->with('success', 'Xóa vĩnh viễn tài khoản thành công!');
+    }
+
+    /**
+     * Khóa / Mở khóa tài khoản & Cập nhật lý do
+     */
+    public function toggleStatus(Request $request, $id)
+    {
+        $customer = User::findOrFail($id);
+
+        if ($customer->id === auth()->id()) {
+            return back()->with('error', 'Bạn không thể khóa tài khoản của chính mình!');
+        }
+
+        if ($customer->status === 'active') {
+            $customer->status = 'locked';
+            $customer->reason_lock = $request->input('reason_lock', 'Vi phạm quy định của hệ thống.');
+            $message = 'Đã khóa tài khoản thành công!';
+        } else {
+            $customer->status = 'active';
+            $customer->reason_lock = null;
+            $message = 'Đã mở khóa tài khoản thành công!';
+        }
+
+        $customer->save();
+
+        return back()->with('success', $message);
+    }
+}
