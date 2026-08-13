@@ -14,9 +14,10 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'product_type' => 'required|in:simple,variable',
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
+            'price' => 'required_if:product_type,simple|nullable|numeric|min:0',
+            'stock' => 'required_if:product_type,simple|nullable|integer|min:0',
             'sku' => 'nullable|string|max:100|unique:products,sku',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
@@ -33,12 +34,14 @@ class StoreProductRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'product_type.required' => 'Vui lòng chọn loại sản phẩm.',
+            'product_type.in' => 'Loại sản phẩm không hợp lệ.',
             'name.required' => 'Vui lòng nhập tên sản phẩm.',
             'name.max' => 'Tên sản phẩm không vượt quá 255 ký tự.',
-            'price.required' => 'Vui lòng nhập giá bán sản phẩm.',
+            'price.required_if' => 'Vui lòng nhập giá bán sản phẩm khi chọn loại sản phẩm đơn giản.',
             'price.numeric' => 'Giá bán phải là số.',
             'price.min' => 'Giá bán không được nhỏ hơn 0.',
-            'stock.required' => 'Vui lòng nhập số lượng tồn kho.',
+            'stock.required_if' => 'Vui lòng nhập số lượng tồn kho khi chọn loại sản phẩm đơn giản.',
             'stock.integer' => 'Số lượng tồn kho phải là số nguyên.',
             'stock.min' => 'Số lượng tồn kho không được nhỏ hơn 0.',
             'sku.unique' => 'Mã SKU này đã tồn tại trên hệ thống.',

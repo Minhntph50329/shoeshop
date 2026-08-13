@@ -101,13 +101,22 @@
                     <div class="divide-y divide-slate-100">
                         @foreach($product->variants as $variant)
                             <div class="py-3 flex items-center justify-between text-xs">
-                                <div>
-                                    <span class="font-mono font-semibold text-slate-600 mr-2">#{{ $variant->sku }}</span>
-                                    <span class="font-bold text-slate-800">
-                                        @foreach($variant->attributeValues as $val)
-                                            {{ $val->attribute ? $val->attribute->name : '' }}: {{ $val->value }} 
-                                        @endforeach
-                                    </span>
+                                <div class="flex items-center gap-3">
+                                    @if($variant->image)
+                                        <img src="{{ asset($variant->image) }}" class="w-10 h-10 object-cover rounded-lg border bg-slate-50" alt="{{ $variant->sku }}">
+                                    @else
+                                        <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400 font-mono text-[9px] border">No Img</div>
+                                    @endif
+                                    <div>
+                                        <span class="font-mono font-semibold text-slate-600">#{{ $variant->sku }}</span>
+                                        <div class="font-bold text-slate-800 mt-0.5">
+                                            @foreach($variant->attributeValues as $val)
+                                                <span class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[10px] mr-1">
+                                                    {{ $val->attribute ? $val->attribute->name : '' }}: {{ $val->value }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="space-x-3">
                                     <span class="font-bold text-indigo-600">{{ number_format($variant->price ?? $product->price) }}đ</span>

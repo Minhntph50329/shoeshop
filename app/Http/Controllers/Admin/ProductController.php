@@ -72,6 +72,12 @@ class ProductController extends Controller
             'description', 'short_description', 'sku'
         ]);
 
+        if ($request->product_type === 'variable') {
+            $firstVariant = collect($request->variants)->first();
+            $data['price'] = !empty($firstVariant['price']) ? $firstVariant['price'] : 0;
+            $data['stock'] = isset($firstVariant['stock']) ? $firstVariant['stock'] : 0;
+        }
+
         // Nếu SKU để trống -> tự động tạo mã SKU dạng PRD123456
         if (empty($data['sku'])) {
             $data['sku'] = $this->generateSku();
@@ -183,6 +189,12 @@ class ProductController extends Controller
             'description', 'short_description', 'sku'
         ]);
 
+        if ($request->product_type === 'variable') {
+            $firstVariant = collect($request->variants)->first();
+            $data['price'] = !empty($firstVariant['price']) ? $firstVariant['price'] : 0;
+            $data['stock'] = isset($firstVariant['stock']) ? $firstVariant['stock'] : 0;
+        }
+
         // Nếu SKU để trống -> tự động sinh mã
         if (empty($data['sku'])) {
             $data['sku'] = $product->sku ?: $this->generateSku();
@@ -217,7 +229,7 @@ class ProductController extends Controller
         $product->categories()->sync($request->category_ids ?? []);
 
         // Cập nhật biến thể
-        if ($request->has('variants') && is_array($request->variants)) {
+        if ($request->product_type === 'variable' && $request->has('variants') && is_array($request->variants)) {
             $existingVariantIds = [];
             foreach ($request->variants as $index => $variantData) {
                 if (empty($variantData['attribute_value_ids'])) continue;
@@ -278,6 +290,9 @@ class ProductController extends Controller
                 }
             }
             $product->variants()->whereNotIn('id', $existingVariantIds)->delete();
+        } else {
+            // Delete all variants if product type is simple
+            $product->variants()->delete();
         }
 
         return redirect()->route('admin.products.index')

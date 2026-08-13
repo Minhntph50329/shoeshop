@@ -264,14 +264,46 @@ class CheckoutController extends Controller
      */
     private function redirectToVnpay(Order $order)
     {
-        // Mock VNPay: redirect to a local return URL with simulated success
-        $params = [
-            'order_id'  => $order->id,
-            'vnp_TxnRef'=> $order->code,
-            'vnp_Amount'=> $order->grand_total * 100,
-            'simulate'  => 'success',
-        ];
-        return redirect()->route('checkout.vnpay.return', $params);
+        return redirect()->route('checkout.payment.online', ['order_id' => $order->id]);
+    }
+
+    /**
+     * Hiển thị trang thanh toán online giả lập
+     */
+    public function paymentOnline($order_id)
+    {
+        $order = Order::with(['items.product', 'items.productVariant'])->findOrFail($order_id);
+        return view('client.checkout.online_payment', compact('order'));
+    }
+
+    /**
+     * Xử lý thanh toán online giả lập
+     */
+    public function processOnlinePayment(Request $request, $order_id)
+    {
+        $order = Order::findOrFail($order_id);
+        
+        $request->validate([
+            'card_number' => 'required|string',
+            'cardholder_name' => 'required|string',
+            'password' => 'required|string',
+        ], [
+            'card_number.required' => 'Vui lòng nhập số thẻ/tài khoản.',
+            'cardholder_name.required' => 'Vui lòng nhập tên chủ thẻ.',
+            'password.required' => 'Vui lòng nhập mật khẩu/OTP.',
+        ]);
+
+        if ($request->card_number === '123456789' && $request->password === '123456') {
+            $params = [
+                'order_id'  => $order->id,
+                'vnp_TxnRef'=> $order->code,
+                'vnp_Amount'=> ($order->total_amount - $order->discount_amount + $order->shipping_fee) * 100,
+                'simulate'  => 'success',
+            ];
+            return redirect()->route('checkout.vnpay.return', $params);
+        }
+
+        return back()->with('error', 'Thông tin thanh toán không chính xác. Vui lòng sử dụng số thẻ 123456789 và mật khẩu 123456.');
     }
 
     /**

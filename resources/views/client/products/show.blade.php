@@ -125,7 +125,7 @@
                                 @foreach($product->variants as $index => $variant)
                                     <label class="flex flex-col p-3 rounded-xl border border-slate-200 hover:border-indigo-500 cursor-pointer transition">
                                         <div class="flex items-center justify-between">
-                                            <input type="radio" name="product_variant_id" value="{{ $variant->id }}" {{ $index === 0 ? 'checked' : '' }} class="w-4 h-4 text-indigo-600">
+                                            <input type="radio" name="product_variant_id" value="{{ $variant->id }}" {{ $index === 0 ? 'checked' : '' }} data-image="{{ $variant->image ? asset($variant->image) : asset($product->image) }}" class="w-4 h-4 text-indigo-600">
                                             <span class="text-[10px] text-slate-400 font-mono">SKU: {{ $variant->sku }}</span>
                                         </div>
                                         <div class="mt-2 text-xs font-bold text-slate-800">
@@ -376,5 +376,26 @@
         
     </div>
 
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const variantRadios = document.querySelectorAll('input[name="product_variant_id"]');
+            const mainImage = document.getElementById('main_detail_image');
+            
+            if (variantRadios.length > 0 && mainImage) {
+                function updateVariantImage() {
+                    const checkedRadio = document.querySelector('input[name="product_variant_id"]:checked');
+                    if (checkedRadio && checkedRadio.dataset.image) {
+                        mainImage.src = checkedRadio.dataset.image;
+                    }
+                }
+                
+                variantRadios.forEach(radio => {
+                    radio.addEventListener('change', updateVariantImage);
+                });
+                
+                // Initial update
+                updateVariantImage();
+            }
+        });
+    </script>
 @endsection

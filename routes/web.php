@@ -56,6 +56,8 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/address/create', [CheckoutController::class, 'createAddress'])->name('checkout.address.create');
 Route::post('/checkout/address/create', [CheckoutController::class, 'storeAddress'])->name('checkout.address.store');
+Route::get('/checkout/payment-online/{order_id}', [CheckoutController::class, 'paymentOnline'])->name('checkout.payment.online');
+Route::post('/checkout/payment-online/{order_id}', [CheckoutController::class, 'processOnlinePayment'])->name('checkout.payment.online.submit');
 Route::get('/checkout/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('checkout.vnpay.return');
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.apply-coupon');

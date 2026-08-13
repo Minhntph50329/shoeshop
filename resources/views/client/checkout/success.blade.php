@@ -77,8 +77,12 @@
             @foreach($order->items as $item)
             @php
                 $img = null;
-                if($item->product && $item->product->images->first()) {
-                    $img = asset('storage/' . $item->product->images->first()->url);
+                if ($item->productVariant && $item->productVariant->image) {
+                    $img = asset($item->productVariant->image);
+                } elseif ($item->product && $item->product->image) {
+                    $img = asset($item->product->image);
+                } elseif ($item->product && $item->product->images->first()) {
+                    $img = asset($item->product->images->first()->url);
                 }
             @endphp
             <div class="flex items-center gap-4 px-6 py-3">

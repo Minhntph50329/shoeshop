@@ -186,6 +186,14 @@ $doneIds = $order->statusHistories->pluck('order_status_id')->unique()->toArray(
                             <span class="text-amber-600 font-bold">⏳ Chưa thanh toán</span>
                         @endif
                     </div>
+                    @if(!$order->is_paid && $order->payment && (stripos($order->payment->name, 'vnpay') !== false || stripos($order->payment->name, 'online') !== false))
+                        <div class="pt-2">
+                            <a href="{{ route('checkout.payment.online', ['order_id' => $order->id]) }}" 
+                               class="flex items-center justify-center gap-1.5 w-full py-2.5 bg-[#005baa] hover:bg-[#004b8c] text-white rounded-xl text-xs font-bold transition shadow-sm">
+                                <i data-lucide="credit-card" class="w-3.5 h-3.5"></i> Thanh toán ngay qua VNPAY
+                            </a>
+                        </div>
+                    @endif
                     <div class="flex items-center justify-between text-slate-700">
                         <span class="text-slate-500">Vận chuyển</span>
                         <span class="font-semibold">{{ $order->shipping_type == 'express' ? 'Nhanh' : 'Tiêu chuẩn' }}</span>

@@ -50,6 +50,17 @@
                 </div>
             </div>
 
+            <!-- Loại sản phẩm -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-4">
+                <div>
+                    <label class="block text-sm font-bold text-slate-800 mb-1">Loại sản phẩm <span class="text-rose-500">*</span></label>
+                    <select name="product_type" id="product_type" class="w-full px-4 py-3 text-base border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold text-slate-800">
+                        <option value="simple" {{ old('product_type', $product->variants->count() > 0 ? 'variable' : 'simple') == 'simple' ? 'selected' : '' }}>Sản phẩm đơn giản</option>
+                        <option value="variable" {{ old('product_type', $product->variants->count() > 0 ? 'variable' : 'simple') == 'variable' ? 'selected' : '' }}>Sản phẩm biến thể</option>
+                    </select>
+                </div>
+            </div>
+
             <!-- Mô tả ngắn -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-2">
                 <label class="block text-sm font-bold text-slate-800">Mô tả ngắn sản phẩm</label>
@@ -63,7 +74,7 @@
             </div>
 
             <!-- Giá, Tồn kho & Giảm giá -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-6">
+            <div id="simple_product_fields" class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-6">
                 <h3 class="font-bold text-slate-800 text-base flex items-center gap-2 border-b border-slate-100 pb-3">
                     <i data-lucide="dollar-sign" class="w-5 h-5 text-indigo-600"></i> Dữ liệu sản phẩm & Giá bán
                 </h3>
@@ -122,7 +133,7 @@
             </div>
 
             <!-- Thuộc tính & Biến thể Sản phẩm -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-4">
+            <div id="variable_product_fields" class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                     <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
                         <i data-lucide="layers" class="w-5 h-5 text-indigo-600"></i> Thuộc tính & Biến thể sản phẩm
@@ -360,5 +371,41 @@
         variantIndex++;
         lucide.createIcons();
     });
+
+    // Toggle Product Type Fields
+    const productTypeSelect = document.getElementById('product_type');
+    const simpleFields = document.getElementById('simple_product_fields');
+    const variableFields = document.getElementById('variable_product_fields');
+
+    function toggleProductType() {
+        const type = productTypeSelect.value;
+        if (type === 'simple') {
+            simpleFields.classList.remove('hidden');
+            variableFields.classList.add('hidden');
+            
+            // Re-enable validation attributes on simple product inputs
+            simpleFields.querySelectorAll('input[required_on_simple]').forEach(input => {
+                input.setAttribute('required', 'required');
+            });
+        } else {
+            simpleFields.classList.add('hidden');
+            variableFields.classList.remove('hidden');
+            
+            // Remove required attribute from simple fields when hidden
+            simpleFields.querySelectorAll('input[required]').forEach(input => {
+                input.removeAttribute('required');
+                input.setAttribute('required_on_simple', 'true');
+            });
+
+            // If no variants exist, click the add variant button once
+            const container = document.getElementById('variants_wrapper');
+            if (container.children.length === 0 || (container.children.length === 1 && container.children[0].id === 'no_variants_msg')) {
+                document.getElementById('add_variant_btn').click();
+            }
+        }
+    }
+
+    productTypeSelect.addEventListener('change', toggleProductType);
+    toggleProductType(); // Run on load
 </script>
 @endsection
