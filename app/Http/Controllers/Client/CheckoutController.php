@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderSuccessMail;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Coupon;
@@ -13,6 +14,7 @@ use App\Models\Payment;
 use App\Models\PaymentLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class CheckoutController extends Controller
 {
@@ -250,6 +252,17 @@ class CheckoutController extends Controller
                 return $this->redirectToVnpay($order);
             }
 
+            // Send order confirmation email
+            try {
+                $recipientEmail = $order->email ?? ($order->user->email ?? null);
+                if ($recipientEmail) {
+                    $order->load(['items.product.images', 'items.productVariant.images', 'payment']);
+                    Mail::to($recipientEmail)->send(new OrderSuccessMail($order));
+                }
+            } catch (\Exception $e) {
+                logger()->error('Không thể gửi email xác nhận đơn hàng: ' . $e->getMessage());
+            }
+
             return redirect()->route('checkout.success', ['code' => $order->code])
                 ->with('success', 'Đặt hàng thành công!');
 
@@ -334,6 +347,18 @@ class CheckoutController extends Controller
 
         if ($responseCode === '00') {
             $order->update(['is_paid' => true]);
+
+            // Send order confirmation email after VNPay payment
+            try {
+                $recipientEmail = $order->email ?? ($order->user->email ?? null);
+                if ($recipientEmail) {
+                    $order->load(['items.product', 'items.productVariant', 'payment']);
+                    Mail::to($recipientEmail)->send(new OrderSuccessMail($order));
+                }
+            } catch (\Exception $e) {
+                logger()->error('Không thể gửi email xác nhận đơn hàng (VNPay): ' . $e->getMessage());
+            }
+
             return redirect()->route('checkout.success', ['code' => $order->code])
                 ->with('success', 'Thanh toán VNPay thành công!');
         }

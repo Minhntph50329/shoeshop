@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class RefundSuccessfulMail extends Mailable
+class ReturnRequestMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -30,14 +30,14 @@ class RefundSuccessfulMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Hoàn tiền thành công cho đơn hàng #' . $this->refund->order->code,
+            subject: 'Xác nhận yêu cầu trả hàng – Đơn hàng #' . $this->refund->order->code,
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.refund_successful',
+            view: 'emails.return_request',
         );
     }
 }

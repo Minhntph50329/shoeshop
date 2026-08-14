@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ReturnRequestMail;
 use App\Models\Order;
 use App\Models\OrderStatusHistory;
 use App\Models\Refund;
 use App\Models\RefundItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class RefundController extends Controller
@@ -192,6 +194,18 @@ class RefundController extends Controller
                 'is_current'      => true,
             ]);
         });
+
+        // Send return request confirmation email
+        try {
+            // Reload refund with all relations needed for email
+            $refund = Refund::with(['order', 'user', 'items'])->where('order_id', $orderId)->latest()->first();
+            $recipientEmail = $order->email ?? ($refund?->user?->email ?? null);
+            if ($recipientEmail && $refund) {
+                Mail::to($recipientEmail)->send(new ReturnRequestMail($refund));
+            }
+        } catch (\Exception $e) {
+            logger()->error('Không thể gửi email xác nhận yêu cầu trả hàng: ' . $e->getMessage());
+        }
 
         return redirect()->route('client.orders.show', $orderId)
             ->with('success', 'Yêu cầu trả hàng / hoàn tiền đã được gửi thành công. Vui lòng chờ phản hồi từ quản trị viên.');

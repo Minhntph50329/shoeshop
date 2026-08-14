@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoàn tiền thành công – #{{ $refund->order->code }}</title>
+    <title>Xác nhận yêu cầu trả hàng – #{{ $refund->order->code }}</title>
     <style>
         body {
             margin: 0; padding: 0;
@@ -41,7 +41,7 @@
         .body { padding: 28px 32px; }
         .greeting { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
         .intro { color: #555; line-height: 1.6; margin-bottom: 20px; }
-        /* Section label */
+        /* Section title */
         .section-label {
             font-size: 11px;
             font-weight: bold;
@@ -78,27 +78,6 @@
         .info-table tr:last-child td { border-bottom: none; }
         .info-table .lbl { color: #888; width: 45%; }
         .info-table .val { font-weight: bold; color: #222; }
-        /* Refund amount highlight */
-        .refund-amount-box {
-            background: #f0fff4;
-            border: 1px solid #b7ebc8;
-            border-radius: 4px;
-            padding: 14px 16px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-        .refund-amount-box .label {
-            float: left;
-            font-size: 14px;
-            color: #555;
-            line-height: 24px;
-        }
-        .refund-amount-box .amount {
-            float: right;
-            font-size: 18px;
-            font-weight: bold;
-            color: #1e7e34;
-        }
         /* Product row */
         .product-row {
             display: table;
@@ -151,17 +130,36 @@
             font-size: 13px;
             min-width: 100px;
         }
-        /* Note */
-        .note-box {
+        /* Total */
+        .total-box {
             background: #f9f9f9;
-            border-left: 3px solid #ccc;
-            border-radius: 0 4px 4px 0;
-            padding: 10px 14px;
-            font-size: 13px;
-            color: #555;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            padding: 12px 16px;
             margin-bottom: 24px;
-            line-height: 1.6;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: bold;
+            color: #222;
         }
+        /* Steps */
+        .step-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #555; margin-bottom: 24px; }
+        .step-table td { padding: 6px 0; vertical-align: top; }
+        .step-num-cell { width: 30px; }
+        .step-num {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            background: #1a1a2e;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .step-content strong { display: block; color: #333; margin-bottom: 2px; }
         /* Footer */
         .footer {
             background: #f4f4f4;
@@ -177,7 +175,7 @@
 <div class="wrap">
     {{-- Header --}}
     <div class="header">
-        <h1>Hoàn tiền thành công</h1>
+        <h1>Tiếp nhận yêu cầu trả hàng</h1>
         <p>Đơn hàng #{{ $refund->order->code }}</p>
     </div>
 
@@ -186,20 +184,22 @@
         <p class="greeting">Xin chào {{ $refund->user->fullname ?? 'Khách hàng' }},</p>
 
         <div class="apology">
-            Chúng tôi thành thật xin lỗi vì sản phẩm chưa đáp ứng được mong đợi của bạn. Yêu cầu trả hàng và hoàn tiền cho đơn hàng <strong>#{{ $refund->order->code }}</strong> đã được xử lý thành công. Cảm ơn bạn đã kiên nhẫn chờ đợi.
+            Chúng tôi thành thật xin lỗi vì sản phẩm chưa đáp ứng được mong đợi của bạn. Yêu cầu trả hàng của bạn đã được tiếp nhận và đang được xử lý. Chúng tôi cam kết giải quyết nhanh chóng và đảm bảo quyền lợi cho bạn.
         </div>
 
-        {{-- Refund amount --}}
-        <div class="refund-amount-box">
-            <span class="label">Số tiền đã hoàn</span>
-            <span class="amount">{{ number_format($refund->total_amount, 0, ',', '.') }}đ</span>
-        </div>
-
-        {{-- Bank info --}}
-        <p class="section-label">Thông tin hoàn tiền</p>
+        {{-- Refund request info --}}
+        <p class="section-label">Thông tin yêu cầu</p>
         <table class="info-table">
             <tr>
-                <td class="lbl">Ngân hàng</td>
+                <td class="lbl">Mã đơn hàng</td>
+                <td class="val">#{{ $refund->order->code }}</td>
+            </tr>
+            <tr>
+                <td class="lbl">Ngày yêu cầu</td>
+                <td class="val">{{ $refund->created_at->format('d/m/Y H:i') }}</td>
+            </tr>
+            <tr>
+                <td class="lbl">Ngân hàng hoàn tiền</td>
                 <td class="val">{{ $refund->bank_name }}</td>
             </tr>
             <tr>
@@ -211,13 +211,13 @@
                 <td class="val">{{ $refund->bank_account }}</td>
             </tr>
             <tr>
-                <td class="lbl">Số tiền hoàn</td>
-                <td class="val">{{ number_format($refund->total_amount, 0, ',', '.') }}đ</td>
+                <td class="lbl">Lý do trả hàng</td>
+                <td class="val">{{ $refund->reason }}</td>
             </tr>
         </table>
 
-        {{-- Products returned --}}
-        <p class="section-label">Sản phẩm được hoàn trả</p>
+        {{-- Products --}}
+        <p class="section-label">Sản phẩm yêu cầu trả</p>
 
         @foreach ($refund->items as $item)
             @php
@@ -251,14 +251,40 @@
             </div>
         @endforeach
 
-        @if ($refund->aadmin_reason)
-        <div class="note-box">
-            <strong>Ghi chú từ cửa hàng:</strong> {{ $refund->aadmin_reason }}
+        {{-- Total --}}
+        <div class="total-box">
+            <span>Tổng tiền yêu cầu hoàn</span>
+            <span>{{ number_format($refund->total_amount, 0, ',', '.') }}đ</span>
         </div>
-        @endif
+
+        {{-- Next steps --}}
+        <p class="section-label">Các bước tiếp theo</p>
+        <table class="step-table">
+            <tr>
+                <td class="step-num-cell"><div class="step-num">1</div></td>
+                <td class="step-content">
+                    <strong>Xem xét yêu cầu</strong>
+                    Đội ngũ của chúng tôi đang xem xét yêu cầu của bạn (1–2 ngày làm việc).
+                </td>
+            </tr>
+            <tr>
+                <td class="step-num-cell"><div class="step-num">2</div></td>
+                <td class="step-content">
+                    <strong>Gửi lại sản phẩm</strong>
+                    Sau khi được phê duyệt, bạn sẽ nhận thông báo hướng dẫn gửi sản phẩm về cho chúng tôi.
+                </td>
+            </tr>
+            <tr>
+                <td class="step-num-cell"><div class="step-num">3</div></td>
+                <td class="step-content">
+                    <strong>Hoàn tiền</strong>
+                    Sau khi nhận được sản phẩm, chúng tôi sẽ hoàn tiền vào tài khoản của bạn trong 3–5 ngày làm việc.
+                </td>
+            </tr>
+        </table>
 
         <p style="color:#555; font-size:13px; margin:0;">
-            Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua hotline hoặc phản hồi email này. Cảm ơn bạn đã đồng hành cùng Veloce!
+            Nếu bạn cần hỗ trợ thêm, vui lòng liên hệ qua hotline hoặc phản hồi email này.
         </p>
     </div>
 
