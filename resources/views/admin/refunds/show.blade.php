@@ -96,7 +96,17 @@
                 <div class="divide-y divide-slate-50">
                     @foreach($refund->items as $item)
                         @php
-                            $img = $item->product && $item->product->images->first() ? asset('storage/' . $item->product->images->first()->url) : 'https://placehold.co/80x80/f1f5f9/94a3b8?text=No+Img';
+                            $variant = $item->productVariant;
+                            // Ưu tiên: ảnh biến thể > ảnh sản phẩm > placeholder
+                            if ($variant && $variant->image) {
+                                $img = asset($variant->image);
+                            } elseif ($item->product && $item->product->images->first()) {
+                                $img = asset('storage/' . $item->product->images->first()->url);
+                            } else {
+                                $img = 'https://placehold.co/80x80/f1f5f9/94a3b8?text=No+Img';
+                            }
+                            // Lấy tên thuộc tính biến thể (VD: Xanh, 42)
+                            $variantAttributes = $variant ? $variant->attributeValues->map(fn($av) => $av->value)->implode(', ') : null;
                         @endphp
                         <div class="flex items-center gap-4 px-6 py-4">
                             <div class="w-12 h-12 rounded-xl overflow-hidden border border-slate-100 flex-shrink-0 bg-slate-50">
@@ -104,7 +114,11 @@
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="font-semibold text-xs text-slate-800 line-clamp-1">{{ $item->name }}</h4>
-                                @if($item->name_variant)
+                                @if($variantAttributes)
+                                    <p class="text-[10px] text-slate-400 mt-0.5">
+                                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-slate-100 rounded text-[10px] font-semibold text-slate-600">{{ $variantAttributes }}</span>
+                                    </p>
+                                @elseif($item->name_variant)
                                     <p class="text-[10px] text-slate-400 mt-0.5">{{ $item->name_variant }}</p>
                                 @endif
                             </div>
