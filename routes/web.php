@@ -141,6 +141,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('/customers/{id}/restore', [CustomerController::class, 'restore'])->name('customers.restore');
     Route::delete('/customers/{id}/force-delete', [CustomerController::class, 'forceDelete'])->name('customers.forceDelete');
     Route::put('/customers/{id}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('customers.toggle');
+    Route::put('/customers/{id}/role', [CustomerController::class, 'updateRole'])->name('customers.updateRole');
     Route::resource('customers', CustomerController::class);
 
     // Banner (CRUD + Soft Delete + Trash + Restore + Force Delete)

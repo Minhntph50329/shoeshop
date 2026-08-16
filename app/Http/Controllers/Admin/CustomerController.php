@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -36,8 +37,12 @@ class CustomerController extends Controller
         }
 
         $customers = $query->latest()->paginate(10)->withQueryString();
+        $roles = Role::all();
+        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
+            $roles = $roles->filter(fn($r) => in_array($r->name, ['Customer', 'Staff']));
+        }
 
-        return view('admin.customers.index', compact('customers'));
+        return view('admin.customers.index', compact('customers', 'roles'));
     }
 
     /**
@@ -45,7 +50,11 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        return view('admin.customers.create');
+        $roles = Role::all();
+        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
+            $roles = $roles->filter(fn($r) => in_array($r->name, ['Customer', 'Staff']));
+        }
+        return view('admin.customers.create', compact('roles'));
     }
 
     /**
@@ -58,7 +67,7 @@ class CustomerController extends Controller
             'email' => 'required|email|max:255|unique:users,email',
             'phone_number' => 'nullable|string|max:20',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,client',
+            'role' => 'required|exists:roles,name',
             'status' => 'required|in:active,locked',
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',
@@ -81,7 +90,19 @@ class CustomerController extends Controller
 
         $validated['password'] = Hash::make($validated['password']);
 
-        User::create($validated);
+        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
+            if (in_array($validated['role'], ['Admin', 'Super Admin'])) {
+                return back()->with('error', 'Bạn không có quyền tạo tài khoản với vai trò này!')->withInput();
+            }
+        }
+
+        $user = User::create($validated);
+        
+        if (auth()->user()->hasAnyRole(['Super Admin', 'Admin'])) {
+            $user->assignRole($validated['role']);
+        } else {
+            $user->assignRole('Customer');
+        }
 
         return redirect()->route('admin.customers.index')->with('success', 'Thêm mới người dùng thành công!');
     }
@@ -101,7 +122,11 @@ class CustomerController extends Controller
     public function edit($id)
     {
         $customer = User::findOrFail($id);
-        return view('admin.customers.edit', compact('customer'));
+        $roles = Role::all();
+        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
+            $roles = $roles->filter(fn($r) => in_array($r->name, ['Customer', 'Staff']));
+        }
+        return view('admin.customers.edit', compact('customer', 'roles'));
     }
 
     /**
@@ -116,7 +141,7 @@ class CustomerController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($customer->id)],
             'phone_number' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:6',
-            'role' => 'required|in:admin,client',
+            'role' => 'nullable|exists:roles,name',
             'status' => 'required|in:active,locked',
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',
@@ -140,7 +165,23 @@ class CustomerController extends Controller
             unset($validated['password']);
         }
 
+        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
+            if ($customer->hasAnyRole(['Super Admin', 'Admin'])) {
+                unset($validated['role']); // Cannot change role of Admins
+            } elseif (isset($validated['role']) && in_array($validated['role'], ['Admin', 'Super Admin'])) {
+                return back()->with('error', 'Bạn không có quyền cấp vai trò này!')->withInput();
+            }
+        }
+
+        if (!auth()->user()->hasAnyRole(['Super Admin', 'Admin'])) {
+            unset($validated['role']);
+        }
+
         $customer->update($validated);
+
+        if (isset($validated['role'])) {
+            $customer->syncRoles([$validated['role']]);
+        }
 
         return redirect()->route('admin.customers.index')->with('success', 'Cập nhật thông tin người dùng thành công!');
     }
@@ -233,5 +274,36 @@ class CustomerController extends Controller
         $customer->save();
 
         return back()->with('success', $message);
+    }
+
+    /**
+     * Cập nhật vai trò (chỉ Super Admin)
+     */
+    public function updateRole(Request $request, $id)
+    {
+        if (!auth()->user()->hasAnyRole(['Super Admin', 'Admin'])) {
+            return back()->with('error', 'Bạn không có quyền thực hiện thao tác này!');
+        }
+
+        $customer = User::findOrFail($id);
+        
+        if ($customer->id === auth()->id()) {
+            return back()->with('error', 'Bạn không thể tự thay đổi vai trò của chính mình!');
+        }
+
+        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
+            if ($customer->hasAnyRole(['Super Admin', 'Admin'])) {
+                return back()->with('error', 'Bạn không có quyền thay đổi vai trò của Quản trị viên khác!');
+            }
+            if (in_array($request->role, ['Super Admin', 'Admin'])) {
+                return back()->with('error', 'Bạn không có quyền cấp vai trò này!');
+            }
+        }
+
+        $request->validate(['role' => 'required|exists:roles,name']);
+        
+        $customer->syncRoles([$request->role]);
+
+        return back()->with('success', 'Đã cập nhật vai trò thành công!');
     }
 }

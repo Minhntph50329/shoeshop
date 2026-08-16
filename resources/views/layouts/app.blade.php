@@ -91,22 +91,22 @@
                             </div>
 
                             <div class="py-2 text-xs">
-                                @if(auth()->user()->isAdmin())
+                                @hasanyrole('Admin|Super Admin|Staff')
                                     <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-5 py-2.5 text-purple-600 font-bold hover:bg-purple-50">
                                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Trang quản trị Admin
                                     </a>
-                                @endif
+                                @endhasanyrole
                                 <a href="{{ route('profile') }}" class="flex items-center gap-3 px-5 py-2.5 hover:bg-slate-100 text-slate-700">
                                     <i data-lucide="user-circle" class="w-4 h-4"></i> Hồ sơ cá nhân
                                 </a>
                                 <a href="{{ route('my-orders') }}" class="flex items-center gap-3 px-5 py-2.5 hover:bg-slate-100 text-slate-700">
                                     <i data-lucide="package-check" class="w-4 h-4"></i> Đơn hàng của tôi
                                 </a>
-                                @if(auth()->user()->role === 'client')
+                                @unless(auth()->user()->hasAnyRole(['Admin', 'Super Admin', 'Staff']))
                                 <a href="{{ route('my-contacts') }}" class="flex items-center gap-3 px-5 py-2.5 hover:bg-slate-100 text-slate-700">
                                     <i data-lucide="mail" class="w-4 h-4"></i> Tin nhắn của tôi
                                 </a>
-                                @endif
+                                @endunless
                             </div>
 
                             <div class="border-t">

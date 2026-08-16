@@ -80,10 +80,16 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Vai trò (Role) <span class="text-rose-500">*</span></label>
-                    <select name="role" required class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
-                        <option value="client" {{ old('role') == 'client' ? 'selected' : '' }}>Khách hàng (Client)</option>
-                        <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Quản trị viên (Admin)</option>
+                    <select name="role" required class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                        @if(!auth()->user()->hasAnyRole(['Super Admin', 'Admin'])) disabled @endif>
+                        @foreach($roles as $role)
+                            <option value="{{ $role->name }}" {{ old('role', 'Customer') == $role->name ? 'selected' : '' }}>{{ $role->name }}</option>
+                        @endforeach
                     </select>
+                    @if(!auth()->user()->hasAnyRole(['Super Admin', 'Admin']))
+                        <input type="hidden" name="role" value="Customer">
+                        <p class="text-[10px] text-slate-500 mt-1 italic">* Chỉ Admin và Super Admin mới có quyền chọn vai trò. Mặc định là Khách hàng.</p>
+                    @endif
                 </div>
 
                 <div>

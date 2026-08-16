@@ -104,14 +104,33 @@
                                 {{ $user->phone_number ?? 'N/A' }}
                             </td>
                             <td class="p-4">
-                                @if($user->role === 'admin')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-[11px] font-bold border border-purple-100">
-                                        <i data-lucide="shield-check" class="w-3 h-3"></i> Admin
-                                    </span>
+                                @php 
+                                    $currentRole = $user->roles->first()->name ?? $user->role ?? 'Customer'; 
+                                    $canEditRole = auth()->user()->hasRole('Super Admin') || (auth()->user()->hasRole('Admin') && !in_array($currentRole, ['Super Admin', 'Admin']));
+                                @endphp
+                                @if($canEditRole)
+                                    <form action="{{ route('admin.customers.updateRole', $user->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        @method('PUT')
+                                        <select name="role" onchange="this.form.submit()" class="py-1 px-2 border border-slate-200 rounded-lg text-[11px] focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold bg-slate-50">
+                                            @foreach($roles as $role)
+                                                <option value="{{ $role->name }}" {{ ($user->roles->first()->name ?? $user->role) == $role->name ? 'selected' : '' }}>
+                                                    {{ $role->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </form>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full text-[11px] font-semibold">
-                                        <i data-lucide="user" class="w-3 h-3"></i> Khách hàng
-                                    </span>
+                                    @php $currentRole = $user->roles->first()->name ?? $user->role; @endphp
+                                    @if(in_array($currentRole, ['Admin', 'Super Admin']))
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-[11px] font-bold border border-purple-100">
+                                            <i data-lucide="shield-check" class="w-3 h-3"></i> {{ $currentRole }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full text-[11px] font-semibold">
+                                            <i data-lucide="user" class="w-3 h-3"></i> {{ $currentRole ?? 'Khách hàng' }}
+                                        </span>
+                                    @endif
                                 @endif
                             </td>
                             <td class="p-4">
