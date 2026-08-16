@@ -32,17 +32,94 @@
                 <a href="/contact" class="hover:text-indigo-600">Liên hệ</a>
             </nav>
             <div class="flex items-center gap-4">
-                @php
-                    $cartCount = auth()->check() && auth()->user()->activeCart ? auth()->user()->activeCart->items->sum('quantity') : 0;
-                @endphp
-                <a href="{{ route('cart') }}" class="relative p-2 hover:bg-slate-50 rounded-full text-slate-700">
-                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-                    @if($cartCount > 0)
-                        <span class="absolute -top-1 -right-1 bg-indigo-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{{ $cartCount }}</span>
-                    @else
-                        <span class="absolute -top-1 -right-1 bg-slate-300 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
-                    @endif
-                </a>
+                <!-- Mini Cart Dropdown -->
+                <div class="relative group">
+                    @php
+                        $cart = auth()->check() ? auth()->user()->activeCart : null;
+                        $cartCount = $cart ? $cart->items->sum('quantity') : 0;
+                        $cartItems = $cart ? $cart->items()->with(['product.images', 'variant'])->get() : collect();
+                    @endphp
+                    <a href="{{ route('cart') }}" class="relative p-2 hover:bg-slate-50 rounded-full text-slate-700 block focus:outline-none">
+                        <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                        @if($cartCount > 0)
+                            <span class="absolute -top-1 -right-1 bg-indigo-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{{ $cartCount }}</span>
+                        @else
+                            <span class="absolute -top-1 -right-1 bg-slate-300 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                        @endif
+                    </a>
+
+                    <!-- Dropdown Content -->
+                    <div class="absolute right-0 top-full pt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 origin-top-right scale-95 group-hover:scale-100 z-50">
+                        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                            <h4 class="font-bold text-slate-800 text-sm">Giỏ hàng của bạn</h4>
+                            <span class="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">{{ $cartCount }} sản phẩm</span>
+                        </div>
+
+                        <div class="max-h-[60vh] overflow-y-auto overscroll-contain">
+                            @if($cartItems->count() > 0)
+                                <div class="divide-y divide-slate-50">
+                                    @foreach($cartItems as $item)
+                                        @php
+                                            $variant = $item->variant;
+                                            if ($variant && $variant->image) {
+                                                $img = asset($variant->image);
+                                            } elseif ($item->product && $item->product->images->first()) {
+                                                $img = asset('storage/' . $item->product->images->first()->url);
+                                            } else {
+                                                $img = 'https://placehold.co/80x80/f1f5f9/94a3b8?text=No+Img';
+                                            }
+                                            $variantAttributes = $variant ? $variant->attributeValues->map(fn($av) => $av->value)->implode(', ') : null;
+                                        @endphp
+                                        <div class="px-5 py-4 flex gap-4 hover:bg-slate-50 transition-colors">
+                                            <div class="w-16 h-16 rounded-xl border border-slate-100 bg-white overflow-hidden shrink-0 shadow-sm">
+                                                <img src="{{ $img }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
+                                            </div>
+                                            <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                                                <div>
+                                                    <h5 class="text-xs font-bold text-slate-800 line-clamp-2 leading-tight">
+                                                        <a href="#" class="hover:text-indigo-600 transition-colors">{{ $item->product->name }}</a>
+                                                    </h5>
+                                                    @if($variantAttributes)
+                                                        <p class="text-[10px] text-slate-500 mt-1 font-medium bg-slate-100 px-1.5 py-0.5 rounded inline-block">{{ $variantAttributes }}</p>
+                                                    @endif
+                                                </div>
+                                                <div class="flex items-center justify-between mt-2">
+                                                    <span class="text-xs font-bold text-indigo-600">{{ number_format($item->price_at_time, 0, ',', '.') }}đ</span>
+                                                    <span class="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 rounded-md">SL: {{ $item->quantity }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="px-5 py-8 text-center flex flex-col items-center justify-center">
+                                    <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-3">
+                                        <i data-lucide="shopping-cart" class="w-8 h-8 text-slate-300"></i>
+                                    </div>
+                                    <p class="text-sm font-semibold text-slate-600">Giỏ hàng trống</p>
+                                    <p class="text-[11px] text-slate-400 mt-1">Chưa có sản phẩm nào trong giỏ</p>
+                                </div>
+                            @endif
+                        </div>
+
+                        @if($cartItems->count() > 0)
+                            <div class="p-5 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl space-y-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Tổng tạm tính</span>
+                                    @php
+                                        $subtotal = $cartItems->sum(function($item) {
+                                            return $item->price_at_time * $item->quantity;
+                                        });
+                                    @endphp
+                                    <span class="text-sm font-black text-slate-900">{{ number_format($subtotal, 0, ',', '.') }}đ</span>
+                                </div>
+                                <a href="{{ route('cart') }}" class="flex items-center justify-center w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5">
+                                    Xem giỏ hàng
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
                 @php
                     $wishlistCount = auth()->check()
                         ? \App\Models\Wishlist::where('user_id', auth()->id())->count()
