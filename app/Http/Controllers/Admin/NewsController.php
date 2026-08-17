@@ -235,7 +235,7 @@ class NewsController extends Controller
             });
         }
 
-        $comments = $query->latest()->paginate(15)->withQueryString();
+        $comments = $query->latest()->paginate(10)->withQueryString();
 
         return view('admin.news.comments', compact('comments'));
     }

@@ -37,7 +37,7 @@ class ReviewController extends Controller
             });
         }
 
-        $reviews = $query->paginate(15);
+        $reviews = $query->paginate(10);
 
         return view('admin.reviews.index', compact('reviews'));
     }

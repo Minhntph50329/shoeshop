@@ -31,7 +31,7 @@ class ContactController extends Controller
             });
         }
 
-        $contacts = $query->paginate(15);
+        $contacts = $query->paginate(10);
 
         return view('admin.contacts.index', compact('contacts'));
     }

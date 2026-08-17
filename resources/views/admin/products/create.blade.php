@@ -80,8 +80,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Mã SKU (Để trống tự động sinh dạng PRD123456)</label>
-                        <input type="text" name="sku" value="{{ old('sku') }}" placeholder="VD: PRD123456 (Tự sinh nếu trống)" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Mã SKU</label>
+                        <input type="text" name="sku" value="{{ old('sku') }}" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Giá bán gốc (VNĐ) <span class="text-rose-500">*</span></label>
@@ -89,7 +89,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Số lượng tồn kho <span class="text-rose-500">*</span></label>
-                        <input type="number" name="stock" value="{{ old('stock', 10) }}" min="0" required class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input type="number" name="stock" value="{{ old('stock', 0) }}" min="0" required class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                 </div>
 

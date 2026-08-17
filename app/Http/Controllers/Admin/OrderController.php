@@ -46,7 +46,7 @@ class OrderController extends Controller
             $query->whereDate('created_at', '<=', $to);
         }
 
-        $orders   = $query->paginate(15)->withQueryString();
+        $orders   = $query->paginate(10)->withQueryString();
         $statuses = OrderStatus::all();
 
         // Stats

@@ -14,7 +14,7 @@
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-slate-900 text-white shrink-0 hidden md:flex flex-col border-r border-slate-800">
+    <aside class="w-64 bg-slate-900 text-white shrink-0 hidden md:flex flex-col border-r border-slate-800 sticky top-0 h-screen overflow-y-auto">
         <div class="h-16 flex items-center px-6 border-b border-slate-800">
             <span class="font-black tracking-wider text-indigo-400">VELOCE ADMIN</span>
         </div>

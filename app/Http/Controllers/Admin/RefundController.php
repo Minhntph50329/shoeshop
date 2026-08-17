@@ -37,7 +37,7 @@ class RefundController extends Controller
             $query->where('status', $status);
         }
 
-        $refunds = $query->paginate(15)->withQueryString();
+        $refunds = $query->paginate(10)->withQueryString();
         $statuses = Refund::statusLabels();
         $statusColors = Refund::statusColors();
 
