@@ -37,6 +37,7 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/register/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('register.verify');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Cart Routes

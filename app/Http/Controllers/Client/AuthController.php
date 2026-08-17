@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Mail\LoginNotification;
+use App\Mail\VerifyRegistration;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -39,10 +42,27 @@ class AuthController extends Controller
             ]);
         }
 
+        if ($user && is_null($user->email_verified_at)) {
+            return back()->withInput()->withErrors([
+                'email' => 'Tài khoản của bạn chưa được xác nhận. Vui lòng kiểm tra email để xác nhận.',
+            ]);
+        }
+
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
+
+            try {
+                Mail::to(Auth::user()->email)->send(new LoginNotification(
+                    Auth::user(),
+                    now()->format('d/m/Y H:i:s'),
+                    $request->ip(),
+                    $request->userAgent()
+                ));
+            } catch (\Exception $e) {
+                // Log error if needed
+            }
 
             if (Auth::user()->isAdmin()) {
                 return redirect()->intended(route('admin.dashboard'))->with('success', 'Đăng nhập trang quản trị thành công!');
@@ -90,9 +110,14 @@ class AuthController extends Controller
             'status' => 'active',
         ]);
 
-        Auth::login($user);
+        $verifyUrl = route('register.verify', ['id' => $user->id, 'hash' => sha1($user->email)]);
+        try {
+            Mail::to($user->email)->send(new VerifyRegistration($user, $verifyUrl));
+        } catch (\Exception $e) {
+            // Log error
+        }
 
-        return redirect()->route('home')->with('success', 'Đăng ký tài khoản thành công!');
+        return redirect()->route('login')->with('success', 'Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản trước khi đăng nhập.');
     }
 
     public function logout(Request $request)
@@ -102,5 +127,25 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home')->with('success', 'Đã đăng xuất thành công.');
+    }
+
+    public function verifyEmail(Request $request, $id, $hash)
+    {
+        $user = User::findOrFail($id);
+
+        if (!hash_equals((string) $hash, sha1($user->email))) {
+            return redirect()->route('login')->withErrors(['email' => 'Đường dẫn xác nhận không hợp lệ.']);
+        }
+
+        if (!is_null($user->email_verified_at)) {
+            return redirect()->route('login')->with('success', 'Tài khoản của bạn đã được xác nhận trước đó. Vui lòng đăng nhập.');
+        }
+
+        $user->email_verified_at = now();
+        $user->save();
+
+        Auth::login($user);
+
+        return redirect()->route('home')->with('success', 'Xác nhận tài khoản thành công! Bạn đã được đăng nhập tự động.');
     }
 }
