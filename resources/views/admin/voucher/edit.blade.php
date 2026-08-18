@@ -22,7 +22,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mã Voucher (Code) <span class="text-rose-500">*</span></label>
-                <input type="text" name="code" value="{{ old('code', $coupon->code) }}" required 
+                <input type="text" name="code" value="{{ old('code', $coupon->code) }}" 
                     class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs font-mono font-bold text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 uppercase transition">
                 @error('code') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
             </div>
@@ -35,16 +35,18 @@
 
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Loại giảm giá <span class="text-rose-500">*</span></label>
-                <select name="discount_type" required class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                <select name="discount_type" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                     <option value="fixed" {{ old('discount_type', $coupon->discount_type) == 'fixed' ? 'selected' : '' }}>Giảm số tiền cố định (VNĐ)</option>
                     <option value="percent" {{ old('discount_type', $coupon->discount_type) == 'percent' ? 'selected' : '' }}>Giảm theo phần trăm (%)</option>
                 </select>
+                @error('discount_type') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Giá trị giảm <span class="text-rose-500">*</span></label>
-                <input type="number" name="discount_value" value="{{ old('discount_value', $coupon->discount_value) }}" min="0" step="any" required 
+                <input type="number" name="discount_value" value="{{ old('discount_value', $coupon->discount_value) }}" min="0" step="any" 
                     class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                @error('discount_value') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>
@@ -55,10 +57,11 @@
 
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Trạng thái kích hoạt</label>
-                <select name="is_active" required class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                <select name="is_active" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                     <option value="1" {{ old('is_active', $coupon->is_active) ? 'selected' : '' }}>Kích hoạt (Active)</option>
                     <option value="0" {{ !old('is_active', $coupon->is_active) ? 'selected' : '' }}>Khóa (Inactive)</option>
                 </select>
+                @error('is_active') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>

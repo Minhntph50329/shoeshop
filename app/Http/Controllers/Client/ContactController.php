@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
+use App\Http\Requests\Client\Contact\StoreContactRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,20 +21,9 @@ class ContactController extends Controller
     /**
      * Store a contact message.
      */
-    public function store(Request $request)
+    public function store(StoreContactRequest $request)
     {
-        $request->validate([
-            'name'    => 'required|string|max:255',
-            'email'   => 'required|email|max:255',
-            'phone'   => 'nullable|string|max:20',
-            'message' => 'required|string|min:10|max:2000',
-        ], [
-            'name.required'    => 'Vui lòng nhập họ tên của bạn.',
-            'email.required'   => 'Vui lòng nhập địa chỉ email.',
-            'email.email'      => 'Địa chỉ email không đúng định dạng.',
-            'message.required' => 'Vui lòng nhập nội dung liên hệ.',
-            'message.min'      => 'Nội dung liên hệ phải có ít nhất 10 ký tự.',
-        ]);
+        $validated = $request->validated();
 
         Contact::create([
             'user_id' => Auth::id(),

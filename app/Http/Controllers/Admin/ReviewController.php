@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Review;
+use App\Http\Requests\Admin\Review\ReplyReviewRequest;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
@@ -45,16 +46,11 @@ class ReviewController extends Controller
     /**
      * Reply to a review.
      */
-    public function reply(Request $request, $id)
+    public function reply(ReplyReviewRequest $request, $id)
     {
         $parentReview = Review::findOrFail($id);
 
-        $request->validate([
-            'reply_text' => 'required|string|min:5|max:1000',
-        ], [
-            'reply_text.required' => 'Vui lòng nhập nội dung trả lời.',
-            'reply_text.min' => 'Nội dung trả lời phải có ít nhất 5 ký tự.',
-        ]);
+        $validated = $request->validated();
 
         // Create reply
         Review::create([

@@ -40,14 +40,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Họ và tên <span class="text-rose-500">*</span></label>
-                    <input type="text" name="fullname" value="{{ old('fullname', $customer->fullname) }}" required 
+                    <input type="text" name="fullname" value="{{ old('fullname', $customer->fullname) }}" 
                         class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                     @error('fullname') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Địa chỉ Email <span class="text-rose-500">*</span></label>
-                    <input type="email" name="email" value="{{ old('email', $customer->email) }}" required 
+                    <input type="email" name="email" value="{{ old('email', $customer->email) }}" 
                         class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                     @error('email') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
@@ -99,7 +99,7 @@
                         $currentRole = $customer->roles->first()->name ?? $customer->role ?? 'Customer';
                         $canEditRole = auth()->user()->hasRole('Super Admin') || (auth()->user()->hasRole('Admin') && !in_array($currentRole, ['Super Admin', 'Admin']));
                     @endphp
-                    <select name="role" required class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
+                    <select name="role" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
                         @if(!$canEditRole) disabled @endif>
                         @foreach($roles as $role)
                             <option value="{{ $role->name }}" {{ old('role', $currentRole) == $role->name ? 'selected' : '' }}>{{ $role->name }}</option>
@@ -113,10 +113,11 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Trạng thái <span class="text-rose-500">*</span></label>
-                    <select name="status" required class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                    <select name="status" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                         <option value="active" {{ old('status', $customer->status) == 'active' ? 'selected' : '' }}>Hoạt động</option>
                         <option value="locked" {{ old('status', $customer->status) == 'locked' ? 'selected' : '' }}>Khóa tài khoản</option>
                     </select>
+                    @error('status') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                 </div>
             </div>
 

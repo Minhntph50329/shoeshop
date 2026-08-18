@@ -56,8 +56,11 @@
         <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
             <form action="{{ route('admin.news.category.store') }}" method="POST" class="flex items-center gap-2">
                 @csrf
-                <input type="text" name="name" required placeholder="Tên danh mục tin mới..." 
-                    class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                <div>
+                    <input type="text" name="name" placeholder="Tên danh mục tin mới..." 
+                        class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                    @error('name') <p class="text-[10px] text-rose-500 mt-1 absolute">{{ $message }}</p> @enderror
+                </div>
                 <button type="submit" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shrink-0 transition">
                     + Thêm DM
                 </button>

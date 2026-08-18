@@ -21,7 +21,7 @@
 
         <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tiêu đề bài viết <span class="text-rose-500">*</span></label>
-            <input type="text" name="title" value="{{ old('title', $post->title) }}" required 
+            <input type="text" name="title" value="{{ old('title', $post->title) }}" 
                 class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
             @error('title') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
@@ -50,7 +50,7 @@
 
         <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Nội dung bài viết <span class="text-rose-500">*</span></label>
-            <textarea name="content" rows="12" required 
+            <textarea name="content" rows="12" 
                 class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">{{ old('content', $post->content) }}</textarea>
             @error('content') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
@@ -58,10 +58,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Trạng thái bài viết</label>
-                <select name="is_active" required class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                <select name="is_active" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                     <option value="1" {{ old('is_active', $post->is_active) ? 'selected' : '' }}>Xuất bản (Active)</option>
                     <option value="0" {{ !old('is_active', $post->is_active) ? 'selected' : '' }}>Bản nháp (Draft)</option>
                 </select>
+                @error('is_active') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div class="flex items-center gap-2 pt-6">

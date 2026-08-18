@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
+use App\Http\Requests\Admin\Coupon\StoreCouponRequest;
+use App\Http\Requests\Admin\Coupon\UpdateCouponRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -40,24 +42,9 @@ class CouponController extends Controller
     /**
      * Lưu Voucher mới
      */
-    public function store(Request $request)
+    public function store(StoreCouponRequest $request)
     {
-        $validated = $request->validate([
-            'code' => 'required|string|max:50|unique:coupons,code',
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'discount_type' => 'required|in:fixed,percent',
-            'discount_value' => 'required|numeric|min:0',
-            'usage_limit' => 'nullable|integer|min:1',
-            'is_active' => 'required|boolean',
-            'is_notified' => 'nullable|boolean',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-        ], [
-            'code.required' => 'Vui lòng nhập mã Voucher.',
-            'code.unique' => 'Mã Voucher này đã tồn tại.',
-            'discount_value.required' => 'Vui lòng nhập giá trị giảm giá.',
-        ]);
+        $validated = $request->validated();
 
         $validated['is_notified'] = $request->boolean('is_notified');
 
@@ -78,22 +65,11 @@ class CouponController extends Controller
     /**
      * Cập nhật Voucher
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCouponRequest $request, $id)
     {
         $coupon = Coupon::findOrFail($id);
 
-        $validated = $request->validate([
-            'code' => ['required', 'string', 'max:50', Rule::unique('coupons')->ignore($coupon->id)],
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'discount_type' => 'required|in:fixed,percent',
-            'discount_value' => 'required|numeric|min:0',
-            'usage_limit' => 'nullable|integer|min:1',
-            'is_active' => 'required|boolean',
-            'is_notified' => 'nullable|boolean',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-        ]);
+        $validated = $request->validated();
 
         $validated['is_notified'] = $request->boolean('is_notified');
 

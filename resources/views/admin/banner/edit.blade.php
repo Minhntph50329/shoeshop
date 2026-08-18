@@ -25,6 +25,7 @@
                 <img src="{{ asset($banner->image) }}" alt="{{ $banner->title }}" class="w-48 h-28 object-cover rounded-xl border border-slate-200 bg-slate-50">
             </div>
             <input type="file" name="image" accept="image/*" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+            @error('image') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -48,25 +49,28 @@
 
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Vị trí (Position)</label>
-                <select name="poisition" required class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                <select name="poisition" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                     <option value="home_hero" {{ old('poisition', $banner->poisition) == 'home_hero' ? 'selected' : '' }}>Trang chủ - Hero Slider</option>
                     <option value="home_sidebar" {{ old('poisition', $banner->poisition) == 'home_sidebar' ? 'selected' : '' }}>Trang chủ - Sidebar Banner</option>
                     <option value="shop_top" {{ old('poisition', $banner->poisition) == 'shop_top' ? 'selected' : '' }}>Trang Cửa hàng - Top Banner</option>
                 </select>
+                @error('poisition') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Thứ tự sắp xếp (Sort Order)</label>
-                <input type="number" name="sort_order" value="{{ old('sort_order', $banner->sort_order) }}" min="0" required 
+                <input type="number" name="sort_order" value="{{ old('sort_order', $banner->sort_order) }}" min="0" 
                     class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                @error('sort_order') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Trạng thái hiển thị</label>
-                <select name="is_active" required class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                <select name="is_active" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                     <option value="1" {{ old('is_active', $banner->is_active) ? 'selected' : '' }}>Hiển thị (Active)</option>
                     <option value="0" {{ !old('is_active', $banner->is_active) ? 'selected' : '' }}>Ẩn (Inactive)</option>
                 </select>
+                @error('is_active') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
             </div>
         </div>
 

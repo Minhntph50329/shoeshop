@@ -12,6 +12,8 @@ use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
 use App\Models\Payment;
 use App\Models\PaymentLog;
+use App\Http\Requests\Client\Checkout\CheckoutRequest;
+use App\Http\Requests\Client\Checkout\CreateAddressRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -65,29 +67,11 @@ class CheckoutController extends Controller
     /**
      * Lưu địa chỉ mới từ Checkout
      */
-    public function storeAddress(Request $request)
+    public function storeAddress(CreateAddressRequest $request)
     {
         $user = auth()->user();
 
-        $validated = $request->validate([
-            'fullname'     => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            'province'     => 'required|string|max:255',
-            'district'     => 'required|string|max:255',
-            'ward'         => 'required|string|max:255',
-            'street'       => 'required|string|max:255',
-            'address'      => 'required|string|max:500',
-            'address_type' => 'required|in:home,office,other',
-            'is_default'   => 'nullable|boolean',
-        ], [
-            'fullname.required'     => 'Vui lòng nhập họ và tên người nhận.',
-            'phone_number.required' => 'Vui lòng nhập số điện thoại.',
-            'province.required'     => 'Vui lòng chọn Tỉnh/Thành phố.',
-            'district.required'     => 'Vui lòng chọn Quận/Huyện.',
-            'ward.required'         => 'Vui lòng chọn Phường/Xã.',
-            'street.required'       => 'Vui lòng nhập tên đường, tòa nhà...',
-            'address.required'      => 'Vui lòng nhập địa chỉ cụ thể.',
-        ]);
+        $validated = $request->validated();
 
         $isDefault = $request->boolean('is_default');
 
@@ -106,20 +90,11 @@ class CheckoutController extends Controller
     /**
      * Đặt hàng
      */
-    public function store(Request $request)
+    public function store(CheckoutRequest $request)
     {
         $user = auth()->user();
 
-        $request->validate([
-            'fullname'    => 'required|string|max:255',
-            'phone'       => 'required|string|max:20',
-            'email'       => 'required|email|max:255',
-            'address'     => 'required|string|max:500',
-            'payment_id'  => 'required|exists:payments,id',
-            'shipping_type'=> 'required|in:standard,express',
-            'note'        => 'nullable|string|max:500',
-            'coupon_code' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $selectedItemIds = $request->query('items') ? explode(',', $request->query('items')) : [];
         $cart = Cart::with(['items' => function($q) use ($selectedItemIds) {

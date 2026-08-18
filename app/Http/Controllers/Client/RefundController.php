@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderStatusHistory;
 use App\Models\Refund;
 use App\Models\RefundItem;
+use App\Http\Requests\Client\Refund\StoreRefundRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -54,7 +55,7 @@ class RefundController extends Controller
     /**
      * Store the refund request
      */
-    public function store(Request $request, $orderId)
+    public function store(StoreRefundRequest $request, $orderId)
     {
         $order = Order::with('items')->where('user_id', auth()->id())->findOrFail($orderId);
         $currentStatus = $order->getCurrentStatus();
@@ -76,15 +77,7 @@ class RefundController extends Controller
                 ->with('error', 'Đơn hàng này đã có yêu cầu trả hàng / hoàn tiền.');
         }
 
-        $request->validate([
-            'bank_account'   => 'required|string|max:100',
-            'user_bank_name' => 'required|string|max:255',
-            'bank_name'      => 'required|string|max:100',
-            'reason'         => 'required|string|max:1000',
-            'reason_image'   => 'nullable|image|max:2048', // max 2MB
-            'items'          => 'required|array',
-            'items.*.quantity' => 'required|integer|min:0',
-        ]);
+        $validated = $request->validated();
 
         // Filter items that have quantity > 0
         $selectedItems = array_filter($request->items, function ($itemData) {

@@ -45,7 +45,10 @@
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-4">
                 <div>
                     <label class="block text-sm font-bold text-slate-800 mb-1">Tên sản phẩm <span class="text-rose-500">*</span></label>
-                    <input type="text" name="name" id="product_name" value="{{ old('name') }}" required placeholder="Nhập tên sản phẩm (VD: Nike Air Max 270)..." class="w-full px-4 py-3 text-base border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold text-slate-800">
+                    <input type="text" name="name" id="product_name" value="{{ old('name') }}" placeholder="Nhập tên sản phẩm (VD: Nike Air Max 270)..." class="w-full px-4 py-3 text-base border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold text-slate-800">
+                    @error('name')
+                        <div class="auto-hide-error text-rose-500 text-xs mt-1 animate-pulse"><i data-lucide="alert-circle" class="w-3 h-3 inline-block mr-1"></i>{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
 
@@ -85,11 +88,17 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Giá bán gốc (VNĐ) <span class="text-rose-500">*</span></label>
-                        <input type="number" name="price" value="{{ old('price', 0) }}" min="0" step="1000" required class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
+                        <input type="number" name="price" value="{{ old('price', 0) }}" min="0" step="1000" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
+                        @error('price')
+                            <div class="auto-hide-error text-rose-500 text-xs mt-1 animate-pulse"><i data-lucide="alert-circle" class="w-3 h-3 inline-block mr-1"></i>{{ $message }}</div>
+                        @enderror
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Số lượng tồn kho <span class="text-rose-500">*</span></label>
-                        <input type="number" name="stock" value="{{ old('stock', 0) }}" min="0" required class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input type="number" name="stock" value="{{ old('stock', 0) }}" min="0" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        @error('stock')
+                            <div class="auto-hide-error text-rose-500 text-xs mt-1 animate-pulse"><i data-lucide="alert-circle" class="w-3 h-3 inline-block mr-1"></i>{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
 
@@ -221,6 +230,7 @@
                         <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
                     @endforeach
                 </select>
+                
             </div>
 
         </div>

@@ -32,7 +32,10 @@
             @csrf
             <div class="flex-1 w-full">
                 <label class="block text-xs font-semibold text-slate-600 mb-1">Tên thuộc tính <span class="text-rose-500">*</span></label>
-                <input type="text" name="name" required placeholder="VD: Size, Màu sắc, Chất liệu..." class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                <input type="text" name="name" value="{{ old('name') }}" placeholder="VD: Size, Màu sắc, Chất liệu..." class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                @error('name')
+                    <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                @enderror
             </div>
 
             <div class="flex items-center gap-6 py-2">
@@ -105,13 +108,18 @@
 
                 <!-- Form thêm Giá trị thuộc tính -->
                 <div class="p-4 bg-slate-50/50 border-t border-slate-100">
-                    <form action="{{ route('admin.attributes.values.store', $attr->id) }}" method="POST" class="flex items-center gap-2">
+                    <form action="{{ route('admin.attributes.values.store', $attr->id) }}" method="POST" class="flex flex-col gap-2">
                         @csrf
-                        <input type="text" name="value" required placeholder="Giá trị (VD: Đỏ, 42...)" class="flex-1 px-3 py-1.5 rounded-md border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <input type="color" name="color_code" class="w-8 h-8 p-0.5 rounded border border-slate-200 cursor-pointer" title="Mã màu (nếu có)">
-                        <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-md text-xs font-semibold transition shrink-0">
-                            + Thêm
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <input type="text" name="value" placeholder="Giá trị (VD: Đỏ, 42...)" class="flex-1 px-3 py-1.5 rounded-md border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <input type="color" name="color_code" class="w-8 h-8 p-0.5 rounded border border-slate-200 cursor-pointer" title="Mã màu (nếu có)">
+                            <button type="submit" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-md text-xs font-semibold transition shrink-0">
+                                + Thêm
+                            </button>
+                        </div>
+                        @error('value')
+                            <div class="text-rose-500 text-xs">{{ $message }}</div>
+                        @enderror
                     </form>
                 </div>
             </div>

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Http\Requests\Admin\Customer\StoreCustomerRequest;
+use App\Http\Requests\Admin\Customer\UpdateCustomerRequest;
 use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -60,29 +62,9 @@ class CustomerController extends Controller
     /**
      * Lưu người dùng mới
      */
-    public function store(Request $request)
+    public function store(StoreCustomerRequest $request)
     {
-        $validated = $request->validate([
-            'fullname' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
-            'phone_number' => 'nullable|string|max:20',
-            'password' => 'required|string|min:6',
-            'role' => 'required|exists:roles,name',
-            'status' => 'required|in:active,locked',
-            'gender' => 'nullable|in:male,female,other',
-            'birthday' => 'nullable|date',
-            'bank_name' => 'nullable|string|max:255',
-            'user_bank_name' => 'nullable|string|max:255',
-            'bank_account' => 'nullable|string|max:255',
-            'reason_lock' => 'nullable|string',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        ], [
-            'fullname.required' => 'Vui lòng nhập họ tên.',
-            'email.required' => 'Vui lòng nhập email.',
-            'email.unique' => 'Email đã tồn tại.',
-            'password.required' => 'Vui lòng nhập mật khẩu.',
-            'password.min' => 'Mật khẩu phải từ 6 ký tự trở lên.',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('avatar')) {
             $validated['avatar'] = $request->file('avatar')->store('users', 'public');
@@ -132,25 +114,11 @@ class CustomerController extends Controller
     /**
      * Cập nhật thông tin người dùng
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCustomerRequest $request, $id)
     {
         $customer = User::findOrFail($id);
 
-        $validated = $request->validate([
-            'fullname' => 'required|string|max:255',
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($customer->id)],
-            'phone_number' => 'nullable|string|max:20',
-            'password' => 'nullable|string|min:6',
-            'role' => 'nullable|exists:roles,name',
-            'status' => 'required|in:active,locked',
-            'gender' => 'nullable|in:male,female,other',
-            'birthday' => 'nullable|date',
-            'bank_name' => 'nullable|string|max:255',
-            'user_bank_name' => 'nullable|string|max:255',
-            'bank_account' => 'nullable|string|max:255',
-            'reason_lock' => 'nullable|string',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('avatar')) {
             if ($customer->avatar) {

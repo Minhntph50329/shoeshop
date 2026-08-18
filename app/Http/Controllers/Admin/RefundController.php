@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderStatusHistory;
 use App\Models\Refund;
 use App\Mail\RefundSuccessfulMail;
+use App\Http\Requests\Admin\Refund\HandleRefundRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -74,13 +75,9 @@ class RefundController extends Controller
     /**
      * Xử lý trạng thái yêu cầu trả hàng theo State Machine
      */
-    public function handleAction(Request $request, $id)
+    public function handleAction(HandleRefundRequest $request, $id)
     {
-        $request->validate([
-            'action'        => 'required|in:approve,reject,complete',
-            'aadmin_reason' => 'nullable|string|max:1000',
-            'img_refunded_money'  => 'nullable|image|max:2048',
-        ]);
+        $validated = $request->validated();
 
         $refund = Refund::findOrFail($id);
         $order  = Order::findOrFail($refund->order_id);

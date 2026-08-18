@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BlogCategory;
 use App\Models\BlogComment;
 use App\Models\BlogPost;
+use App\Http\Requests\Client\Blog\StoreCommentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -96,7 +97,7 @@ class BlogController extends Controller
     /**
      * Gửi bình luận bài viết (Lưu vào bảng blog_comments với user_name & user_email)
      */
-    public function storeComment(Request $request, $postId)
+    public function storeComment(StoreCommentRequest $request, $postId)
     {
         $post = BlogPost::where('is_active', true)->findOrFail($postId);
 
@@ -104,21 +105,7 @@ class BlogController extends Controller
             return back()->with('error', 'Bài viết này hiện đã tắt tính năng bình luận.');
         }
 
-        $rules = [
-            'content' => 'required|string|max:1000',
-            'parent_id' => 'nullable|exists:blog_comments,id',
-        ];
-
-        if (!Auth::check()) {
-            $rules['user_name'] = 'required|string|max:255';
-            $rules['user_email'] = 'required|email|max:255';
-        }
-
-        $validated = $request->validate($rules, [
-            'content.required' => 'Vui lòng nhập nội dung bình luận.',
-            'user_name.required' => 'Vui lòng nhập họ tên của bạn.',
-            'user_email.required' => 'Vui lòng nhập email hợp lệ.',
-        ]);
+        $validated = $request->validated();
 
         BlogComment::create([
             'post_id' => $post->id,

@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\BlogCategory;
 use App\Models\BlogComment;
 use App\Models\BlogPost;
+use App\Http\Requests\Admin\News\StoreNewsRequest;
+use App\Http\Requests\Admin\News\UpdateNewsRequest;
+use App\Http\Requests\Admin\News\StoreNewsCategoryRequest;
+use App\Http\Requests\Admin\News\UpdateNewsCategoryRequest;
+use App\Http\Requests\Admin\News\ReplyCommentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -46,19 +51,9 @@ class NewsController extends Controller
     /**
      * Lưu bài viết mới
      */
-    public function store(Request $request)
+    public function store(StoreNewsRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'category_id' => 'nullable|exists:blog_categories,id',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'is_active' => 'required|boolean',
-            'alow_comments' => 'nullable|boolean',
-        ], [
-            'title.required' => 'Vui lòng nhập tiêu đề bài viết.',
-            'content.required' => 'Vui lòng nhập nội dung bài viết.',
-        ]);
+        $validated = $request->validated();
 
         $validated['slug'] = Str::slug($request->title) . '-' . time();
         $validated['author_id'] = Auth::id();
@@ -87,18 +82,11 @@ class NewsController extends Controller
     /**
      * Cập nhật bài viết
      */
-    public function update(Request $request, $id)
+    public function update(UpdateNewsRequest $request, $id)
     {
         $post = BlogPost::findOrFail($id);
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'category_id' => 'nullable|exists:blog_categories,id',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'is_active' => 'required|boolean',
-            'alow_comments' => 'nullable|boolean',
-        ]);
+        $validated = $request->validated();
 
         $validated['alow_comments'] = $request->boolean('alow_comments');
 
@@ -174,13 +162,9 @@ class NewsController extends Controller
         return view('admin.news.categories', compact('categories'));
     }
 
-    public function storeCategory(Request $request)
+    public function storeCategory(StoreNewsCategoryRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ], [
-            'name.required' => 'Vui lòng nhập tên danh mục.',
-        ]);
+        $validated = $request->validated();
 
         BlogCategory::create([
             'name' => $request->name,
@@ -190,14 +174,11 @@ class NewsController extends Controller
         return back()->with('success', 'Thêm danh mục tin tức thành công!');
     }
 
-    public function updateCategory(Request $request, $id)
+    public function updateCategory(UpdateNewsCategoryRequest $request, $id)
     {
         $category = BlogCategory::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'is_active' => 'required|boolean',
-        ]);
+        $validated = $request->validated();
 
         $category->update([
             'name' => $request->name,
@@ -240,15 +221,11 @@ class NewsController extends Controller
         return view('admin.news.comments', compact('comments'));
     }
 
-    public function replyComment(Request $request, $id)
+    public function replyComment(ReplyCommentRequest $request, $id)
     {
         $parentComment = BlogComment::findOrFail($id);
 
-        $request->validate([
-            'reply_content' => 'required|string|max:1000',
-        ], [
-            'reply_content.required' => 'Vui lòng nhập nội dung trả lời.',
-        ]);
+        $validated = $request->validated();
 
         BlogComment::create([
             'post_id' => $parentComment->post_id,

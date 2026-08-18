@@ -236,7 +236,7 @@ $csColors = $cs && isset($statusColors[$cs->id]) ? $statusColors[$cs->id] : ['bg
                         @method('POST')
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Trạng thái mới</label>
-                            <select name="status_id" required
+                            <select name="status_id"
                                 class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition bg-white">
                                 @foreach($allStatuses as $status)
                                     <option value="{{ $status->id }}" {{ $cs && $cs->id == $status->id ? 'selected' : '' }}>

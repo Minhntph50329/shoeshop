@@ -18,8 +18,12 @@
 
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">Tên danh mục <span class="text-rose-500">*</span></label>
-            <input type="text" name="name" value="{{ old('name', $category->name) }}" required class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-            @error('name') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+            <input type="text" name="name" value="{{ old('name', $category->name) }}" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+            @error('name')
+                <div class="auto-hide-error text-rose-500 text-xs mt-1 animate-pulse">
+                    <i data-lucide="alert-circle" class="w-3 h-3 inline-block mr-1"></i>{{ $message }}
+                </div>
+            @enderror
         </div>
 
         <div>
@@ -30,13 +34,21 @@
                     <option value="{{ $parent->id }}" {{ old('parent_id', $category->parent_id) == $parent->id ? 'selected' : '' }}>{{ $parent->name }}</option>
                 @endforeach
             </select>
-            @error('parent_id') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+            @error('parent_id')
+                <div class="auto-hide-error text-rose-500 text-xs mt-1 animate-pulse">
+                    <i data-lucide="alert-circle" class="w-3 h-3 inline-block mr-1"></i>{{ $message }}
+                </div>
+            @enderror
         </div>
 
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">Icon Lucide</label>
             <input type="text" name="icon" value="{{ old('icon', $category->icon) }}" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-            @error('icon') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+            @error('icon')
+                <div class="auto-hide-error text-rose-500 text-xs mt-1 animate-pulse">
+                    <i data-lucide="alert-circle" class="w-3 h-3 inline-block mr-1"></i>{{ $message }}
+                </div>
+            @enderror
         </div>
 
         <div class="flex items-center gap-6 border-t border-slate-100 pt-6">

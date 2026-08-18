@@ -81,8 +81,11 @@
                     <!-- Inline Reply Form -->
                     <form action="{{ route('admin.news.comments.reply', $comment->id) }}" method="POST" class="flex items-center gap-2 flex-1 max-w-xl">
                         @csrf
-                        <input type="text" name="reply_content" required placeholder="Nhập câu trả lời của Admin..." 
-                            class="w-full py-1.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600">
+                        <div class="w-full">
+                            <input type="text" name="reply_content" placeholder="Nhập câu trả lời của Admin..." 
+                                class="w-full py-1.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600">
+                            @error('reply_content') <p class="text-[10px] text-rose-500 mt-1 absolute">{{ $message }}</p> @enderror
+                        </div>
                         <button type="submit" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shrink-0 transition flex items-center gap-1">
                             <i data-lucide="corner-down-right" class="w-3.5 h-3.5"></i> Trả lời
                         </button>

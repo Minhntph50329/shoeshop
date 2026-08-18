@@ -17,14 +17,22 @@
 
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">Tên thương hiệu <span class="text-rose-500">*</span></label>
-            <input type="text" name="name" value="{{ old('name') }}" required class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="VD: Nike, Adidas, Puma...">
-            @error('name') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+            <input type="text" name="name" value="{{ old('name') }}" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm" placeholder="VD: Nike, Adidas, Puma...">
+            @error('name')
+                <div class="auto-hide-error text-rose-500 text-xs mt-1 animate-pulse">
+                    <i data-lucide="alert-circle" class="w-3 h-3 inline-block mr-1"></i>{{ $message }}
+                </div>
+            @enderror
         </div>
 
         <div>
             <label class="block text-sm font-semibold text-slate-700 mb-2">Logo thương hiệu</label>
             <input type="file" name="logo" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-            @error('logo') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+            @error('logo')
+                <div class="auto-hide-error text-rose-500 text-xs mt-1 animate-pulse">
+                    <i data-lucide="alert-circle" class="w-3 h-3 inline-block mr-1"></i>{{ $message }}
+                </div>
+            @enderror
         </div>
 
         <div class="flex items-center gap-6 border-t border-slate-100 pt-6">

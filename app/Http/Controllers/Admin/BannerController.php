@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Http\Requests\Admin\Banner\StoreBannerRequest;
+use App\Http\Requests\Admin\Banner\UpdateBannerRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -37,20 +39,9 @@ class BannerController extends Controller
     /**
      * Lưu Banner mới
      */
-    public function store(Request $request)
+    public function store(StoreBannerRequest $request)
     {
-        $validated = $request->validate([
-            'title' => 'nullable|string|max:255',
-            'subtitle' => 'nullable|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'link' => 'nullable|string|max:500',
-            'poisition' => 'required|string|max:100',
-            'sort_order' => 'required|integer|min:0',
-            'is_active' => 'required|boolean',
-        ], [
-            'image.required' => 'Vui lòng chọn ảnh Banner.',
-            'image.image' => 'File ảnh không hợp lệ.',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('banners', 'public');
@@ -74,19 +65,11 @@ class BannerController extends Controller
     /**
      * Cập nhật Banner
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBannerRequest $request, $id)
     {
         $banner = Banner::findOrFail($id);
 
-        $validated = $request->validate([
-            'title' => 'nullable|string|max:255',
-            'subtitle' => 'nullable|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'link' => 'nullable|string|max:500',
-            'poisition' => 'required|string|max:100',
-            'sort_order' => 'required|integer|min:0',
-            'is_active' => 'required|boolean',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('image')) {
             if ($banner->image && str_contains($banner->image, 'storage/')) {

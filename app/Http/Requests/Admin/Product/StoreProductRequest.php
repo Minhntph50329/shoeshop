@@ -49,7 +49,9 @@ class StoreProductRequest extends FormRequest
             'image.max' => 'Dung lượng ảnh đại diện tối đa 2MB.',
             'gallery.*.image' => 'File trong thư viện ảnh không hợp lệ.',
             'gallery.*.max' => 'Dung lượng từng ảnh trong thư viện tối đa 2MB.',
+            'brand_id.required' => 'Vui lòng chọn thương hiệu.',
             'brand_id.exists' => 'Thương hiệu được chọn không tồn tại.',
+            'category_ids.required' => 'Vui lòng chọn danh mục.',
             'category_ids.*.exists' => 'Danh mục được chọn không tồn tại.',
             'discount_end.after_or_equal' => 'Thời gian kết thúc giảm giá phải sau hoặc bằng thời gian bắt đầu.',
         ];

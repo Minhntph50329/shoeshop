@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\UserAddress;
+use App\Http\Requests\Client\Profile\UpdateProfileRequest;
+use App\Http\Requests\Client\Profile\UpdatePasswordRequest;
+use App\Http\Requests\Client\Profile\StoreAddressRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -28,24 +31,11 @@ class ProfileController extends Controller
     /**
      * Cập nhật thông tin cá nhân & Ngân hàng
      */
-    public function updateProfile(Request $request)
+    public function updateProfile(UpdateProfileRequest $request)
     {
         $user = Auth::user();
 
-        $validated = $request->validate([
-            'fullname' => 'required|string|max:255',
-            'phone_number' => 'nullable|string|max:20',
-            'gender' => 'nullable|in:male,female,other',
-            'birthday' => 'nullable|date',
-            'bank_name' => 'nullable|string|max:255',
-            'user_bank_name' => 'nullable|string|max:255',
-            'bank_account' => 'nullable|string|max:255',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        ], [
-            'fullname.required' => 'Vui lòng nhập họ và tên.',
-            'avatar.image' => 'File ảnh không hợp lệ.',
-            'avatar.max' => 'Dung lượng ảnh tối đa 2MB.',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
@@ -62,19 +52,11 @@ class ProfileController extends Controller
     /**
      * Đổi mật khẩu
      */
-    public function updatePassword(Request $request)
+    public function updatePassword(UpdatePasswordRequest $request)
     {
         $user = Auth::user();
 
-        $request->validate([
-            'current_password' => 'required|string',
-            'password' => 'required|string|min:6|confirmed',
-        ], [
-            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại.',
-            'password.required' => 'Vui lòng nhập mật khẩu mới.',
-            'password.min' => 'Mật khẩu mới tối thiểu 6 ký tự.',
-            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
-        ]);
+        $validated = $request->validated();
 
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng.']);
@@ -91,25 +73,11 @@ class ProfileController extends Controller
     /**
      * Thêm địa chỉ mới (user_addresses)
      */
-    public function storeAddress(Request $request)
+    public function storeAddress(StoreAddressRequest $request)
     {
         $user = Auth::user();
 
-        $validated = $request->validate([
-            'fullname' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            'address' => 'required|string|max:500',
-            'province' => 'nullable|string|max:255',
-            'district' => 'nullable|string|max:255',
-            'ward' => 'nullable|string|max:255',
-            'street' => 'nullable|string|max:255',
-            'address_type' => 'required|in:home,office,other',
-            'is_default' => 'nullable|boolean',
-        ], [
-            'fullname.required' => 'Vui lòng nhập người nhận.',
-            'phone_number.required' => 'Vui lòng nhập sđt người nhận.',
-            'address.required' => 'Vui lòng nhập chi tiết địa chỉ.',
-        ]);
+        $validated = $request->validated();
 
         $isDefault = $request->boolean('is_default');
 

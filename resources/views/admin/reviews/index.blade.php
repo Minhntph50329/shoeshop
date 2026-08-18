@@ -217,7 +217,7 @@
             </div>
             <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nội dung phản hồi <span class="text-rose-500">*</span></label>
-                <textarea name="reply_text" rows="4" required minlength="5" placeholder="Cảm ơn quý khách đã tin dùng sản phẩm của Veloce..."
+                <textarea name="reply_text" rows="4" placeholder="Cảm ơn quý khách đã tin dùng sản phẩm của Veloce..."
                     class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition resize-none"></textarea>
             </div>
             <div class="flex gap-3 pt-2">

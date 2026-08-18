@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\OrderStatusHistory;
+use App\Http\Requests\Admin\Order\UpdateOrderStatusRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -89,12 +90,9 @@ class OrderController extends Controller
     /**
      * Cập nhật trạng thái đơn hàng
      */
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(UpdateOrderStatusRequest $request, $id)
     {
-        $request->validate([
-            'status_id' => 'required|exists:order_statuses,id',
-            'note'      => 'nullable|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         $order    = Order::findOrFail($id);
         $statusId = (int) $request->input('status_id');

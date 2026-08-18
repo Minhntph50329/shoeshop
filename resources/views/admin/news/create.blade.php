@@ -20,7 +20,7 @@
 
         <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tiêu đề bài viết <span class="text-rose-500">*</span></label>
-            <input type="text" name="title" value="{{ old('title') }}" required placeholder="VD: Mẫu giày Sneaker hot nhất mùa thu năm nay" 
+            <input type="text" name="title" value="{{ old('title') }}" placeholder="VD: Mẫu giày Sneaker hot nhất mùa thu năm nay" 
                 class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
             @error('title') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
@@ -44,7 +44,7 @@
 
         <div>
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Nội dung bài viết <span class="text-rose-500">*</span></label>
-            <textarea name="content" rows="12" required placeholder="Nhập nội dung bài viết tin tức tại đây..." 
+            <textarea name="content" rows="12" placeholder="Nhập nội dung bài viết tin tức tại đây..." 
                 class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">{{ old('content') }}</textarea>
             @error('content') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
         </div>
@@ -52,10 +52,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-4">
             <div>
                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Trạng thái bài viết</label>
-                <select name="is_active" required class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
-                    <option value="1">Xuất bản (Active)</option>
-                    <option value="0">Bản nháp (Draft)</option>
+                <select name="is_active" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                    <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Xuất bản (Active)</option>
+                    <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Bản nháp (Draft)</option>
                 </select>
+                @error('is_active') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div class="flex items-center gap-2 pt-6">

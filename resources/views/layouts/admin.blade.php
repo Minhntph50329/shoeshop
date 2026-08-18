@@ -131,6 +131,20 @@
 
     <script>
         lucide.createIcons();
+        
+        // Tự động ẩn các lỗi validation sau 4 giây
+        document.addEventListener('DOMContentLoaded', function() {
+            const errorElements = document.querySelectorAll('.auto-hide-error');
+            if (errorElements.length > 0) {
+                setTimeout(function() {
+                    errorElements.forEach(el => {
+                        el.style.transition = 'opacity 0.5s ease-out';
+                        el.style.opacity = '0';
+                        setTimeout(() => el.remove(), 500);
+                    });
+                }, 4000); // 4 giây
+            }
+        });
     </script>
 </body>
 </html>
