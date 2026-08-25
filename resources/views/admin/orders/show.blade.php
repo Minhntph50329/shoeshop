@@ -35,6 +35,11 @@ $csColors = $cs && isset($statusColors[$cs->id]) ? $statusColors[$cs->id] : ['bg
             <i data-lucide="check-circle" class="w-5 h-5"></i> {{ session('success') }}
         </div>
     @endif
+    @if(session('error'))
+        <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-5 h-5"></i> {{ session('error') }}
+        </div>
+    @endif
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
 

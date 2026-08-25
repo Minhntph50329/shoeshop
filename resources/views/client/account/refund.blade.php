@@ -41,7 +41,15 @@
                 <div class="border border-slate-100 rounded-2xl divide-y divide-slate-50 overflow-hidden">
                     @foreach($order->items as $item)
                         @php
-                            $img = $item->product && $item->product->images->first() ? asset('storage/' . $item->product->images->first()->url) : 'https://placehold.co/64x64/f1f5f9/94a3b8?text=?';
+                            $img = null;
+                            if ($item->productVariant && $item->productVariant->image) {
+                                $img = asset($item->productVariant->image);
+                            } elseif ($item->product && $item->product->image) {
+                                $img = asset($item->product->image);
+                            } elseif ($item->product && $item->product->images->first()) {
+                                $img = asset($item->product->images->first()->url);
+                            }
+                            $img = $img ?? 'https://placehold.co/64x64/f1f5f9/94a3b8?text=?';
                         @endphp
                         <div class="flex flex-wrap items-center justify-between gap-4 p-4 hover:bg-slate-50/50 transition">
                             <div class="flex items-center gap-3 flex-1 min-w-0">

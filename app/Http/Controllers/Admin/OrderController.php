@@ -104,6 +104,11 @@ class OrderController extends Controller
             return back()->with('error', 'Chuyển đổi trạng thái không hợp lệ theo quy tắc State Machine.');
         }
 
+        $currentStatus = $order->getCurrentStatus();
+        if ($currentStatus && $currentStatus->id === $statusId) {
+            return back()->with('error', 'Đơn hàng đang ở trạng thái này.');
+        }
+
         DB::transaction(function () use ($order, $statusId, $note, $userId) {
             // Update pivot: set all is_current = false
             DB::table('order_order_status')
@@ -168,6 +173,14 @@ class OrderController extends Controller
                             $product->increment('stock', $item->quantity);
                         }
                     }
+                }
+            }
+
+            // Mark COD orders as paid when delivered or received
+            if (in_array($statusId, [4, 10])) {
+                $payment = \App\Models\Payment::find($order->payment_id);
+                if ($payment && stripos($payment->name, 'cod') !== false && !$order->is_paid) {
+                    $order->update(['is_paid' => true]);
                 }
             }
         });

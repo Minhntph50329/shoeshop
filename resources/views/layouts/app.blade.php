@@ -63,8 +63,10 @@
                                             $variant = $item->variant;
                                             if ($variant && $variant->image) {
                                                 $img = asset($variant->image);
+                                            } elseif ($item->product && $item->product->image) {
+                                                $img = asset($item->product->image);
                                             } elseif ($item->product && $item->product->images->first()) {
-                                                $img = asset('storage/' . $item->product->images->first()->url);
+                                                $img = asset($item->product->images->first()->url);
                                             } else {
                                                 $img = 'https://placehold.co/80x80/f1f5f9/94a3b8?text=No+Img';
                                             }

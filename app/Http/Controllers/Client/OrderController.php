@@ -197,6 +197,12 @@ class OrderController extends Controller
                 'note'            => 'Khách hàng xác nhận đã nhận hàng',
                 'is_current'      => true,
             ]);
+
+            // Mark COD orders as paid
+            $payment = \App\Models\Payment::find($order->payment_id);
+            if ($payment && stripos($payment->name, 'cod') !== false && !$order->is_paid) {
+                $order->update(['is_paid' => true]);
+            }
         });
 
         return redirect()->route('client.orders.show', $id)

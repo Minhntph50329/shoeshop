@@ -319,7 +319,7 @@ $doneIds = $order->statusHistories->pluck('order_status_id')->unique()->toArray(
                         } elseif ($item->product && $item->product->image) {
                             $img = asset($item->product->image);
                         } elseif ($item->product && $item->product->images->first()) {
-                            $img = asset('storage/' . $item->product->images->first()->url);
+                            $img = asset($item->product->images->first()->url);
                         }
                     @endphp
                     <div class="flex items-center gap-4 px-6 py-4">
