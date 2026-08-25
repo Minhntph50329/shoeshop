@@ -92,12 +92,6 @@
                 Đánh giá
             </a>
 
-            <a href="{{ route('admin.managers.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="shield-check" class="w-5 h-5"></i>
-                Quản lý
-            </a>
-
             <a href="{{ route('admin.contacts.index') }}"
                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition {{ request()->routeIs('admin.contacts.*') ? 'bg-slate-800 text-white font-bold' : '' }}">
                 <i data-lucide="mail" class="w-5 h-5"></i>
@@ -146,5 +140,6 @@
             }
         });
     </script>
+    @yield('scripts')
 </body>
 </html>

@@ -48,7 +48,20 @@ class CheckoutController extends Controller
             return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống.');
         }
 
-        $payments     = Payment::where('is_active', true)->get();
+        $allPayments  = Payment::where('is_active', true)->get();
+        $payments = collect();
+        foreach ($allPayments as $payment) {
+            $name = strtolower($payment->name);
+            if (str_contains($name, 'cod') && \App\Models\Setting::get('payment_cod', '1') == '1') {
+                $payments->push($payment);
+            } elseif (str_contains($name, 'vnpay') && \App\Models\Setting::get('payment_vnpay', '1') == '1') {
+                $payments->push($payment);
+            } elseif (!str_contains($name, 'cod') && !str_contains($name, 'vnpay')) {
+                // For any other active payments in DB, though we only handle these two currently
+                $payments->push($payment);
+            }
+        }
+
         $allAddresses = $user->addresses()->latest()->get();
         $addresses    = $allAddresses->where('is_default', true)->first()
                      ?? $allAddresses->first();
@@ -113,7 +126,14 @@ class CheckoutController extends Controller
         // Calculate totals
         $subtotal      = 0;
         $discountAmount = 0;
-        $shippingFee   = $request->shipping_type === 'express' ? 50000 : 30000;
+        $baseShippingFee = (int) \App\Models\Setting::get('shipping_fee', 30000);
+        $freeShippingMin = (int) \App\Models\Setting::get('free_shipping_min', 500000);
+
+        if ($subtotal >= $freeShippingMin) {
+            $baseShippingFee = 0;
+        }
+        
+        $shippingFee = $request->shipping_type === 'express' ? $baseShippingFee + 20000 : $baseShippingFee;
         $couponId      = null;
 
         foreach ($cart->items as $item) {
@@ -177,8 +197,14 @@ class CheckoutController extends Controller
                 // Trừ số lượng tồn kho
                 if ($variant) {
                     $variant->decrement('stock', $item->quantity);
+                    if ($variant->stock <= 5) {
+                        app(\App\Services\AdminNotificationService::class)->sendLowStock($product, $variant);
+                    }
                 } else {
                     $product->decrement('stock', $item->quantity);
+                    if ($product->stock <= 5) {
+                        app(\App\Services\AdminNotificationService::class)->sendLowStock($product);
+                    }
                 }
             }
 
@@ -237,6 +263,9 @@ class CheckoutController extends Controller
             } catch (\Exception $e) {
                 logger()->error('Không thể gửi email xác nhận đơn hàng: ' . $e->getMessage());
             }
+
+            // Send admin notification
+            app(\App\Services\AdminNotificationService::class)->sendNewOrder($order);
 
             return redirect()->route('checkout.success', ['code' => $order->code])
                 ->with('success', 'Đặt hàng thành công!');

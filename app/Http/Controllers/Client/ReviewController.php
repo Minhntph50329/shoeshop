@@ -60,7 +60,9 @@ class ReviewController extends Controller
             return back()->with('error', 'Sản phẩm này trong đơn hàng đã được đánh giá trước đó.');
         }
 
-        DB::transaction(function () use ($request, $orderItem, $order) {
+        $createdReview = null;
+
+        DB::transaction(function () use ($request, $orderItem, $order, &$createdReview) {
             // Create review
             $review = Review::create([
                 'product_id'    => $orderItem->product_id,
@@ -83,7 +85,15 @@ class ReviewController extends Controller
                     ]);
                 }
             }
+
+            $createdReview = $review;
         });
+
+        // Send admin notification
+        if ($createdReview) {
+            $createdReview->load(['product', 'user']);
+            app(\App\Services\AdminNotificationService::class)->sendNewReview($createdReview);
+        }
 
         return back()->with('success', 'Cảm ơn bạn đã gửi đánh giá sản phẩm!');
     }

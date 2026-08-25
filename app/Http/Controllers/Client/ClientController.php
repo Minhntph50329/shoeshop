@@ -118,7 +118,8 @@ class ClientController extends Controller
                 break;
         }
 
-        $products = $query->paginate(12)->withQueryString();
+        $perPage = \App\Models\Setting::get('products_per_page', 12);
+        $products = $query->paginate($perPage)->withQueryString();
 
         $categories = Category::where('is_active', true)
             ->whereNull('parent_id')

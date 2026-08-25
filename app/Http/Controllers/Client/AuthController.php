@@ -99,6 +99,9 @@ class AuthController extends Controller
             // Log error
         }
 
+        // Send admin notification
+        app(\App\Services\AdminNotificationService::class)->sendNewCustomer($user);
+
         return redirect()->route('login')->with('success', 'Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản trước khi đăng nhập.');
     }
 

@@ -140,7 +140,7 @@
                     <div class="relative group">
                         <button class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded-full text-slate-700 transition focus:outline-none">
                             @if(auth()->user()->avatar)
-                                <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->fullname }}" class="w-8 h-8 rounded-full object-cover border border-slate-200">
+                                <img src="{{ asset(auth()->user()->avatar) }}" alt="{{ auth()->user()->fullname }}" class="w-8 h-8 rounded-full object-cover border border-slate-200">
                             @else
                                 <div class="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-xs">
                                     {{ substr(auth()->user()->fullname ?? auth()->user()->email, 0, 1) }}
@@ -152,7 +152,7 @@
                             <div class="px-5 py-4 bg-slate-50 border-b">
                                 <div class="flex items-center gap-3">
                                     @if(auth()->user()->avatar)
-                                        <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="{{ auth()->user()->fullname }}" class="w-10 h-10 rounded-full object-cover border border-slate-200">
+                                        <img src="{{ asset(auth()->user()->avatar) }}" alt="{{ auth()->user()->fullname }}" class="w-10 h-10 rounded-full object-cover border border-slate-200">
                                     @else
                                         <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
                                             {{ substr(auth()->user()->fullname ?? auth()->user()->email, 0, 1) }}
@@ -221,15 +221,15 @@
     <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
         <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
             <div class="space-y-4">
-                <span class="text-white font-black text-lg">VELOCE</span>
-                <p class="text-xs leading-relaxed">Trải nghiệm mua sắm thời trang công nghệ đẳng cấp nhất với Veloce Store.</p>
+                <a href="{{ route('home') }}" class="text-white font-black text-lg">{!! \App\Models\Setting::get('site_name', 'VELOCE') !!}</a>
+                <p class="text-xs leading-relaxed">{!! \App\Models\Setting::get('site_description', 'Trải nghiệm mua sắm thời trang công nghệ đẳng cấp nhất với Veloce Store.') !!}</p>
             </div>
             <div>
                 <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-4">Danh mục sản phẩm</h4>
                 <ul class="space-y-2 text-xs">
-                    <li><a href="#" class="hover:text-white">Giày sneaker</a></li>
-                    <li><a href="#" class="hover:text-white">Áo khoác gió</a></li>
-                    <li><a href="#" class="hover:text-white">Phụ kiện thời trang</a></li>
+                    @foreach(\App\Models\Category::take(6)->get() as $category)
+                        <li><a href="{{ route('shop', ['category' => $category->slug]) }}" class="hover:text-white">{{ $category->name }}</a></li>
+                    @endforeach
                 </ul>
             </div>
             <div>
@@ -242,8 +242,9 @@
             </div>
             <div>
                 <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-4">Liên hệ</h4>
-                <p class="text-xs">Email: support@veloce.vn</p>
-                <p class="text-xs">Phone: 1900 6789</p>
+                <p class="text-xs">Email: {{ \App\Models\Setting::get('site_email', 'contact@veloce.vn') }}</p>
+                <p class="text-xs">Phone: {{ \App\Models\Setting::get('site_phone', '0123456789') }}</p>
+                <p class="text-xs mt-1">Địa chỉ: {{ \App\Models\Setting::get('site_address', 'Hà Nội') }}</p>
             </div>
         </div>
     </footer>

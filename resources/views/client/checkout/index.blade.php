@@ -112,19 +112,32 @@
                         <h3 class="font-bold text-sm text-slate-800">Phương thức vận chuyển</h3>
                     </div>
                     <div class="p-6 space-y-3">
-                        <label class="flex items-center gap-4 p-4 border-2 border-indigo-500 rounded-xl cursor-pointer bg-indigo-50/50 transition hover:border-indigo-600 shipping-option" data-fee="30000">
+                        @php
+                            $subtotal = $cart->items->sum(function($item) {
+                                $price = $item->price_at_time ?? ($item->variant ? $item->variant->price : $item->product->price);
+                                return $price * $item->quantity;
+                            });
+                            
+                            $baseShippingFee = (int) \App\Models\Setting::get('shipping_fee', 30000);
+                            $freeShippingMin = (int) \App\Models\Setting::get('free_shipping_min', 500000);
+                            
+                            $isFreeShipping = $subtotal >= $freeShippingMin;
+                            $standardFee = $isFreeShipping ? 0 : $baseShippingFee;
+                            $expressFee = $isFreeShipping ? 20000 : $baseShippingFee + 20000;
+                        @endphp
+                        <label class="flex items-center gap-4 p-4 border-2 border-indigo-500 rounded-xl cursor-pointer bg-indigo-50/50 transition hover:border-indigo-600 shipping-option" data-fee="{{ $standardFee }}">
                             <input type="radio" name="shipping_type" value="standard" checked class="text-indigo-600" onchange="updateShipping(this)">
                             <div class="flex-1">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="font-bold text-sm text-slate-800">Tiêu chuẩn</p>
-                                        <p class="text-xs text-slate-500">3-5 ngày làm việc</p>
+                                        <p class="text-xs text-slate-500">{{ \App\Models\Setting::get('shipping_time', '3-5 ngày làm việc') }}</p>
                                     </div>
-                                    <span class="font-bold text-sm text-indigo-600">30.000đ</span>
+                                    <span class="font-bold text-sm text-indigo-600">{{ $standardFee == 0 ? 'Miễn phí' : number_format($standardFee, 0, ',', '.') . 'đ' }}</span>
                                 </div>
                             </div>
                         </label>
-                        <label class="flex items-center gap-4 p-4 border-2 border-slate-200 rounded-xl cursor-pointer transition hover:border-indigo-400 shipping-option" data-fee="50000">
+                        <label class="flex items-center gap-4 p-4 border-2 border-slate-200 rounded-xl cursor-pointer transition hover:border-indigo-400 shipping-option" data-fee="{{ $expressFee }}">
                             <input type="radio" name="shipping_type" value="express" class="text-indigo-600" onchange="updateShipping(this)">
                             <div class="flex-1">
                                 <div class="flex items-center justify-between">
@@ -132,7 +145,7 @@
                                         <p class="font-bold text-sm text-slate-800">Nhanh</p>
                                         <p class="text-xs text-slate-500">1-2 ngày làm việc</p>
                                     </div>
-                                    <span class="font-bold text-sm text-indigo-600">50.000đ</span>
+                                    <span class="font-bold text-sm text-indigo-600">{{ number_format($expressFee, 0, ',', '.') . 'đ' }}</span>
                                 </div>
                             </div>
                         </label>
@@ -238,12 +251,6 @@
                         </div>
 
                         {{-- Totals --}}
-                        @php
-                            $subtotal = $cart->items->sum(function($item) {
-                                $price = $item->price_at_time ?? ($item->variant ? $item->variant->price : $item->product->price);
-                                return $price * $item->quantity;
-                            });
-                        @endphp
                         <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 space-y-2">
                             <div class="flex justify-between text-xs text-slate-600">
                                 <span>Tạm tính</span>
@@ -255,11 +262,11 @@
                             </div>
                             <div class="flex justify-between text-xs text-slate-600">
                                 <span>Phí vận chuyển</span>
-                                <span id="shippingEl">30.000đ</span>
+                                <span id="shippingEl">{{ $standardFee == 0 ? 'Miễn phí' : number_format($standardFee, 0, ',', '.') . 'đ' }}</span>
                             </div>
                             <div class="flex justify-between font-black text-sm text-slate-800 pt-2 border-t border-slate-200">
                                 <span>Tổng cộng</span>
-                                <span id="grandTotalEl" class="text-indigo-600">{{ number_format($subtotal + 30000, 0, ',', '.') }}đ</span>
+                                <span id="grandTotalEl" class="text-indigo-600">{{ number_format($subtotal + $standardFee, 0, ',', '.') }}đ</span>
                             </div>
                         </div>
 
@@ -285,7 +292,7 @@
 
 <script>
 const SUBTOTAL = {{ $subtotal }};
-let shippingFee = 30000;
+let shippingFee = {{ $standardFee }};
 let discountAmt  = 0;
 
 function formatVND(n) {

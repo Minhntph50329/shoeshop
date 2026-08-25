@@ -200,6 +200,11 @@ class RefundController extends Controller
             logger()->error('Không thể gửi email xác nhận yêu cầu trả hàng: ' . $e->getMessage());
         }
 
+        // Send admin notification
+        if (isset($refund)) {
+            app(\App\Services\AdminNotificationService::class)->sendReturnRequest($refund);
+        }
+
         return redirect()->route('client.orders.show', $orderId)
             ->with('success', 'Yêu cầu trả hàng / hoàn tiền đã được gửi thành công. Vui lòng chờ phản hồi từ quản trị viên.');
     }

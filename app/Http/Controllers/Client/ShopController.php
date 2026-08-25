@@ -44,7 +44,7 @@ class ShopController extends Controller
         }
 
         return Inertia::render('Client/ClientShop', [
-            'products' => $query->paginate(12),
+            'products' => $query->paginate(\App\Models\Setting::get('products_per_page', 12)),
             'categories' => Category::where('isDeleted', false)->get(),
             'brands' => Brand::where('isDeleted', false)->get(),
             'filters' => $request->only(['q', 'category', 'brand', 'sort'])

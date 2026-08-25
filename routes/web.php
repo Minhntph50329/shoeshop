@@ -179,7 +179,29 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::post('/reviews/{id}/reply', [\App\Http\Controllers\Admin\ReviewController::class, 'reply'])->name('reviews.reply');
     Route::put('/reviews/{id}/toggle', [\App\Http\Controllers\Admin\ReviewController::class, 'toggleActive'])->name('reviews.toggle');
     Route::delete('/reviews/{id}', [\App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
-    Route::view('/settings', 'admin.settings.index')->name('settings.index');
+    
+    // Settings Center
+    Route::prefix('settings')->name('settings.')->controller(\App\Http\Controllers\Admin\SettingsController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
+        
+        Route::get('/website', 'website')->name('website');
+        Route::post('/website', 'websiteSave')->name('website.save');
+        
+        Route::get('/store', 'store')->name('store');
+        Route::post('/store', 'storeSave')->name('store.save');
+        
+        Route::get('/payment', 'payment')->name('payment');
+        Route::post('/payment', 'paymentSave')->name('payment.save');
+        
+        Route::get('/shipping', 'shipping')->name('shipping');
+        Route::post('/shipping', 'shippingSave')->name('shipping.save');
+        
+        Route::get('/notification', 'notification')->name('notification');
+        Route::post('/notification', 'notificationSave')->name('notification.save');
+        
+        Route::get('/account', 'account')->name('account');
+        Route::post('/account', 'accountSave')->name('account.save');
+    });
     
     // Contact Management
     Route::get('/contacts', [\App\Http\Controllers\Admin\ContactController::class, 'index'])->name('contacts.index');

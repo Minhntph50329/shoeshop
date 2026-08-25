@@ -44,7 +44,8 @@ class ProductController extends Controller
             $query->where('status', $request->status);
         }
 
-        $products = $query->paginate(10);
+        $perPage = \App\Models\Setting::get('products_per_page', 10);
+        $products = $query->paginate($perPage);
 
         return view('admin.products.index', compact('products'));
     }

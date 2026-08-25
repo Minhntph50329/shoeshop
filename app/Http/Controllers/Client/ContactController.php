@@ -25,7 +25,7 @@ class ContactController extends Controller
     {
         $validated = $request->validated();
 
-        Contact::create([
+        $contact = Contact::create([
             'user_id' => Auth::id(),
             'name'    => $request->name,
             'email'   => $request->email,
@@ -33,6 +33,8 @@ class ContactController extends Controller
             'message' => $request->message,
             'status'  => 'pending',
         ]);
+
+        app(\App\Services\AdminNotificationService::class)->sendNewContact($contact);
 
         return back()->with('success', 'Lời nhắn của bạn đã được gửi đi thành công! Chúng tôi sẽ phản hồi sớm nhất.');
     }
