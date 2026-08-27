@@ -11,12 +11,17 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex">
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex overflow-x-hidden w-full">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-slate-900 text-white shrink-0 hidden md:flex flex-col border-r border-slate-800 sticky top-0 h-screen overflow-y-auto">
-        <div class="h-16 flex items-center px-6 border-b border-slate-800">
+    <!-- Added fixed positioning for mobile sidebar and z-index -->
+    <aside id="admin-sidebar" class="w-64 bg-slate-900 text-white shrink-0 hidden md:flex flex-col border-r border-slate-800 fixed md:sticky top-0 h-screen overflow-y-auto z-50">
+        <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800">
             <span class="font-black tracking-wider text-indigo-400">VELOCE ADMIN</span>
+            <!-- Close button for mobile -->
+            <button id="close-sidebar-btn" class="md:hidden text-slate-300 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
         </div>
         <nav class="flex-1 p-4 space-y-1">
 
@@ -107,18 +112,26 @@
         </nav>
     </aside>
 
+    <!-- Overlay cho mobile -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900 bg-opacity-50 z-40 hidden md:hidden"></div>
+
     <!-- Main Container -->
-    <div class="flex-1 flex flex-col overflow-x-hidden">
+    <div class="flex-1 flex flex-col min-w-0">
         <!-- Top bar -->
-        <header class="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-8">
-            <h1 class="text-lg font-bold text-slate-800">@yield('page_title', 'Hệ thống Quản lý')</h1>
+        <header class="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-4 md:px-8 shrink-0">
+            <div class="flex items-center gap-3">
+                <button id="mobile-menu-btn" class="md:hidden text-slate-600 hover:text-slate-900 transition focus:outline-none">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <h1 class="text-lg font-bold text-slate-800">@yield('page_title', 'Hệ thống Quản lý')</h1>
+            </div>
             <div class="flex items-center gap-4">
                 <span class="text-xs font-semibold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">Admin Account</span>
             </div>
         </header>
 
         <!-- Page Content -->
-        <main class="p-8 flex-1">
+        <main class="p-4 md:p-8 flex-1 overflow-x-hidden w-full">
             @yield('content')
         </main>
     </div>
@@ -126,6 +139,22 @@
     <script>
         lucide.createIcons();
         
+        // Logic for mobile sidebar
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const adminSidebar = document.getElementById('admin-sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        function toggleSidebar() {
+            adminSidebar.classList.toggle('hidden');
+            adminSidebar.classList.toggle('flex');
+            sidebarOverlay.classList.toggle('hidden');
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleSidebar);
+        closeSidebarBtn.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
         // Tự động ẩn các lỗi validation sau 4 giây
         document.addEventListener('DOMContentLoaded', function() {
             const errorElements = document.querySelectorAll('.auto-hide-error');

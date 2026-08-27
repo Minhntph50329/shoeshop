@@ -4,76 +4,281 @@
 @section('page_title', 'Danh sách người dùng')
 
 @section('content')
-<div class="space-y-6">
+<div class="w-full max-w-full space-y-6 overflow-x-hidden">
+
     <!-- Header Actions -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="min-w-0">
             <h2 class="text-xl font-bold text-slate-800">Quản lý người dùng</h2>
-            <p class="text-sm text-slate-500">Quản lý tài khoản, phân quyền, trạng thái và xem chi tiết khách hàng</p>
+            <p class="mt-1 text-sm leading-5 text-slate-500">
+                Quản lý tài khoản, phân quyền, trạng thái và xem chi tiết khách hàng
+            </p>
         </div>
-        <div class="flex items-center gap-3">
-            <a href="{{ route('admin.customers.trash') }}" class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
-                <i data-lucide="trash-2" class="w-4 h-4 text-slate-500"></i> Thùng rác
+
+        <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
+            <a href="{{ route('admin.customers.trash') }}"
+               class="flex min-w-0 items-center justify-center gap-2 rounded-xl bg-slate-100 px-3 py-2.5 text-xs font-bold text-slate-700 transition hover:bg-slate-200 sm:px-4">
+                <i data-lucide="trash-2" class="h-4 w-4 shrink-0 text-slate-500"></i>
+                <span>Thùng rác</span>
             </a>
-            <a href="{{ route('admin.customers.create') }}" class="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-indigo-200 transition">
-                <i data-lucide="user-plus" class="w-4 h-4"></i> Thêm người dùng
+
+            <a href="{{ route('admin.customers.create') }}"
+               class="flex min-w-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-3 py-2.5 text-xs font-bold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700 sm:px-4">
+                <i data-lucide="user-plus" class="h-4 w-4 shrink-0"></i>
+                <span>Thêm người dùng</span>
             </a>
         </div>
     </div>
 
     <!-- Alert Notifications -->
     @if(session('success'))
-        <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-xs flex items-center gap-2">
-            <i data-lucide="check-circle" class="w-5 h-5"></i>
-            {{ session('success') }}
+        <div class="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-xs text-emerald-700">
+            <i data-lucide="check-circle" class="mt-0.5 h-5 w-5 shrink-0"></i>
+            <span>{{ session('success') }}</span>
         </div>
     @endif
 
     @if(session('error'))
-        <div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs flex items-center gap-2">
-            <i data-lucide="alert-circle" class="w-5 h-5"></i>
-            {{ session('error') }}
+        <div class="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-700">
+            <i data-lucide="alert-circle" class="mt-0.5 h-5 w-5 shrink-0"></i>
+            <span>{{ session('error') }}</span>
         </div>
     @endif
 
     <!-- Filter & Search Bar -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-        <form method="GET" action="{{ route('admin.customers.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-            <div class="sm:col-span-2 relative">
+    <div class="w-full rounded-2xl border border-slate-100 bg-white p-3 shadow-sm sm:p-4">
+        <form method="GET"
+              action="{{ route('admin.customers.index') }}"
+              class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+
+            <div class="relative min-w-0 sm:col-span-2">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                    <i data-lucide="search" class="w-4 h-4"></i>
+                    <i data-lucide="search" class="h-4 w-4"></i>
                 </span>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm theo tên, email, sđt..." 
-                    class="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+
+                <input type="text"
+                       name="search"
+                       value="{{ request('search') }}"
+                       placeholder="Tìm theo tên, email, sđt..."
+                       class="w-full min-w-0 rounded-xl border border-slate-200 py-2.5 pl-9 pr-4 text-xs transition focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
             </div>
 
-            <div>
-                <select name="role" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+            <div class="min-w-0">
+                <select name="role"
+                        class="w-full min-w-0 rounded-xl border border-slate-200 px-3 py-2.5 text-xs transition focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
                     <option value="">-- Tất cả vai trò --</option>
-                    <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin (Quản trị)</option>
-                    <option value="client" {{ request('role') == 'client' ? 'selected' : '' }}>Client (Khách hàng)</option>
+                    <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>
+                        Admin (Quản trị)
+                    </option>
+                    <option value="client" {{ request('role') == 'client' ? 'selected' : '' }}>
+                        Client (Khách hàng)
+                    </option>
                 </select>
             </div>
 
-            <div class="flex items-center gap-2">
-                <select name="status" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+            <div class="flex min-w-0 gap-2">
+                <select name="status"
+                        class="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-xs transition focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
                     <option value="">-- Tất cả trạng thái --</option>
-                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Hoạt động</option>
-                    <option value="locked" {{ request('status') == 'locked' ? 'selected' : '' }}>Đã khóa</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>
+                        Hoạt động
+                    </option>
+                    <option value="locked" {{ request('status') == 'locked' ? 'selected' : '' }}>
+                        Đã khóa
+                    </option>
                 </select>
-                <button type="submit" class="px-4 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">
+
+                <button type="submit"
+                        class="shrink-0 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-slate-800">
                     Lọc
                 </button>
             </div>
         </form>
     </div>
 
-    <!-- Table -->
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+    <!-- =========================
+         MOBILE: USER CARDS
+         ========================= -->
+    <div class="space-y-3 md:hidden">
+        @forelse($customers as $user)
+            @php
+                $currentRole = $user->roles->first()->name ?? $user->role ?? 'Customer';
+                $canEditRole = auth()->user()->hasRole('Super Admin')
+                    || (auth()->user()->hasRole('Admin') && !in_array($currentRole, ['Super Admin', 'Admin']));
+            @endphp
+
+            <div class="w-full overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+
+                <!-- User -->
+                <div class="flex min-w-0 items-start gap-3">
+                    @if($user->avatar)
+                        <img src="{{ asset('storage/' . $user->avatar) }}"
+                             alt="{{ $user->fullname }}"
+                             class="h-11 w-11 shrink-0 rounded-full border border-slate-200 object-cover">
+                    @else
+                        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-black uppercase text-indigo-600">
+                            {{ substr($user->fullname ?? $user->email, 0, 1) }}
+                        </div>
+                    @endif
+
+                    <div class="min-w-0 flex-1">
+                        <h4 class="truncate text-sm font-bold text-slate-900">
+                            {{ $user->fullname ?? 'Chưa cập nhật' }}
+                        </h4>
+                        <p class="mt-0.5 break-all text-[11px] leading-4 text-slate-400">
+                            {{ $user->email }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4">
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                            Số điện thoại
+                        </p>
+                        <p class="mt-1 truncate text-xs font-semibold text-slate-700">
+                            {{ $user->phone_number ?? 'N/A' }}
+                        </p>
+                    </div>
+
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                            Ngày tạo
+                        </p>
+                        <p class="mt-1 truncate text-xs font-semibold text-slate-700">
+                            {{ $user->created_at ? $user->created_at->format('d/m/Y H:i') : 'N/A' }}
+                        </p>
+                    </div>
+
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                            Vai trò
+                        </p>
+
+                        <div class="mt-1">
+                            @if($canEditRole)
+                                <form action="{{ route('admin.customers.updateRole', $user->id) }}"
+                                      method="POST"
+                                      class="w-full">
+                                    @csrf
+                                    @method('PUT')
+
+                                    <select name="role"
+                                            onchange="this.form.submit()"
+                                            class="w-full min-w-0 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-[11px] font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                        @foreach($roles as $role)
+                                            <option value="{{ $role->name }}"
+                                                {{ ($user->roles->first()->name ?? $user->role) == $role->name ? 'selected' : '' }}>
+                                                {{ $role->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            @else
+                                @if(in_array($currentRole, ['Admin', 'Super Admin']))
+                                    <span class="inline-flex max-w-full items-center gap-1 rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-[11px] font-bold text-purple-700">
+                                        <i data-lucide="shield-check" class="h-3 w-3 shrink-0"></i>
+                                        <span class="truncate">{{ $currentRole }}</span>
+                                    </span>
+                                @else
+                                    <span class="inline-flex max-w-full items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+                                        <i data-lucide="user" class="h-3 w-3 shrink-0"></i>
+                                        <span class="truncate">{{ $currentRole ?? 'Khách hàng' }}</span>
+                                    </span>
+                                @endif
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">
+                            Trạng thái
+                        </p>
+
+                        <div class="mt-1">
+                            @if($user->status === 'active')
+                                <span class="inline-flex items-center gap-1 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
+                                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"></span>
+                                    Hoạt động
+                                </span>
+                            @else
+                                <span class="inline-flex max-w-full items-center gap-1 rounded-full border border-rose-100 bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-700"
+                                      title="{{ $user->reason_lock }}">
+                                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-rose-500"></span>
+                                    Đã khóa
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-4 flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+                    <a href="{{ route('admin.customers.show', $user->id) }}"
+                       class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-500 transition hover:bg-indigo-50 hover:text-indigo-600"
+                       title="Xem chi tiết">
+                        <i data-lucide="eye" class="h-4 w-4"></i>
+                    </a>
+
+                    <a href="{{ route('admin.customers.edit', $user->id) }}"
+                       class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-500 transition hover:bg-amber-50 hover:text-amber-600"
+                       title="Chỉnh sửa">
+                        <i data-lucide="edit-3" class="h-4 w-4"></i>
+                    </a>
+
+                    <form action="{{ route('admin.customers.toggle', $user->id) }}"
+                          method="POST"
+                          class="inline-block">
+                        @csrf
+                        @method('PUT')
+
+                        @if($user->status === 'active')
+                            <button type="submit"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-500 transition hover:bg-rose-50 hover:text-rose-600"
+                                    title="Khóa tài khoản"
+                                    onclick="return confirm('Bạn có muốn khóa tài khoản này?')">
+                                <i data-lucide="lock" class="h-4 w-4"></i>
+                            </button>
+                        @else
+                            <button type="submit"
+                                    class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-500 transition hover:bg-emerald-50 hover:text-emerald-600"
+                                    title="Mở khóa tài khoản">
+                                <i data-lucide="unlock" class="h-4 w-4"></i>
+                            </button>
+                        @endif
+                    </form>
+
+                    <form action="{{ route('admin.customers.destroy', $user->id) }}"
+                          method="POST"
+                          class="inline-block"
+                          onsubmit="return confirm('Bạn có chắc muốn chuyển tài khoản này vào thùng rác?')">
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="submit"
+                                class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-slate-50 text-slate-500 transition hover:bg-rose-50 hover:text-rose-600"
+                                title="Xóa mềm (vào thùng rác)">
+                            <i data-lucide="trash-2" class="h-4 w-4"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @empty
+            <div class="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-400 shadow-sm">
+                Không tìm thấy người dùng nào.
+            </div>
+        @endforelse
+    </div>
+
+    <!-- =========================
+         DESKTOP/TABLET: DATA TABLE
+         ========================= -->
+    <div class="hidden overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm md:block">
+        <div class="w-full overflow-x-auto">
+            <table class="w-full min-w-[900px] border-collapse text-left">
                 <thead>
-                    <tr class="bg-slate-50/80 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <tr class="border-b border-slate-100 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500">
                         <th class="p-4">Người dùng</th>
                         <th class="p-4">Số điện thoại</th>
                         <th class="p-4">Vai trò</th>
@@ -82,101 +287,143 @@
                         <th class="p-4 text-right">Hành động</th>
                     </tr>
                 </thead>
+
                 <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
                     @forelse($customers as $user)
-                        <tr class="hover:bg-slate-50/50 transition">
+                        @php
+                            $currentRole = $user->roles->first()->name ?? $user->role ?? 'Customer';
+                            $canEditRole = auth()->user()->hasRole('Super Admin')
+                                || (auth()->user()->hasRole('Admin') && !in_array($currentRole, ['Super Admin', 'Admin']));
+                        @endphp
+
+                        <tr class="transition hover:bg-slate-50/50">
                             <td class="p-4">
-                                <div class="flex items-center gap-3">
+                                <div class="flex min-w-[230px] items-center gap-3">
                                     @if($user->avatar)
-                                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->fullname }}" class="w-10 h-10 rounded-full object-cover border border-slate-200">
+                                        <img src="{{ asset('storage/' . $user->avatar) }}"
+                                             alt="{{ $user->fullname }}"
+                                             class="h-10 w-10 shrink-0 rounded-full border border-slate-200 object-cover">
                                     @else
-                                        <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 font-black flex items-center justify-center text-sm uppercase">
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-black uppercase text-indigo-600">
                                             {{ substr($user->fullname ?? $user->email, 0, 1) }}
                                         </div>
                                     @endif
-                                    <div>
-                                        <h4 class="font-bold text-slate-900">{{ $user->fullname ?? 'Chưa cập nhật' }}</h4>
-                                        <p class="text-slate-400 text-[11px]">{{ $user->email }}</p>
+
+                                    <div class="min-w-0">
+                                        <h4 class="max-w-[240px] truncate font-bold text-slate-900">
+                                            {{ $user->fullname ?? 'Chưa cập nhật' }}
+                                        </h4>
+                                        <p class="max-w-[240px] break-all text-[11px] text-slate-400">
+                                            {{ $user->email }}
+                                        </p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="p-4 font-medium text-slate-700">
+
+                            <td class="whitespace-nowrap p-4 font-medium text-slate-700">
                                 {{ $user->phone_number ?? 'N/A' }}
                             </td>
+
                             <td class="p-4">
-                                @php 
-                                    $currentRole = $user->roles->first()->name ?? $user->role ?? 'Customer'; 
-                                    $canEditRole = auth()->user()->hasRole('Super Admin') || (auth()->user()->hasRole('Admin') && !in_array($currentRole, ['Super Admin', 'Admin']));
-                                @endphp
                                 @if($canEditRole)
-                                    <form action="{{ route('admin.customers.updateRole', $user->id) }}" method="POST" class="inline-block">
+                                    <form action="{{ route('admin.customers.updateRole', $user->id) }}"
+                                          method="POST"
+                                          class="inline-block">
                                         @csrf
                                         @method('PUT')
-                                        <select name="role" onchange="this.form.submit()" class="py-1 px-2 border border-slate-200 rounded-lg text-[11px] focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold bg-slate-50">
+
+                                        <select name="role"
+                                                onchange="this.form.submit()"
+                                                class="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500">
                                             @foreach($roles as $role)
-                                                <option value="{{ $role->name }}" {{ ($user->roles->first()->name ?? $user->role) == $role->name ? 'selected' : '' }}>
+                                                <option value="{{ $role->name }}"
+                                                    {{ ($user->roles->first()->name ?? $user->role) == $role->name ? 'selected' : '' }}>
                                                     {{ $role->name }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </form>
                                 @else
-                                    @php $currentRole = $user->roles->first()->name ?? $user->role; @endphp
                                     @if(in_array($currentRole, ['Admin', 'Super Admin']))
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-[11px] font-bold border border-purple-100">
-                                            <i data-lucide="shield-check" class="w-3 h-3"></i> {{ $currentRole }}
+                                        <span class="inline-flex items-center gap-1 rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-[11px] font-bold text-purple-700">
+                                            <i data-lucide="shield-check" class="h-3 w-3"></i>
+                                            {{ $currentRole }}
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full text-[11px] font-semibold">
-                                            <i data-lucide="user" class="w-3 h-3"></i> {{ $currentRole ?? 'Khách hàng' }}
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+                                            <i data-lucide="user" class="h-3 w-3"></i>
+                                            {{ $currentRole ?? 'Khách hàng' }}
                                         </span>
                                     @endif
                                 @endif
                             </td>
-                            <td class="p-4">
+
+                            <td class="whitespace-nowrap p-4">
                                 @if($user->status === 'active')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[11px] font-bold border border-emerald-100">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Hoạt động
+                                    <span class="inline-flex items-center gap-1 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                        Hoạt động
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 text-rose-700 rounded-full text-[11px] font-bold border border-rose-100" title="{{ $user->reason_lock }}">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Đã khóa
+                                    <span class="inline-flex items-center gap-1 rounded-full border border-rose-100 bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-700"
+                                          title="{{ $user->reason_lock }}">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                                        Đã khóa
                                     </span>
                                 @endif
                             </td>
-                            <td class="p-4 text-slate-400 text-[11px]">
+
+                            <td class="whitespace-nowrap p-4 text-[11px] text-slate-400">
                                 {{ $user->created_at ? $user->created_at->format('d/m/Y H:i') : 'N/A' }}
                             </td>
+
                             <td class="p-4 text-right">
                                 <div class="flex items-center justify-end gap-1.5">
-                                    <a href="{{ route('admin.customers.show', $user->id) }}" class="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="Xem chi tiết">
-                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    <a href="{{ route('admin.customers.show', $user->id) }}"
+                                       class="rounded-lg p-1.5 text-slate-500 transition hover:bg-indigo-50 hover:text-indigo-600"
+                                       title="Xem chi tiết">
+                                        <i data-lucide="eye" class="h-4 w-4"></i>
                                     </a>
-                                    <a href="{{ route('admin.customers.edit', $user->id) }}" class="p-1.5 text-slate-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Chỉnh sửa">
-                                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+
+                                    <a href="{{ route('admin.customers.edit', $user->id) }}"
+                                       class="rounded-lg p-1.5 text-slate-500 transition hover:bg-amber-50 hover:text-amber-600"
+                                       title="Chỉnh sửa">
+                                        <i data-lucide="edit-3" class="h-4 w-4"></i>
                                     </a>
-                                    
-                                    <!-- Toggle Lock Form -->
-                                    <form action="{{ route('admin.customers.toggle', $user->id) }}" method="POST" class="inline-block">
+
+                                    <form action="{{ route('admin.customers.toggle', $user->id) }}"
+                                          method="POST"
+                                          class="inline-block">
                                         @csrf
                                         @method('PUT')
+
                                         @if($user->status === 'active')
-                                            <button type="submit" class="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Khóa tài khoản" onclick="return confirm('Bạn có muốn khóa tài khoản này?')">
-                                                <i data-lucide="lock" class="w-4 h-4"></i>
+                                            <button type="submit"
+                                                    class="rounded-lg p-1.5 text-slate-500 transition hover:bg-rose-50 hover:text-rose-600"
+                                                    title="Khóa tài khoản"
+                                                    onclick="return confirm('Bạn có muốn khóa tài khoản này?')">
+                                                <i data-lucide="lock" class="h-4 w-4"></i>
                                             </button>
                                         @else
-                                            <button type="submit" class="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition" title="Mở khóa tài khoản">
-                                                <i data-lucide="unlock" class="w-4 h-4"></i>
+                                            <button type="submit"
+                                                    class="rounded-lg p-1.5 text-slate-500 transition hover:bg-emerald-50 hover:text-emerald-600"
+                                                    title="Mở khóa tài khoản">
+                                                <i data-lucide="unlock" class="h-4 w-4"></i>
                                             </button>
                                         @endif
                                     </form>
 
-                                    <!-- Soft Delete Form -->
-                                    <form action="{{ route('admin.customers.destroy', $user->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc muốn chuyển tài khoản này vào thùng rác?')">
+                                    <form action="{{ route('admin.customers.destroy', $user->id) }}"
+                                          method="POST"
+                                          class="inline-block"
+                                          onsubmit="return confirm('Bạn có chắc muốn chuyển tài khoản này vào thùng rác?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Xóa mềm (vào thùng rác)">
-                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+
+                                        <button type="submit"
+                                                class="rounded-lg p-1.5 text-slate-500 transition hover:bg-rose-50 hover:text-rose-600"
+                                                title="Xóa mềm (vào thùng rác)">
+                                            <i data-lucide="trash-2" class="h-4 w-4"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -184,18 +431,24 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="p-8 text-center text-slate-400">Không tìm thấy người dùng nào.</td>
+                            <td colspan="6" class="p-8 text-center text-slate-400">
+                                Không tìm thấy người dùng nào.
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+    </div>
 
-        @if($customers->hasPages())
-            <div class="p-4 border-t border-slate-100">
+    <!-- Pagination -->
+    @if($customers->hasPages())
+        <div class="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm sm:p-4">
+            <div class="w-full overflow-x-auto">
                 {{ $customers->links() }}
             </div>
-        @endif
-    </div>
+        </div>
+    @endif
+
 </div>
 @endsection

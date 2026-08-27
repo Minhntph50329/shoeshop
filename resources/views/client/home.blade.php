@@ -7,41 +7,75 @@
 
     <!-- Hero Banner (Dynamic from Admin Banners) -->
     @if(isset($banners) && $banners->count() > 0)
-        <div class="space-y-6">
-            @foreach($banners as $banner)
-                <div class="relative bg-slate-900 rounded-3xl overflow-hidden min-h-[380px] flex items-center p-8 md:p-12 shadow-xl group">
-                    <!-- Banner Background Image -->
-                    <img src="{{ asset($banner->image) }}" alt="{{ $banner->title }}" class="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition duration-700">
-                    <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/70 to-transparent z-10"></div>
-                    
-                    <div class="max-w-xl space-y-5 text-white z-20 relative">
-                        @if($banner->poisition)
-                            <span class="inline-flex items-center gap-2 bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 font-bold px-3.5 py-1 rounded-full text-xs uppercase tracking-wider backdrop-blur-md">
-                                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> {{ strtoupper($banner->poisition) }}
-                            </span>
-                        @endif
+        <!-- Include Swiper CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
-                        @if($banner->title)
-                            <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-md">
-                                {{ $banner->title }}
-                            </h1>
-                        @endif
+        <div class="swiper bannerSwiper rounded-3xl overflow-hidden shadow-xl mt-4 md:mt-0">
+            <div class="swiper-wrapper">
+                @foreach($banners as $banner)
+                    <div class="swiper-slide h-auto">
+                        <div class="relative bg-slate-900 min-h-[350px] md:min-h-[450px] h-full flex items-center p-8 md:p-16 group">
+                            <!-- Banner Background Image -->
+                            <img src="{{ asset($banner->image) }}" alt="{{ $banner->title }}" class="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/70 to-transparent z-10"></div>
+                            
+                            <div class="max-w-xl space-y-5 text-white z-20 relative">
+                                @if($banner->poisition)
+                                    <span class="inline-flex items-center gap-2 bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 font-bold px-3.5 py-1 rounded-full text-xs uppercase tracking-wider backdrop-blur-md">
+                                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> {{ strtoupper($banner->poisition) }}
+                                    </span>
+                                @endif
 
-                        @if($banner->subtitle)
-                            <p class="text-sm text-slate-200 leading-relaxed font-medium drop-shadow-sm">
-                                {{ $banner->subtitle }}
-                            </p>
-                        @endif
+                                @if($banner->title)
+                                    <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-md">
+                                        {{ $banner->title }}
+                                    </h1>
+                                @endif
 
-                        <div class="flex items-center gap-4 pt-2">
-                            <a href="{{ $banner->link ?? route('shop') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl text-sm transition shadow-lg shadow-indigo-600/30 active:scale-95">
-                                Khám phá ngay <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                            </a>
+                                @if($banner->subtitle)
+                                    <p class="text-sm text-slate-200 leading-relaxed font-medium drop-shadow-sm">
+                                        {{ $banner->subtitle }}
+                                    </p>
+                                @endif
+
+                                <div class="flex items-center gap-4 pt-2">
+                                    <a href="{{ $banner->link ?? route('shop') }}" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-3 rounded-xl text-sm transition shadow-lg shadow-indigo-600/30 active:scale-95">
+                                        Khám phá ngay <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
+            <!-- Add Navigation -->
+            <div class="swiper-button-next !text-white after:!text-xl !w-12 !h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition"></div>
+            <div class="swiper-button-prev !text-white after:!text-xl !w-12 !h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full transition"></div>
         </div>
+
+        <!-- Include Swiper JS -->
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                new Swiper(".bannerSwiper", {
+                    loop: true,
+                    autoplay: {
+                        delay: 4000,
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: ".swiper-pagination",
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: ".swiper-button-next",
+                        prevEl: ".swiper-button-prev",
+                    }
+                });
+            });
+        </script>
     @else
         <!-- Fallback Default Hero Banner -->
         <div class="relative bg-slate-900 rounded-3xl overflow-hidden min-h-[380px] flex items-center p-8 md:p-12 shadow-xl">

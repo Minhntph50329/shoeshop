@@ -181,41 +181,36 @@
                     <i data-lucide="image" class="w-4 h-4 text-indigo-600"></i> Ảnh đại diện sản phẩm
                 </h3>
                 <div class="text-center">
-                    <div id="main_image_preview_box" class="mb-3 hidden">
+                    <div id="main_image_preview_box" class="mb-3 hidden relative">
                         <img id="main_image_preview" src="#" alt="Preview" class="w-full h-48 object-contain rounded-lg border border-slate-200 bg-slate-50 p-2">
+                        <button type="button" id="remove_main_image_btn" class="absolute top-2 right-2 bg-rose-500 hover:bg-rose-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+                            <i data-lucide="x" class="w-3 h-3"></i>
+                        </button>
                     </div>
                     <input type="file" name="image" id="main_image_input" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
                 </div>
             </div>
 
-            <!-- Khối Danh mục sản phẩm (Categories Checkbox Tree) -->
+            <!-- Khối Danh mục sản phẩm (Categories Select) -->
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-3">
                 <h3 class="font-bold text-slate-800 text-base border-b border-slate-100 pb-3 flex items-center gap-2">
                     <i data-lucide="folder" class="w-4 h-4 text-indigo-600"></i> Danh mục sản phẩm
                 </h3>
-                <div class="max-h-60 overflow-y-auto space-y-2 pr-2">
-                    @forelse($categories as $cat)
-                        <div class="space-y-1">
-                            <label class="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
-                                <input type="checkbox" name="category_ids[]" value="{{ $cat->id }}" class="w-4 h-4 text-indigo-600 rounded border-slate-300">
-                                <span>{{ $cat->name }}</span>
-                            </label>
-
-                            <!-- Danh mục con -->
+                <div class="space-y-2">
+                    <select name="category_ids[]" multiple class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 h-32">
+                        @forelse($categories as $cat)
+                            <option value="{{ $cat->id }}" class="font-bold">{{ $cat->name }}</option>
                             @if($cat->children->count() > 0)
-                                <div class="pl-5 space-y-1 border-l-2 border-slate-100 ml-2">
-                                    @foreach($cat->children as $child)
-                                        <label class="flex items-center gap-2 text-xs font-normal text-slate-600 cursor-pointer">
-                                            <input type="checkbox" name="category_ids[]" value="{{ $child->id }}" class="w-3.5 h-3.5 text-indigo-600 rounded border-slate-300">
-                                            <span>{{ $child->name }}</span>
-                                        </label>
-                                    @endforeach
-                                </div>
+                                @foreach($cat->children as $child)
+                                    @if(isset($child->is_active) && !$child->is_active) @continue @endif
+                                    <option value="{{ $child->id }}">&nbsp;&nbsp;-- {{ $child->name }}</option>
+                                @endforeach
                             @endif
-                        </div>
-                    @empty
-                        <p class="text-xs text-slate-400">Chưa có danh mục nào.</p>
-                    @endforelse
+                        @empty
+                            <option value="" disabled>Chưa có danh mục nào.</option>
+                        @endforelse
+                    </select>
+                    <p class="text-xs text-slate-500 mt-1">Giữ phím Ctrl (Windows) hoặc Command (Mac) để chọn nhiều danh mục.</p>
                 </div>
             </div>
 
@@ -247,26 +242,63 @@
             reader.onload = function(evt) {
                 document.getElementById('main_image_preview').src = evt.target.result;
                 document.getElementById('main_image_preview_box').classList.remove('hidden');
+                lucide.createIcons();
             }
             reader.readAsDataURL(file);
         }
     });
 
+    document.getElementById('remove_main_image_btn').addEventListener('click', function() {
+        document.getElementById('main_image_input').value = '';
+        document.getElementById('main_image_preview').src = '#';
+        document.getElementById('main_image_preview_box').classList.add('hidden');
+    });
+
     // Live Preview Thư viện ảnh
+    let selectedGalleryFiles = [];
     document.getElementById('gallery_input').addEventListener('change', function(e) {
         const preview = document.getElementById('gallery_preview');
+        
+        // Add new files to the array
+        const newFiles = Array.from(e.target.files);
+        selectedGalleryFiles = selectedGalleryFiles.concat(newFiles);
+        
+        updateGalleryInputAndPreview();
+    });
+
+    function updateGalleryInputAndPreview() {
+        const preview = document.getElementById('gallery_preview');
+        const input = document.getElementById('gallery_input');
+        
+        // Update input files using DataTransfer
+        const dt = new DataTransfer();
+        selectedGalleryFiles.forEach(file => dt.items.add(file));
+        input.files = dt.files;
+        
+        // Render preview
         preview.innerHTML = '';
-        Array.from(e.target.files).forEach(file => {
+        selectedGalleryFiles.forEach((file, index) => {
             const reader = new FileReader();
             reader.onload = function(evt) {
-                const img = document.createElement('img');
-                img.src = evt.target.result;
-                img.className = 'w-full h-20 object-cover rounded-lg border border-slate-200 bg-slate-50';
-                preview.appendChild(img);
+                const div = document.createElement('div');
+                div.className = 'relative group';
+                div.innerHTML = `
+                    <img src="${evt.target.result}" class="w-full h-20 object-cover rounded-lg border border-slate-200 bg-slate-50">
+                    <button type="button" onclick="removeGalleryImage(${index})" class="absolute top-1 right-1 bg-rose-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                        <i data-lucide="x" class="w-3 h-3"></i>
+                    </button>
+                `;
+                preview.appendChild(div);
+                lucide.createIcons();
             }
             reader.readAsDataURL(file);
         });
-    });
+    }
+
+    function removeGalleryImage(index) {
+        selectedGalleryFiles.splice(index, 1);
+        updateGalleryInputAndPreview();
+    }
 
     // Variant Builder Logic
     let variantIndex = 0;
@@ -312,15 +344,39 @@
                     <input type="number" name="variants[${variantIndex}][stock]" value="10" class="w-full px-2.5 py-1.5 border border-slate-200 rounded text-xs">
                 </div>
                 <div>
-                    <label class="block text-[11px] font-semibold text-slate-500">Ảnh riêng biến thể</label>
-                    <input type="file" name="variants[${variantIndex}][image]" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-1 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-indigo-50 file:text-indigo-700">
+                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">Ảnh riêng biến thể</label>
+                    <div id="variant_image_preview_box_${variantIndex}" class="mb-2 hidden relative w-16 h-16">
+                        <img id="variant_image_preview_${variantIndex}" src="#" alt="Preview" class="w-full h-full object-cover rounded border border-slate-200">
+                        <button type="button" onclick="removeVariantImage(${variantIndex})" class="absolute -top-1 -right-1 bg-rose-500 hover:bg-rose-600 text-white rounded-full w-4 h-4 flex items-center justify-center shadow-sm">
+                            <i data-lucide="x" class="w-2 h-2"></i>
+                        </button>
+                    </div>
+                    <input type="file" name="variants[${variantIndex}][image]" id="variant_image_input_${variantIndex}" onchange="previewVariantImage(this, ${variantIndex})" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-1 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:bg-indigo-50 file:text-indigo-700">
                 </div>
             </div>
         `;
         container.appendChild(card);
-        variantIndex++;
         lucide.createIcons();
+        variantIndex++;
     });
+
+    function previewVariantImage(input, index) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('variant_image_preview_' + index).src = e.target.result;
+                document.getElementById('variant_image_preview_box_' + index).classList.remove('hidden');
+                lucide.createIcons();
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeVariantImage(index) {
+        document.getElementById('variant_image_input_' + index).value = '';
+        document.getElementById('variant_image_preview_' + index).src = '#';
+        document.getElementById('variant_image_preview_box_' + index).classList.add('hidden');
+    }
 
     // Toggle Product Type Fields
     const productTypeSelect = document.getElementById('product_type');

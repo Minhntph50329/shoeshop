@@ -4,52 +4,126 @@
 @section('page_title', 'Quản lý Liên hệ')
 
 @section('content')
-<div class="space-y-6">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+<div class="w-full max-w-full space-y-6 overflow-x-hidden">
+    <!-- Header -->
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="min-w-0">
             <h2 class="text-xl font-bold text-slate-800">Liên hệ & Đóng góp ý kiến</h2>
-            <p class="text-sm text-slate-500">Xem và phản hồi các tin nhắn liên hệ từ khách hàng</p>
+            <p class="mt-1 text-sm leading-5 text-slate-500">Xem và phản hồi các tin nhắn liên hệ từ khách hàng</p>
         </div>
     </div>
 
     @if(session('success'))
-        <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm flex items-center gap-2">
-            <i data-lucide="check-circle" class="w-5 h-5"></i>
-            {{ session('success') }}
+        <div class="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-xs text-emerald-700">
+            <i data-lucide="check-circle" class="mt-0.5 h-5 w-5 shrink-0"></i>
+            <span>{{ session('success') }}</span>
         </div>
     @endif
 
     {{-- Filters --}}
-    <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-        <form method="GET" action="{{ route('admin.contacts.index') }}" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
+    <div class="w-full rounded-2xl border border-slate-100 bg-white p-3 shadow-sm sm:p-4">
+        <form method="GET" action="{{ route('admin.contacts.index') }}" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="min-w-0 sm:col-span-2">
                 <label class="block text-xs font-semibold text-slate-600 mb-1">Tìm kiếm</label>
                 <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Tên, email, số điện thoại, lời nhắn..."
-                    class="w-full py-2 px-3 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                    class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition min-w-0">
             </div>
-            <div>
+            <div class="min-w-0">
                 <label class="block text-xs font-semibold text-slate-600 mb-1">Trạng thái</label>
-                <select name="status" class="w-full py-2 px-3 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition bg-white">
+                <select name="status" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition bg-white min-w-0">
                     <option value="">-- Tất cả --</option>
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Chưa xử lý (Chờ phản hồi)</option>
                     <option value="replied" {{ request('status') === 'replied' ? 'selected' : '' }}>Đã phản hồi</option>
                 </select>
             </div>
             <div class="flex items-end gap-2">
-                <button type="submit" class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition">
+                <button type="submit" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition">
                     Lọc kết quả
                 </button>
-                <a href="{{ route('admin.contacts.index') }}" class="py-2 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition text-center">
+                <a href="{{ route('admin.contacts.index') }}" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition text-center shrink-0">
                     Reset
                 </a>
             </div>
         </form>
     </div>
 
-    {{-- Table / List --}}
-    <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+    <!-- MOBILE CARDS -->
+    <div class="space-y-4 md:hidden">
+        @forelse($contacts as $contact)
+            <div class="w-full overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+                <!-- User Info -->
+                <div class="flex justify-between items-start mb-3">
+                    <div class="min-w-0 flex-1">
+                        <div class="font-bold text-slate-800 text-sm truncate">{{ $contact->name }}</div>
+                        <div class="text-[11px] text-slate-400 font-mono truncate">{{ $contact->email }}</div>
+                        @if($contact->phone)
+                            <div class="text-[11px] text-slate-500 font-mono">{{ $contact->phone }}</div>
+                        @endif
+                        <div class="text-[10px] font-semibold mt-1 {{ $contact->user_id ? 'text-indigo-500' : 'text-slate-400' }}">
+                            {{ $contact->user_id ? '✓ Thành viên' : '✗ Khách vãng lai' }}
+                        </div>
+                    </div>
+                    <div class="shrink-0 ml-2">
+                        @if($contact->status === 'pending')
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Chờ xử lý
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Đã phản hồi
+                            </span>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <div class="space-y-3 mb-4">
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                        <p class="text-xs text-slate-700 leading-relaxed font-medium">
+                            {{ $contact->message }}
+                        </p>
+                        <span class="text-[9px] text-slate-400 block mt-1.5">Gửi lúc: {{ $contact->created_at->format('H:i d/m/Y') }}</span>
+                    </div>
+
+                    @if($contact->status === 'replied')
+                        <div class="bg-indigo-50/30 rounded-xl p-3 border border-indigo-50/50">
+                            <p class="text-xs text-slate-600 leading-relaxed italic">
+                                "{{ $contact->reply_message }}"
+                            </p>
+                            @if($contact->replied_at)
+                                <span class="text-[9px] text-slate-400 block mt-1.5">Phản hồi lúc: {{ $contact->replied_at->format('H:i d/m/Y') }}</span>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Actions -->
+                <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+                    <button type="button" 
+                            onclick="openReplyModal({{ $contact->id }}, '{{ addslashes($contact->name) }}', '{{ addslashes($contact->message) }}')"
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-500 transition hover:bg-indigo-50 hover:text-indigo-600" 
+                            title="{{ $contact->status === 'replied' ? 'Phản hồi lại' : 'Trả lời' }}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+                    </button>
+
+                    <form action="{{ route('admin.contacts.destroy', $contact->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc muốn xóa liên hệ này?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 text-slate-500 transition hover:bg-rose-50 hover:text-rose-600" title="Xóa liên hệ">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @empty
+            <div class="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-400 shadow-sm">Không tìm thấy tin nhắn liên hệ nào.</div>
+        @endforelse
+    </div>
+
+    {{-- DESKTOP TABLE --}}
+    <div class="hidden bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden md:block">
+        <div class="w-full overflow-x-auto">
+            <table class="w-full min-w-[900px] text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-50 border-b border-slate-100 text-xs font-semibold uppercase text-slate-500 tracking-wider">
                         <th class="py-3 px-6">Khách hàng</th>
@@ -137,13 +211,13 @@
                 </tbody>
             </table>
         </div>
-
-        @if($contacts->hasPages())
-            <div class="px-6 py-4 border-t border-slate-100">
-                {{ $contacts->links() }}
-            </div>
-        @endif
     </div>
+
+    @if($contacts->hasPages())
+        <div class="rounded-2xl border border-slate-100 bg-white p-3 shadow-sm sm:p-4 mt-4">
+            {{ $contacts->links() }}
+        </div>
+    @endif
 </div>
 
 {{-- Reply Modal --}}
