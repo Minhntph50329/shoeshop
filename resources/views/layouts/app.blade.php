@@ -21,10 +21,16 @@
     <!-- Header / Navigation -->
     <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-2 font-black text-xl tracking-tight text-slate-900">
-                <span class="bg-indigo-600 text-white p-1.5 rounded-lg text-xs leading-none">V</span>
-                VELOCE
-            </a>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-1.5 -ml-1.5 hover:bg-slate-50 rounded-lg text-slate-700 focus:outline-none transition-colors">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <a href="/" class="flex items-center gap-2 font-black text-xl tracking-tight text-slate-900">
+                    <span class="bg-indigo-600 text-white p-1.5 rounded-lg text-xs leading-none">V</span>
+                    VELOCE
+                </a>
+            </div>
             <nav class="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
                 <a href="/" class="hover:text-indigo-600">Trang chủ</a>
                 <a href="/shop" class="hover:text-indigo-600">Cửa hàng</a>
@@ -212,6 +218,69 @@
         </div>
     </header>
 
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] opacity-0 invisible transition-all duration-300"></div>
+    
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-menu" class="fixed top-0 left-0 bottom-0 w-64 bg-white z-[101] shadow-2xl -translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2 font-black text-xl tracking-tight text-slate-900">
+                <span class="bg-indigo-600 text-white p-1.5 rounded-lg text-xs leading-none">V</span>
+                VELOCE
+            </a>
+            <button id="close-menu-btn" class="p-2 hover:bg-slate-50 rounded-full text-slate-500">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-4 flex flex-col">
+            <div class="px-6 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Menu chính</div>
+            <a href="/" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Trang chủ</a>
+            <hr class="border-slate-100">
+            <a href="/shop" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Cửa hàng</a>
+            <hr class="border-slate-100">
+            <a href="/blog" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Tin tức</a>
+            <hr class="border-slate-100">
+            <a href="/contact" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Liên hệ</a>
+            <hr class="border-slate-100">
+            <a href="/wishlist" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Yêu thích</a>
+            <hr class="border-slate-100">
+            <a href="/cart" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Giỏ hàng</a>
+            <hr class="border-slate-100">
+            <div class="mt-2 px-6 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 pt-4">Tài khoản</div>
+            @auth
+                @hasanyrole('Admin|Super Admin|Staff')
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-purple-600 hover:bg-slate-50">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Quản trị Admin
+                    </a>
+                @endhasanyrole
+                <a href="{{ route('profile') }}" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    <i data-lucide="user-circle" class="w-4 h-4"></i> Hồ sơ cá nhân
+                </a>
+                <a href="{{ route('my-orders') }}" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    <i data-lucide="package-check" class="w-4 h-4"></i> Đơn hàng của tôi
+                </a>
+                @unless(auth()->user()->hasAnyRole(['Admin', 'Super Admin', 'Staff']))
+                <a href="{{ route('my-contacts') }}" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    <i data-lucide="mail" class="w-4 h-4"></i> Tin nhắn của tôi
+                </a>
+                @endunless
+                <form action="{{ route('logout') }}" method="POST" class="block">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center gap-3 px-6 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 text-left">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Đăng xuất
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    <i data-lucide="log-in" class="w-4 h-4"></i> Đăng nhập
+                </a>
+                <a href="{{ route('register') }}" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-indigo-600 hover:bg-slate-50">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i> Đăng ký
+                </a>
+            @endauth
+        </nav>
+    </div>
+
     <!-- Main Content Stage -->
     <main class="flex-1 max-w-7xl mx-auto px-4 w-full py-8">
         @yield('content')
@@ -324,6 +393,33 @@
             // Auto hide after 3.5s
             setTimeout(() => dismissToast(), 3500);
         })();
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+
+        function toggleMobileMenu() {
+            if (!mobileMenu) return;
+            const isOpen = mobileMenu.classList.contains('translate-x-0');
+            if (isOpen) {
+                mobileMenu.classList.remove('translate-x-0');
+                mobileMenu.classList.add('-translate-x-full');
+                mobileMenuOverlay.classList.remove('opacity-100', 'visible');
+                mobileMenuOverlay.classList.add('opacity-0', 'invisible');
+            } else {
+                mobileMenu.classList.remove('-translate-x-full');
+                mobileMenu.classList.add('translate-x-0');
+                mobileMenuOverlay.classList.remove('opacity-0', 'invisible');
+                mobileMenuOverlay.classList.add('opacity-100', 'visible');
+            }
+        }
+
+        if(mobileMenuBtn) mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        if(closeMenuBtn) closeMenuBtn.addEventListener('click', toggleMobileMenu);
+        if(mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', toggleMobileMenu);
+
 
         function dismissToast() {
             const toast = document.getElementById('toast-notification');
