@@ -72,38 +72,44 @@
 
         {{-- Đơn hàng --}}
         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-full -translate-y-8 translate-x-8 group-hover:scale-125 transition"></div>
-            <div class="relative">
-                <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center mb-3">
-                    <i data-lucide="shopping-cart" class="w-5 h-5 text-indigo-600"></i>
+            <a href="{{ route('admin.orders.index') }}">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-full -translate-y-8 translate-x-8 group-hover:scale-125 transition"></div>
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center mb-3">
+                        <i data-lucide="shopping-cart" class="w-5 h-5 text-indigo-600"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Đơn hàng tháng này</span>
+                    <h3 class="text-2xl font-black text-indigo-600 mt-1">{{ $ordersThisMonth }} đơn</h3>
                 </div>
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Đơn hàng tháng này</span>
-                <h3 class="text-2xl font-black text-indigo-600 mt-1">{{ $ordersThisMonth }} đơn</h3>
-            </div>
+            </a>
         </div>
 
         {{-- Khách hàng --}}
         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-sky-50 rounded-full -translate-y-8 translate-x-8 group-hover:scale-125 transition"></div>
-            <div class="relative">
-                <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center mb-3">
-                    <i data-lucide="users" class="w-5 h-5 text-sky-600"></i>
+            <a href="{{ route('admin.customers.index') }}">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-sky-50 rounded-full -translate-y-8 translate-x-8 group-hover:scale-125 transition"></div>
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center mb-3">
+                        <i data-lucide="users" class="w-5 h-5 text-sky-600"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tổng khách hàng</span>
+                    <h3 class="text-2xl font-black text-slate-800 mt-1">{{ number_format($totalCustomers) }}</h3>
                 </div>
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Tổng khách hàng</span>
-                <h3 class="text-2xl font-black text-slate-800 mt-1">{{ number_format($totalCustomers) }}</h3>
-            </div>
+            </a>
         </div>
 
         {{-- Sắp hết hàng --}}
         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-lg transition">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full -translate-y-8 translate-x-8 group-hover:scale-125 transition"></div>
-            <div class="relative">
-                <div class="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center mb-3">
-                    <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-600"></i>
+            <a href="{{ route('admin.products.index') }}">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full -translate-y-8 translate-x-8 group-hover:scale-125 transition"></div>
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center mb-3">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-rose-600"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sắp hết hàng</span>
+                    <h3 class="text-2xl font-black text-rose-600 mt-1">{{ $lowStockCount }} sản phẩm</h3>
                 </div>
-                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Sắp hết hàng</span>
-                <h3 class="text-2xl font-black text-rose-600 mt-1">{{ $lowStockCount }} sản phẩm</h3>
-            </div>
+            </a>
         </div>
     </div>
 

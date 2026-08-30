@@ -23,91 +23,239 @@
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <nav class="flex-1 p-4 space-y-1">
+        <nav class="flex-1 px-3 py-5 overflow-y-auto">
 
-            <a href="{{ route('admin.dashboard') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                Dashboard
-            </a>
+            {{-- ================= QUẢN LÝ ================= --}}
+            <p class="px-3 mb-2 text-[10px] font-bold tracking-[0.18em] text-slate-500 uppercase">
+                Quản lý
+            </p>
 
-            <a href="{{ route('admin.products.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="package" class="w-5 h-5"></i>
-                Sản phẩm
-            </a>
+            <div class="space-y-1">
 
-            <a href="{{ route('admin.category.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="folder-tree" class="w-5 h-5"></i>
-                Danh mục
-            </a>
+                {{-- Dashboard --}}
+                <a href="{{ route('admin.dashboard') }}"
+                    class="group relative flex items-center gap-3 px-3 py-3 rounded-xl
+                    transition-all duration-200
+                    {{ request()->routeIs('admin.dashboard')
+                        ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-900/30'
+                        : 'text-slate-400 hover:bg-slate-800/80 hover:text-white' }}">
 
-            <a href="{{ route('admin.brand.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="tag" class="w-5 h-5"></i>
-                Thương hiệu
-            </a>
+                    <i data-lucide="layout-dashboard"
+                        class="w-5 h-5 transition-transform duration-200 group-hover:scale-110"></i>
 
-            <a href="{{ route('admin.attributes.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="sliders" class="w-5 h-5"></i>
-                Thuộc tính
-            </a>
+                    <span class="font-medium">
+                        Dashboard
+                    </span>
 
-            <a href="{{ route('admin.orders.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-                Đơn hàng
-            </a>
+                    @if(request()->routeIs('admin.dashboard'))
+                        <span class="absolute right-3 w-2 h-2 bg-white rounded-full"></span>
+                    @endif
+                </a>
 
-            <a href="{{ route('admin.refunds.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition {{ request()->routeIs('admin.refunds.*') ? 'bg-slate-800 text-white font-bold' : '' }}">
-                <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                Trả hàng
-            </a>
 
-            <a href="{{ route('admin.customers.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="users" class="w-5 h-5"></i>
-                Khách hàng
-            </a>
+                {{-- Sản phẩm --}}
+                <a href="{{ route('admin.products.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200
+                    {{ request()->routeIs('admin.products.*')
+                        ? 'bg-slate-800 text-white shadow-md'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
 
-            <a href="{{ route('admin.banner.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="image" class="w-5 h-5"></i>
-                Banner
-            </a>
+                    <i data-lucide="package"
+                        class="w-5 h-5 transition-transform group-hover:scale-110"></i>
 
-            <a href="{{ route('admin.voucher.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="ticket-percent" class="w-5 h-5"></i>
-                Voucher
-            </a>
+                    <span class="font-medium">Sản phẩm</span>
+                </a>
 
-            <a href="{{ route('admin.news.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="newspaper" class="w-5 h-5"></i>
-                Tin tức
-            </a>
 
-            <a href="{{ route('admin.reviews.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="star" class="w-5 h-5"></i>
-                Đánh giá
-            </a>
+                {{-- Danh mục --}}
+                <a href="{{ route('admin.category.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200
+                    {{ request()->routeIs('admin.category.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
 
-            <a href="{{ route('admin.contacts.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition {{ request()->routeIs('admin.contacts.*') ? 'bg-slate-800 text-white font-bold' : '' }}">
-                <i data-lucide="mail" class="w-5 h-5"></i>
-                Liên hệ
-            </a>
+                    <i data-lucide="folder-tree"
+                        class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
 
-            <a href="{{ route('admin.settings.index') }}"
-                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition">
-                <i data-lucide="settings" class="w-5 h-5"></i>
-                Cài đặt
-            </a>
+                    <span class="font-medium">Danh mục</span>
+                </a>
+
+
+                {{-- Thương hiệu --}}
+                <a href="{{ route('admin.brand.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200
+                    {{ request()->routeIs('admin.brand.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="tag"
+                        class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+
+                    <span class="font-medium">Thương hiệu</span>
+                </a>
+
+
+                {{-- Thuộc tính --}}
+                <a href="{{ route('admin.attributes.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200
+                    {{ request()->routeIs('admin.attributes.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="sliders-horizontal"
+                        class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300"></i>
+
+                    <span class="font-medium">Thuộc tính</span>
+                </a>
+
+            </div>
+
+
+            {{-- ================= BÁN HÀNG ================= --}}
+            <p class="px-3 mt-7 mb-2 text-[10px] font-bold tracking-[0.18em] text-slate-500 uppercase">
+                Bán hàng
+            </p>
+
+            <div class="space-y-1">
+
+                {{-- Đơn hàng --}}
+                <a href="{{ route('admin.orders.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200
+                    {{ request()->routeIs('admin.orders.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="shopping-cart"
+                        class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+
+                    <span class="font-medium">Đơn hàng</span>
+                </a>
+
+
+                {{-- Trả hàng --}}
+                <a href="{{ route('admin.refunds.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200
+                    {{ request()->routeIs('admin.refunds.*')
+                        ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-purple-900/30'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="refresh-cw"
+                        class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500"></i>
+
+                    <span class="font-medium">Trả hàng</span>
+                </a>
+
+
+                {{-- Khách hàng --}}
+                <a href="{{ route('admin.customers.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200
+                    {{ request()->routeIs('admin.customers.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="users"
+                        class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+
+                    <span class="font-medium">Khách hàng</span>
+                </a>
+
+            </div>
+
+
+            {{-- ================= NỘI DUNG ================= --}}
+            <p class="px-3 mt-7 mb-2 text-[10px] font-bold tracking-[0.18em] text-slate-500 uppercase">
+                Nội dung
+            </p>
+
+            <div class="space-y-1">
+
+                <a href="{{ route('admin.banner.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all
+                    {{ request()->routeIs('admin.banner.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="image"
+                        class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+
+                    <span class="font-medium">Banner</span>
+                </a>
+
+
+                <a href="{{ route('admin.voucher.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all
+                    {{ request()->routeIs('admin.voucher.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="ticket-percent"
+                        class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+
+                    <span class="font-medium">Voucher</span>
+                </a>
+
+
+                <a href="{{ route('admin.news.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all
+                    {{ request()->routeIs('admin.news.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="newspaper"
+                        class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+
+                    <span class="font-medium">Tin tức</span>
+                </a>
+
+
+                <a href="{{ route('admin.reviews.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all
+                    {{ request()->routeIs('admin.reviews.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="star"
+                        class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+
+                    <span class="font-medium">Đánh giá</span>
+                </a>
+
+            </div>
+
+
+            {{-- ================= HỆ THỐNG ================= --}}
+            <p class="px-3 mt-7 mb-2 text-[10px] font-bold tracking-[0.18em] text-slate-500 uppercase">
+                Hệ thống
+            </p>
+
+            <div class="space-y-1 pb-4">
+
+                <a href="{{ route('admin.contacts.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all
+                    {{ request()->routeIs('admin.contacts.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="mail"
+                        class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+
+                    <span class="font-medium">Liên hệ</span>
+                </a>
+
+
+                <a href="{{ route('admin.settings.index') }}"
+                    class="group flex items-center gap-3 px-3 py-3 rounded-xl transition-all
+                    {{ request()->routeIs('admin.settings.*')
+                        ? 'bg-slate-800 text-white'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="settings"
+                        class="w-5 h-5 group-hover:rotate-90 transition-transform duration-500"></i>
+
+                    <span class="font-medium">Cài đặt</span>
+                </a>
+
+            </div>
 
         </nav>
     </aside>
