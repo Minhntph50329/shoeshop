@@ -42,7 +42,7 @@
                     Lọc kết quả
                 </button>
                 <a href="{{ route('admin.reviews.index') }}" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition text-center shrink-0">
-                    Reset
+                    Xóa
                 </a>
             </div>
         </form>

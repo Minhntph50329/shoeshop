@@ -234,17 +234,23 @@
         </div>
         <nav class="flex-1 overflow-y-auto py-4 flex flex-col">
             <div class="px-6 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Menu chính</div>
-            <a href="/" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Trang chủ</a>
+            <a href="/" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <i data-lucide="home" class="w-4 h-4"></i> Trang chủ</a>
             <hr class="border-slate-100">
-            <a href="/shop" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Cửa hàng</a>
+            <a href="/shop" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <i data-lucide="store" class="w-4 h-4"></i> Cửa hàng</a>
             <hr class="border-slate-100">
-            <a href="/blog" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Tin tức</a>
+            <a href="/blog" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <i data-lucide="newspaper" class="w-4 h-4"></i> Tin tức</a>
             <hr class="border-slate-100">
-            <a href="/contact" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Liên hệ</a>
+            <a href="/contact" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <i data-lucide="mail" class="w-4 h-4"></i> Liên hệ</a>
             <hr class="border-slate-100">
-            <a href="/wishlist" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Yêu thích</a>
+            <a href="/wishlist" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <i data-lucide="heart" class="w-4 h-4"></i> Yêu thích</a>
             <hr class="border-slate-100">
-            <a href="/cart" class="block px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Giỏ hàng</a>
+            <a href="/cart" class="flex items-center gap-3 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                <i data-lucide="shopping-cart" class="w-4 h-4"></i> Giỏ hàng</a>
             <hr class="border-slate-100">
             <div class="mt-2 px-6 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 pt-4">Tài khoản</div>
             @auth
