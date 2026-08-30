@@ -41,17 +41,17 @@
                                             </tr>
                                             <tr>
                                                 <td style="padding:6px 0;color:#64748b;font-size:13px;border-top:1px solid #e2e8f0;">Phí vận chuyển</td>
-                                                <td style="padding:6px 0;color:#1e293b;font-size:13px;font-weight:600;text-align:right;border-top:1px solid #e2e8f0;">{{ number_format($order->shipping_fee, 0, ',', '.') }}đ</td>
+                                                <td style="padding:6px 0;color:#1e293b;font-size:13px;font-weight:600;text-align:right;border-top:1px solid #e2e8f0;">{{ format_price($order->shipping_fee) }}</td>
                                             </tr>
                                             @if($order->discount_amount > 0)
                                             <tr>
                                                 <td style="padding:6px 0;color:#059669;font-size:13px;border-top:1px solid #e2e8f0;">Giảm giá</td>
-                                                <td style="padding:6px 0;color:#059669;font-size:13px;font-weight:600;text-align:right;border-top:1px solid #e2e8f0;">-{{ number_format($order->discount_amount, 0, ',', '.') }}đ</td>
+                                                <td style="padding:6px 0;color:#059669;font-size:13px;font-weight:600;text-align:right;border-top:1px solid #e2e8f0;">-{{ format_price($order->discount_amount) }}</td>
                                             </tr>
                                             @endif
                                             <tr>
                                                 <td style="padding:10px 0 0;color:#1e293b;font-size:15px;font-weight:800;border-top:2px solid #cbd5e1;">Tổng cộng</td>
-                                                <td style="padding:10px 0 0;color:#4f46e5;font-size:15px;font-weight:800;text-align:right;border-top:2px solid #cbd5e1;">{{ number_format($order->total_amount + $order->shipping_fee - $order->discount_amount, 0, ',', '.') }}đ</td>
+                                                <td style="padding:10px 0 0;color:#4f46e5;font-size:15px;font-weight:800;text-align:right;border-top:2px solid #cbd5e1;">{{ format_price($order->total_amount + $order->shipping_fee - $order->discount_amount) }}</td>
                                             </tr>
                                         </table>
                                     </td>

@@ -58,7 +58,7 @@
                             @if($coupon->discount_type === 'percent')
                                 {{ number_format($coupon->discount_value, 0) }}%
                             @else
-                                {{ number_format($coupon->discount_value, 0, ',', '.') }} VNĐ
+                                {{ format_price($coupon->discount_value) }}
                             @endif
                         </p>
                     </div>
@@ -125,7 +125,7 @@
                                     @if($coupon->discount_type === 'percent')
                                         {{ number_format($coupon->discount_value, 0) }}%
                                     @else
-                                        {{ number_format($coupon->discount_value, 0, ',', '.') }} VNĐ
+                                        {{ format_price($coupon->discount_value) }}
                                     @endif
                                 </p>
                             </td>

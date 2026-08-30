@@ -158,7 +158,7 @@
             <!-- TAB 2: Shipping Addresses (user_addresses) -->
             <div id="tab-content-address" class="tab-content hidden bg-white p-8 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 space-y-6">
                 <div class="border-b border-slate-100 pb-4">
-                    <h2 class="text-xl font-black text-slate-900">Địa chỉ nhận hàng (user_addresses)</h2>
+                    <h2 class="text-xl font-black text-slate-900">Địa chỉ nhận hàng</h2>
                     <p class="text-xs text-slate-500">Quản lý các địa chỉ nhận hàng của bạn</p>
                 </div>
 
@@ -197,38 +197,69 @@
                 <div class="pt-6 border-t border-slate-100 space-y-4">
                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900">Thêm địa chỉ giao hàng mới</h4>
 
+                    @if($errors->any() && old('fullname'))
+                        <div class="p-4 bg-rose-50 border border-rose-100 text-rose-700 rounded-2xl text-xs space-y-1">
+                            @foreach($errors->all() as $error)
+                                <p class="flex items-center gap-1.5"><i data-lucide="x-circle" class="w-4 h-4"></i> {{ $error }}</p>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <form action="{{ route('profile.address.store') }}" method="POST" class="space-y-4">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Họ tên người nhận <span class="text-rose-500">*</span></label>
-                                <input type="text" name="fullname" value="{{ old('fullname', $user->fullname) }}" required placeholder="Nguyễn Văn A" 
+                                <input type="text" name="fullname" value="{{ old('fullname', $user->fullname) }}" placeholder="Nguyễn Văn A" 
                                     class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                                @error('fullname') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">SĐT người nhận <span class="text-rose-500">*</span></label>
-                                <input type="text" name="phone_number" value="{{ old('phone_number', $user->phone_number) }}" required placeholder="0912345678" 
+                                <input type="text" name="phone_number" value="{{ old('phone_number', $user->phone_number) }}" placeholder="0912345678" 
                                     class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                                @error('phone_number') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="relative">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tỉnh / Thành phố <span class="text-rose-500">*</span></label>
+                                <input type="text" id="provinceInput" name="province" autocomplete="off" placeholder="Gõ để tìm kiếm..." 
+                                    class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                                <div id="provinceList" class="absolute left-0 w-full max-h-60 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
+                                @error('province') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                             </div>
 
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tỉnh / Thành phố</label>
-                                <input type="text" name="province" placeholder="Hà Nội, TP.HCM..." 
-                                    class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                            <div class="relative">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Quận / Huyện <span class="text-rose-500">*</span></label>
+                                <input type="text" id="districtInput" name="district" disabled autocomplete="off" placeholder="Chọn tỉnh trước..." 
+                                    class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition disabled:bg-slate-50 disabled:cursor-not-allowed">
+                                <div id="districtList" class="absolute left-0 w-full max-h-60 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
+                                @error('district') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                             </div>
 
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Quận / Huyện</label>
-                                <input type="text" name="district" placeholder="Thanh Xuân..." 
-                                    class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                            <div class="relative">
+                                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Phường / Xã <span class="text-rose-500">*</span></label>
+                                <input type="text" id="wardInput" name="ward" disabled autocomplete="off" placeholder="Chọn huyện trước..." 
+                                    class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition disabled:bg-slate-50 disabled:cursor-not-allowed">
+                                <div id="wardList" class="absolute left-0 w-full max-h-60 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
+                                @error('ward') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Địa chỉ cụ thể (Số nhà, tên đường...) <span class="text-rose-500">*</span></label>
-                            <input type="text" name="address" required placeholder="Số 123, đường Nguyễn Trãi..." 
-                                class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Tên đường, Tòa nhà, Số nhà <span class="text-rose-500">*</span></label>
+                            <input type="text" id="streetInput" disabled placeholder="Nhập số nhà, tên đường cụ thể..." 
+                                class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition disabled:bg-slate-50 disabled:cursor-not-allowed">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Địa chỉ hiển thị đầy đủ</label>
+                            <input type="text" id="compiledAddressInput" name="address" readonly placeholder="Địa chỉ sẽ tự động tạo..." 
+                                class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-500 cursor-not-allowed">
+                            @error('address') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="flex items-center justify-between">
@@ -263,21 +294,21 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật khẩu hiện tại <span class="text-rose-500">*</span></label>
-                        <input type="password" name="current_password" required placeholder="••••••••" 
+                        <input type="password" name="current_password" placeholder="••••••••" 
                             class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                         @error('current_password') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Mật khẩu mới <span class="text-rose-500">*</span></label>
-                        <input type="password" name="password" required placeholder="Tối thiểu 6 ký tự" 
+                        <input type="password" name="password" placeholder="Tối thiểu 6 ký tự" 
                             class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                         @error('password') <p class="text-xs text-rose-500 mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Xác nhận mật khẩu mới <span class="text-rose-500">*</span></label>
-                        <input type="password" name="password_confirmation" required placeholder="Nhập lại mật khẩu mới" 
+                        <input type="password" name="password_confirmation" placeholder="Nhập lại mật khẩu mới" 
                             class="w-full py-3 px-4 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                     </div>
 
@@ -309,5 +340,188 @@ function switchTab(tabName) {
         targetBtn.classList.remove('text-slate-600', 'hover:bg-slate-50');
     }
 }
+
+// Auto-switch to address tab if there are address form validation errors
+@if($errors->any() && (old('province') !== null || $errors->has('province') || $errors->has('district') || $errors->has('ward') || $errors->has('address')))
+    switchTab('address');
+@elseif($errors->any() && ($errors->has('current_password') || $errors->has('password')))
+    switchTab('password');
+@endif
+
+document.addEventListener('DOMContentLoaded', function () {
+    const provinceInput = document.getElementById('provinceInput');
+    const provinceList = document.getElementById('provinceList');
+    const districtInput = document.getElementById('districtInput');
+    const districtList = document.getElementById('districtList');
+    const wardInput = document.getElementById('wardInput');
+    const wardList = document.getElementById('wardList');
+    const streetInput = document.getElementById('streetInput');
+    const compiledInput = document.getElementById('compiledAddressInput');
+
+    let allProvinces = [];
+    let districts = [];
+    let wards = [];
+
+    let selectedProvinceCode = null;
+    let selectedDistrictCode = null;
+
+    if (!provinceInput) return; // In case elements don't exist
+
+    // Fetch Provinces on Load
+    fetch('https://provinces.open-api.vn/api/?depth=1')
+        .then(res => res.json())
+        .then(data => {
+            allProvinces = data;
+        })
+        .catch(err => {
+            console.error('Không thể tải dữ liệu Tỉnh/Thành phố:', err);
+        });
+
+    // Custom Autocomplete Helper
+    function renderSuggestions(inputElement, listElement, getDataList, onSelect) {
+        // Show dropdown on click
+        inputElement.addEventListener('focus', () => {
+            filterAndShow();
+        });
+
+        // Hide dropdown on click outside
+        document.addEventListener('click', (e) => {
+            if (!inputElement.contains(e.target) && !listElement.contains(e.target)) {
+                listElement.classList.add('hidden');
+            }
+        });
+
+        // Filter suggestions on typing
+        inputElement.addEventListener('input', () => {
+            filterAndShow();
+        });
+
+        function filterAndShow() {
+            const dataList = getDataList();
+            const query = inputElement.value.trim().toLowerCase();
+            const filtered = dataList.filter(item => item.name.toLowerCase().includes(query));
+
+            if (filtered.length > 0) {
+                listElement.innerHTML = filtered.map(item => `
+                    <div class="px-4 py-2.5 text-xs text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer font-medium transition" data-code="${item.code}">
+                        ${item.name}
+                    </div>
+                `).join('');
+                listElement.classList.remove('hidden');
+
+                // Add click handlers
+                listElement.querySelectorAll('[data-code]').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const code = el.getAttribute('data-code');
+                        const name = el.innerText.trim();
+                        inputElement.value = name;
+                        listElement.classList.add('hidden');
+                        onSelect(code, name);
+                    });
+                });
+            } else {
+                listElement.innerHTML = `<div class="px-4 py-2.5 text-xs text-slate-400">Không tìm thấy kết quả</div>`;
+                listElement.classList.remove('hidden');
+            }
+        }
+    }
+
+    // Initialize Provinces
+    renderSuggestions(provinceInput, provinceList, () => allProvinces, (code, name) => {
+        selectedProvinceCode = code;
+        
+        // Reset and lock subsequent inputs
+        districtInput.value = '';
+        districtInput.disabled = true;
+        districtInput.placeholder = 'Đang tải danh sách quận/huyện...';
+        districtList.classList.add('hidden');
+
+        wardInput.value = '';
+        wardInput.disabled = true;
+        wardInput.placeholder = 'Chọn huyện trước...';
+        wardList.classList.add('hidden');
+
+        streetInput.value = '';
+        streetInput.disabled = true;
+
+        updateCompiledAddress();
+
+        // Fetch districts
+        fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`)
+            .then(res => res.json())
+            .then(data => {
+                districts = data.districts || [];
+                districtInput.disabled = false;
+                districtInput.placeholder = 'Gõ để tìm quận/huyện...';
+                
+                // Set up district autocomplete
+                setupDistrictSuggestions();
+            })
+            .catch(err => {
+                console.error('Lỗi tải danh sách Quận/Huyện:', err);
+                districtInput.placeholder = 'Không thể tải quận/huyện';
+            });
+    });
+
+    function setupDistrictSuggestions() {
+        renderSuggestions(districtInput, districtList, () => districts, (code, name) => {
+            selectedDistrictCode = code;
+
+            // Reset and lock ward input
+            wardInput.value = '';
+            wardInput.disabled = true;
+            wardInput.placeholder = 'Đang tải danh sách phường/xã...';
+            wardList.classList.add('hidden');
+
+            streetInput.value = '';
+            streetInput.disabled = true;
+
+            updateCompiledAddress();
+
+            // Fetch Wards
+            fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`)
+                .then(res => res.json())
+                .then(data => {
+                    wards = data.wards || [];
+                    wardInput.disabled = false;
+                    wardInput.placeholder = 'Gõ để tìm phường/xã...';
+
+                    // Set up ward autocomplete
+                    setupWardSuggestions();
+                })
+                .catch(err => {
+                    console.error('Lỗi tải danh sách Phường/Xã:', err);
+                    wardInput.placeholder = 'Không thể tải phường/xã';
+                });
+        });
+    }
+
+    function setupWardSuggestions() {
+        renderSuggestions(wardInput, wardList, () => wards, (code, name) => {
+            streetInput.disabled = false;
+            streetInput.placeholder = 'Nhập số nhà, ngõ ngách, tên đường...';
+            
+            updateCompiledAddress();
+        });
+    }
+
+    // Update compiled address when street is entered
+    streetInput.addEventListener('input', updateCompiledAddress);
+
+    function updateCompiledAddress() {
+        const p = provinceInput.value.trim();
+        const d = districtInput.value.trim();
+        const w = wardInput.value.trim();
+        const s = streetInput.value.trim();
+
+        const parts = [];
+        if (s) parts.push(s);
+        if (w) parts.push(w);
+        if (d) parts.push(d);
+        if (p) parts.push(p);
+
+        compiledInput.value = parts.join(', ');
+    }
+});
 </script>
 @endsection

@@ -35,9 +35,9 @@
         <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm space-y-1">
             <span class="text-xs text-slate-400 font-medium">Giá bán / Giá giảm</span>
             <div class="font-bold text-indigo-600 text-base">
-                {{ number_format($product->final_price) }}đ
+                {{ format_price($product->final_price) }}
                 @if($product->discount > 0)
-                    <span class="text-xs text-slate-400 line-through ml-1">{{ number_format($product->price) }}đ</span>
+                    <span class="text-xs text-slate-400 line-through ml-1">{{ format_price($product->price) }}</span>
                 @endif
             </div>
         </div>
@@ -119,7 +119,7 @@
                                     </div>
                                 </div>
                                 <div class="space-x-3">
-                                    <span class="font-bold text-indigo-600">{{ number_format($variant->price ?? $product->price) }}đ</span>
+                                    <span class="font-bold text-indigo-600">{{ format_price($variant->price ?? $product->price) }}</span>
                                     <span class="text-slate-500">Kho: {{ $variant->stock }}</span>
                                 </div>
                             </div>

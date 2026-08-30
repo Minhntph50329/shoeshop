@@ -126,6 +126,7 @@
                 <h1 class="text-lg font-bold text-slate-800">@yield('page_title', 'Hệ thống Quản lý')</h1>
             </div>
             <div class="flex items-center gap-4">
+                <a href="{{ route('home') }}" class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full">Trang chủ</a>
                 <span class="text-xs font-semibold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full">Admin Account</span>
             </div>
         </header>

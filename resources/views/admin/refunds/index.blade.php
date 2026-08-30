@@ -115,7 +115,7 @@
 
                     <div class="min-w-0 col-span-2 flex justify-between items-center bg-indigo-50/50 p-3 rounded-xl border border-indigo-50">
                         <p class="text-[11px] font-bold text-indigo-900">Tổng tiền hoàn</p>
-                        <p class="font-black text-indigo-600 text-lg">{{ number_format($refund->total_amount, 0, ',', '.') }}đ</p>
+                        <p class="font-black text-indigo-600 text-lg">{{ format_price($refund->total_amount) }}</p>
                     </div>
                 </div>
 
@@ -169,7 +169,7 @@
                                 </span>
                             </td>
                             <td class="p-4 font-black text-indigo-600">
-                                {{ number_format($refund->total_amount, 0, ',', '.') }}đ
+                                {{ format_price($refund->total_amount) }}
                             </td>
                             <td class="p-4 text-center">
                                 <a href="{{ route('admin.refunds.show', $refund->id) }}" 

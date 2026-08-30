@@ -37,7 +37,7 @@
                 <div>
                     <span class="text-slate-400 block mb-0.5 font-medium">Số tiền thanh toán</span>
                     <strong class="text-[#005baa] text-base font-black">
-                        {{ number_format($order->total_amount - $order->discount_amount + $order->shipping_fee) }} đ
+                        {{ format_price($order->total_amount - $order->discount_amount + $order->shipping_fee) }}
                     </strong>
                 </div>
                 <div>
@@ -68,7 +68,7 @@
                             @endif
                             <div class="flex justify-between items-center mt-1 text-[10px] font-bold">
                                 <span class="text-slate-500">x{{ $item->quantity }}</span>
-                                <span class="text-[#005baa]">{{ number_format($item->price_variant ?? $item->price) }}đ</span>
+                                <span class="text-[#005baa]">{{ format_price($item->price_variant ?? $item->price) }}</span>
                             </div>
                         </div>
                     </div>

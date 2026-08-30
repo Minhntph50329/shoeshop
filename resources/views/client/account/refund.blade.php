@@ -62,7 +62,7 @@
                                         <p class="text-[10px] text-slate-400 mt-0.5">{{ $item->name_variant }}: {{ $item->attributes_variant }}</p>
                                     @endif
                                     <p class="text-[11px] text-indigo-600 font-bold mt-1">
-                                        {{ number_format($item->effective_price, 0, ',', '.') }}đ 
+                                        {{ format_price($item->effective_price) }} 
                                         <span class="text-slate-300 font-normal">| Đã mua: x{{ $item->quantity }}</span>
                                     </p>
                                 </div>

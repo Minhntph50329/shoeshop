@@ -99,7 +99,7 @@
                                             </span>
                                         </div>
                                         <p class="text-xs font-bold text-indigo-600 sm:hidden">
-                                            {{ number_format($item->price_at_time, 0, ',', '.') }} đ
+                                            {{ format_price($item->price_at_time) }}
                                         </p>
                                     </div>
                                 </div>
@@ -109,7 +109,7 @@
                                     <div class="hidden sm:block text-right">
                                         <span class="text-xs text-slate-400 block font-medium">Đơn giá</span>
                                         <span class="text-xs font-bold text-slate-800">
-                                            {{ number_format($item->price_at_time, 0, ',', '.') }} đ
+                                            {{ format_price($item->price_at_time) }}
                                         </span>
                                     </div>
 
@@ -147,7 +147,7 @@
                                     <div class="text-right">
                                         <span class="text-xs text-slate-400 block font-medium sm:hidden">Thành tiền</span>
                                         <span class="text-sm font-black text-indigo-600">
-                                            {{ number_format($item->subtotal, 0, ',', '.') }} đ
+                                            {{ format_price($item->subtotal) }}
                                         </span>
                                     </div>
 
@@ -188,7 +188,7 @@
                         </div>
                         <div class="flex items-center justify-between text-slate-600">
                             <span>Tạm tính:</span>
-                            <span class="font-bold text-slate-900">{{ number_format($cart->total, 0, ',', '.') }} đ</span>
+                            <span class="font-bold text-slate-900">{{ format_price($cart->total) }}</span>
                         </div>
                         <div class="flex items-center justify-between text-slate-600">
                             <span>Phí vận chuyển:</span>
@@ -201,7 +201,7 @@
                             <span class="text-xs font-bold uppercase text-slate-500 block">Tổng thanh toán</span>
                             <small class="text-[10px] text-slate-400">(Đã bao gồm VAT)</small>
                         </div>
-                        <span class="text-xl font-black text-indigo-600">{{ number_format($cart->total, 0, ',', '.') }} đ</span>
+                        <span class="text-xl font-black text-indigo-600">{{ format_price($cart->total) }}</span>
                     </div>
 
                     <button type="button" onclick="proceedToCheckout()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl text-xs uppercase tracking-wider shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 transition active:scale-[0.99]">

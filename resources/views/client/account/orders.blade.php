@@ -45,24 +45,33 @@ $activeTab = request('status') ?: 'all';
 
     {{-- Status Tabs --}}
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm">
-        <div class="border-b border-slate-100 overflow-x-auto">
-            <div class="flex min-w-max px-4">
-                @foreach($tabs as $tabKey => $tabLabel)
-                @php
-                    $isActive = (string)$activeTab === (string)$tabKey;
-                    $count = $tabKey === 'all' ? $counts['all'] : ($counts[$tabKey] ?? 0);
-                @endphp
-                <a href="{{ route('my-orders', array_merge(request()->except(['status','page']), $tabKey !== 'all' ? ['status'=>$tabKey] : [])) }}"
-                   class="flex items-center gap-1.5 px-3 py-3.5 text-xs font-semibold border-b-2 transition whitespace-nowrap
-                       {{ $isActive ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
-                    {{ $tabLabel }}
-                    @if($count > 0)
-                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {{ $isActive ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-500' }}">{{ $count }}</span>
-                    @endif
-                </a>
-                @endforeach
+        <div class="border-b border-slate-100 relative">
+            {{-- Fade indicator on right edge --}}
+            <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none md:hidden"></div>
+            <div class="overflow-x-auto scrollbar-hide scroll-smooth" id="statusTabsScroll">
+                <div class="flex px-2 sm:px-4">
+                    @foreach($tabs as $tabKey => $tabLabel)
+                    @php
+                        $isActive = (string)$activeTab === (string)$tabKey;
+                        $count = $tabKey === 'all' ? $counts['all'] : ($counts[$tabKey] ?? 0);
+                    @endphp
+                    <a href="{{ route('my-orders', array_merge(request()->except(['status','page']), $tabKey !== 'all' ? ['status'=>$tabKey] : [])) }}"
+                       class="flex items-center gap-1 px-2.5 sm:px-3 py-3 sm:py-3.5 text-[11px] sm:text-xs font-semibold border-b-2 transition whitespace-nowrap
+                           {{ $isActive ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
+                        {{ $tabLabel }}
+                        @if($count > 0)
+                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold {{ $isActive ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-500' }}">{{ $count }}</span>
+                        @endif
+                    </a>
+                    @endforeach
+                </div>
             </div>
         </div>
+
+        <style>
+            .scrollbar-hide::-webkit-scrollbar { display: none; }
+            .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        </style>
 
         {{-- Search --}}
         <div class="p-4 border-b border-slate-100">
@@ -131,7 +140,7 @@ $activeTab = request('status') ?: 'all';
                         @endif
                     </div>
                     <div class="text-right flex-shrink-0">
-                        <p class="font-black text-sm text-indigo-600">{{ number_format($order->grand_total, 0, ',', '.') }}đ</p>
+                        <p class="font-black text-sm text-indigo-600">{{ format_price($order->grand_total) }}</p>
                         <p class="text-[11px] text-slate-400">{{ $order->items->sum('quantity') }} sản phẩm</p>
                     </div>
                 </div>
@@ -250,6 +259,15 @@ function closeCancelModal() {
 }
 document.getElementById('cancelModal').addEventListener('click', function(e) {
     if (e.target === this) closeCancelModal();
+});
+// Auto-scroll to active tab on mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const scrollContainer = document.getElementById('statusTabsScroll');
+    const activeTab = scrollContainer?.querySelector('.border-indigo-600');
+    if (activeTab && scrollContainer) {
+        const scrollLeft = activeTab.offsetLeft - scrollContainer.offsetWidth / 2 + activeTab.offsetWidth / 2;
+        scrollContainer.scrollLeft = Math.max(0, scrollLeft);
+    }
 });
 </script>
 @endsection

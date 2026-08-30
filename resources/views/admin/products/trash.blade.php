@@ -46,7 +46,7 @@
                         <tr class="hover:bg-slate-50/50 transition">
                             <td class="py-4 px-6 font-medium text-slate-500">#{{ $product->id }}</td>
                             <td class="py-4 px-6 font-semibold text-slate-800">{{ $product->name }}</td>
-                            <td class="py-4 px-6 font-bold text-slate-700">{{ number_format($product->price) }}đ</td>
+                            <td class="py-4 px-6 font-bold text-slate-700">{{ format_price($product->price) }}</td>
                             <td class="py-4 px-6 text-slate-500 text-xs">{{ $product->deleted_at->format('d/m/Y H:i') }}</td>
                             <td class="py-4 px-6 text-right space-x-2">
                                 <form action="{{ route('admin.products.restore', $product->id) }}" method="POST" class="inline-block">

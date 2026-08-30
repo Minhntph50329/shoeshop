@@ -85,7 +85,7 @@
                                     {{ $product->name }}
                                 </a>
                             </td>
-                            <td class="py-3 px-6 font-bold text-slate-800">{{ number_format($product->final_price) }}đ</td>
+                            <td class="py-3 px-6 font-bold text-slate-800">{{ format_price($product->final_price) }}</td>
                             <td class="py-3 px-6 font-medium text-slate-600">{{ $product->stock }}</td>
                             <td class="py-3 px-6 text-right">
                                 <a href="{{ route('admin.products.show', $product->id) }}" class="text-xs text-indigo-600 hover:underline font-semibold">Xem &rarr;</a>

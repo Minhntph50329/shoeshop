@@ -192,7 +192,7 @@
         {{-- Refund amount --}}
         <div class="refund-amount-box">
             <span class="label">Số tiền đã hoàn</span>
-            <span class="amount">{{ number_format($refund->total_amount, 0, ',', '.') }}đ</span>
+            <span class="amount">{{ format_price($refund->total_amount) }}</span>
         </div>
 
         {{-- Bank info --}}
@@ -212,7 +212,7 @@
             </tr>
             <tr>
                 <td class="lbl">Số tiền hoàn</td>
-                <td class="val">{{ number_format($refund->total_amount, 0, ',', '.') }}đ</td>
+                <td class="val">{{ format_price($refund->total_amount) }}</td>
             </tr>
         </table>
 
@@ -243,10 +243,10 @@
                     @if ($item->name_variant)
                         <div class="product-variant-text">Phân loại: {{ $item->name_variant }}</div>
                     @endif
-                    <div class="product-price-text">{{ number_format($item->effective_price, 0, ',', '.') }}đ × {{ $item->quantity }}</div>
+                    <div class="product-price-text">{{ format_price($item->effective_price) }} × {{ $item->quantity }}</div>
                 </div>
                 <div class="product-price-cell">
-                    {{ number_format($item->line_total, 0, ',', '.') }}đ
+                    {{ format_price($item->line_total) }}
                 </div>
             </div>
         @endforeach

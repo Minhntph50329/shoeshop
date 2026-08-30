@@ -79,7 +79,7 @@ $csColors = $cs && isset($statusColors[$cs->id]) ? $statusColors[$cs->id] : ['bg
                     </div>
                     <div>
                         <p class="text-[11px] text-slate-400 font-medium uppercase tracking-wide">Phí ship</p>
-                        <p class="text-xs font-semibold text-slate-800 mt-1">{{ number_format($order->shipping_fee, 0, ',', '.') }}đ</p>
+                        <p class="text-xs font-semibold text-slate-800 mt-1">{{ format_price($order->shipping_fee) }}</p>
                     </div>
                 </div>
             </div>
@@ -124,10 +124,10 @@ $csColors = $cs && isset($statusColors[$cs->id]) ? $statusColors[$cs->id] : ['bg
                         </div>
                         <div class="text-right flex-shrink-0 w-28">
                             @if($item->old_price && $item->old_price > $item->price)
-                                <p class="text-[11px] text-slate-300 line-through">{{ number_format($item->old_price, 0, ',', '.') }}đ</p>
+                                <p class="text-[11px] text-slate-300 line-through">{{ format_price($item->old_price) }}</p>
                             @endif
-                            <p class="font-bold text-indigo-600 text-sm">{{ number_format($item->effective_price, 0, ',', '.') }}đ</p>
-                            <p class="text-[11px] text-slate-400">= {{ number_format($item->line_total, 0, ',', '.') }}đ</p>
+                            <p class="font-bold text-indigo-600 text-sm">{{ format_price($item->effective_price) }}</p>
+                            <p class="text-[11px] text-slate-400">= {{ format_price($item->line_total) }}</p>
                         </div>
                     </div>
                     @endforeach
@@ -136,21 +136,21 @@ $csColors = $cs && isset($statusColors[$cs->id]) ? $statusColors[$cs->id] : ['bg
                 <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 space-y-2">
                     <div class="flex justify-between text-xs text-slate-600">
                         <span>Tạm tính</span>
-                        <span class="font-semibold">{{ number_format($order->total_amount, 0, ',', '.') }}đ</span>
+                        <span class="font-semibold">{{ format_price($order->total_amount) }}</span>
                     </div>
                     @if($order->discount_amount > 0)
                     <div class="flex justify-between text-xs text-emerald-600">
                         <span>Giảm giá {{ $order->coupon ? '('. $order->coupon->code .')' : '' }}</span>
-                        <span class="font-semibold">-{{ number_format($order->discount_amount, 0, ',', '.') }}đ</span>
+                        <span class="font-semibold">-{{ format_price($order->discount_amount) }}</span>
                     </div>
                     @endif
                     <div class="flex justify-between text-xs text-slate-600">
                         <span>Phí vận chuyển</span>
-                        <span class="font-semibold">{{ number_format($order->shipping_fee, 0, ',', '.') }}đ</span>
+                        <span class="font-semibold">{{ format_price($order->shipping_fee) }}</span>
                     </div>
                     <div class="flex justify-between font-black text-sm text-slate-800 pt-2 border-t border-slate-200">
                         <span>Tổng cộng</span>
-                        <span class="text-indigo-600">{{ number_format($order->grand_total, 0, ',', '.') }}đ</span>
+                        <span class="text-indigo-600">{{ format_price($order->grand_total) }}</span>
                     </div>
                 </div>
             </div>
@@ -214,7 +214,7 @@ $csColors = $cs && isset($statusColors[$cs->id]) ? $statusColors[$cs->id] : ['bg
                             @endif
                         </div>
                         <div class="grid grid-cols-3 gap-3 text-[11px] text-slate-500">
-                            <div><span class="font-medium">Số tiền:</span> {{ number_format($log->amount, 0, ',', '.') }}đ</div>
+                            <div><span class="font-medium">Số tiền:</span> {{ format_price($log->amount) }}</div>
                             <div><span class="font-medium">Ngân hàng:</span> {{ $log->bank_code ?? 'N/A' }}</div>
                             <div><span class="font-medium">Thời gian:</span> {{ $log->created_at->format('d/m/Y H:i') }}</div>
                         </div>

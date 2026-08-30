@@ -150,9 +150,9 @@ $statusLabels = [
                     <div class="min-w-0 col-span-2 flex justify-between items-center bg-indigo-50/50 p-3 rounded-xl border border-indigo-50">
                         <p class="text-[11px] font-bold text-indigo-900">Tổng tiền</p>
                         <div class="text-right">
-                            <p class="font-black text-indigo-600 text-lg leading-none">{{ number_format($order->grand_total, 0, ',', '.') }}đ</p>
+                            <p class="font-black text-indigo-600 text-lg leading-none">{{ format_price($order->grand_total) }}</p>
                             @if($order->discount_amount > 0)
-                                <p class="text-emerald-600 text-[10px] mt-0.5">-{{ number_format($order->discount_amount, 0, ',', '.') }}đ</p>
+                                <p class="text-emerald-600 text-[10px] mt-0.5">-{{ format_price($order->discount_amount) }}</p>
                             @endif
                         </div>
                     </div>
@@ -236,9 +236,9 @@ $statusLabels = [
                             <p class="text-slate-400 text-[11px] mt-0.5">{{ $order->payment->name ?? 'N/A' }}</p>
                         </td>
                         <td class="p-4">
-                            <p class="font-black text-slate-800">{{ number_format($order->grand_total, 0, ',', '.') }}đ</p>
+                            <p class="font-black text-slate-800">{{ format_price($order->grand_total) }}</p>
                             @if($order->discount_amount > 0)
-                                <p class="text-emerald-600 text-[11px]">-{{ number_format($order->discount_amount, 0, ',', '.') }}đ</p>
+                                <p class="text-emerald-600 text-[11px]">-{{ format_price($order->discount_amount) }}</p>
                             @endif
                         </td>
                         <td class="p-4 text-slate-400 text-[11px]">

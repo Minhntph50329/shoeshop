@@ -172,9 +172,9 @@
                             <tr>
                                 <td class="p-3 font-semibold text-slate-900">{{ $item->product->name ?? 'N/A' }}</td>
                                 <td class="p-3 font-mono text-slate-500">{{ $item->variant->sku ?? 'Mặc định' }}</td>
-                                <td class="p-3 font-bold text-slate-800">{{ number_format($item->price_at_time, 0, ',', '.') }} đ</td>
+                                <td class="p-3 font-bold text-slate-800">{{ format_price($item->price_at_time) }}</td>
                                 <td class="p-3 font-bold">{{ $item->quantity }}</td>
-                                <td class="p-3 text-right font-black text-indigo-600">{{ number_format($item->subtotal, 0, ',', '.') }} đ</td>
+                                <td class="p-3 text-right font-black text-indigo-600">{{ format_price($item->subtotal) }}</td>
                             </tr>
                         @endforeach
                     </tbody>

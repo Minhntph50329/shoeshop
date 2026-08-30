@@ -243,10 +243,10 @@
                     @if ($item->name_variant)
                         <div class="product-variant-text">Phân loại: {{ $item->name_variant }}</div>
                     @endif
-                    <div class="product-price-text">{{ number_format($item->effective_price, 0, ',', '.') }}đ × {{ $item->quantity }}</div>
+                    <div class="product-price-text">{{ format_price($item->effective_price) }} × {{ $item->quantity }}</div>
                 </div>
                 <div class="product-price-cell">
-                    {{ number_format($item->line_total, 0, ',', '.') }}đ
+                    {{ format_price($item->line_total) }}
                 </div>
             </div>
         @endforeach
@@ -254,7 +254,7 @@
         {{-- Total --}}
         <div class="total-box">
             <span>Tổng tiền yêu cầu hoàn</span>
-            <span>{{ number_format($refund->total_amount, 0, ',', '.') }}đ</span>
+            <span>{{ format_price($refund->total_amount) }}</span>
         </div>
 
         {{-- Next steps --}}

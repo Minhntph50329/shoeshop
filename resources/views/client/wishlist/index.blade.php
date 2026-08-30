@@ -50,9 +50,9 @@
                                     <a href="{{ route('products.show', $product->id) }}">{{ $product->name }}</a>
                                 </h3>
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-base font-black text-indigo-600">{{ number_format($product->final_price, 0, ',', '.') }}đ</span>
+                                    <span class="text-base font-black text-indigo-600">{{ format_price($product->final_price) }}</span>
                                     @if($product->discount > 0)
-                                        <span class="text-xs text-slate-400 line-through font-medium">{{ number_format($product->price, 0, ',', '.') }}đ</span>
+                                        <span class="text-xs text-slate-400 line-through font-medium">{{ format_price($product->price) }}</span>
                                     @endif
                                 </div>
                             </div>

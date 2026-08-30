@@ -127,7 +127,7 @@
 
                                 @if($prod->discount > 0)
                                     <span class="absolute top-3 left-3 bg-rose-500 text-white font-bold text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider shadow">
-                                        Giảm {{ number_format($prod->discount) }}đ
+                                        Giảm {{ format_price($prod->discount) }}
                                     </span>
                                 @endif
 
@@ -164,9 +164,9 @@
                         <!-- Price & Action -->
                         <div class="p-5 pt-0 flex items-center justify-between border-t border-slate-50 mt-2">
                             <div>
-                                <div class="font-black text-indigo-600 text-base">{{ number_format($prod->final_price) }}đ</div>
+                                <div class="font-black text-indigo-600 text-base">{{ format_price($prod->final_price) }}</div>
                                 @if($prod->discount > 0)
-                                    <div class="text-xs text-slate-400 line-through">{{ number_format($prod->price) }}đ</div>
+                                    <div class="text-xs text-slate-400 line-through">{{ format_price($prod->price) }}</div>
                                 @endif
                             </div>
                             <a href="{{ route('products.show', $prod->slug) }}" class="p-2.5 bg-slate-100 hover:bg-indigo-600 text-slate-700 hover:text-white rounded-xl transition">

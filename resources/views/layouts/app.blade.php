@@ -92,7 +92,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="flex items-center justify-between mt-2">
-                                                    <span class="text-xs font-bold text-indigo-600">{{ number_format($item->price_at_time, 0, ',', '.') }}đ</span>
+                                                    <span class="text-xs font-bold text-indigo-600">{{ format_price($item->price_at_time) }}</span>
                                                     <span class="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 rounded-md">SL: {{ $item->quantity }}</span>
                                                 </div>
                                             </div>
@@ -119,7 +119,7 @@
                                             return $item->price_at_time * $item->quantity;
                                         });
                                     @endphp
-                                    <span class="text-sm font-black text-slate-900">{{ number_format($subtotal, 0, ',', '.') }}đ</span>
+                                    <span class="text-sm font-black text-slate-900">{{ format_price($subtotal) }}</span>
                                 </div>
                                 <a href="{{ route('cart') }}" class="flex items-center justify-center w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-200 transition-all hover:-translate-y-0.5">
                                     Xem giỏ hàng

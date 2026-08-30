@@ -35,7 +35,7 @@
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                         <i data-lucide="mail" class="w-4 h-4"></i>
                     </span>
-                    <input type="email" name="email" value="{{ old('email') }}" required placeholder="your@email.com" 
+                    <input type="email" name="email" value="{{ old('email') }}" placeholder="your@email.com" 
                         class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
                 </div>
                 @error('email')
@@ -53,8 +53,11 @@
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                         <i data-lucide="lock" class="w-4 h-4"></i>
                     </span>
-                    <input type="password" name="password" required placeholder="••••••••" 
-                        class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                    <input type="password" id="password" name="password" placeholder="••••••••" 
+                        class="w-full pl-10 pr-10 py-3 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                    <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 focus:outline-none">
+                        <i data-lucide="eye" id="togglePasswordIcon" class="w-4 h-4"></i>
+                    </button>
                 </div>
                 @error('password')
                     <p class="mt-1.5 text-xs text-rose-500 font-medium flex items-center gap-1">
@@ -68,6 +71,9 @@
                     <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
                     <span class="text-xs font-medium text-slate-600">Ghi nhớ đăng nhập</span>
                 </label>
+                <a href="{{ route('password.request') }}" class="text-xs font-bold text-indigo-600 hover:underline">
+                    Quên mật khẩu?
+                </a>
             </div>
 
             <button type="submit" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-indigo-200 transition active:scale-[0.99]">
@@ -83,4 +89,20 @@
         </div>
     </div>
 </div>
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const icon = document.getElementById('togglePasswordIcon');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.setAttribute('data-lucide', 'eye-off');
+        } else {
+            passwordInput.type = 'password';
+            icon.setAttribute('data-lucide', 'eye');
+        }
+        lucide.createIcons();
+    }
+</script>
 @endsection

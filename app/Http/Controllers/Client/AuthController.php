@@ -12,7 +12,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Mail\LoginNotification;
 use App\Mail\VerifyRegistration;
+use App\Mail\ResetPasswordMail;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\Client\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Client\Auth\ResetPasswordRequest;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -132,5 +137,63 @@ class AuthController extends Controller
         Auth::login($user);
 
         return redirect()->route('home')->with('success', 'Xác nhận tài khoản thành công! Bạn đã được đăng nhập tự động.');
+    }
+    public function showForgotPasswordForm()
+    {
+        return view('client.authentication.forgot-password');
+    }
+
+    public function sendResetLinkEmail(ForgotPasswordRequest $request)
+    {
+        $email = $request->validated()['email'];
+        
+        $token = Str::random(60);
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => now()
+            ]
+        );
+
+        $resetUrl = route('password.reset', ['token' => $token, 'email' => $email]);
+
+        try {
+            Mail::to($email)->send(new ResetPasswordMail($resetUrl));
+            return back()->with('success', 'Chúng tôi đã gửi một email chứa liên kết đặt lại mật khẩu cho bạn.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Lỗi gửi email quên mật khẩu: ' . $e->getMessage());
+            return back()->withInput()->withErrors(['email' => 'Có lỗi xảy ra khi gửi email. Vui lòng thử lại sau.']);
+        }
+    }
+
+    public function showResetPasswordForm(Request $request, $token)
+    {
+        return view('client.authentication.reset-password', ['token' => $token, 'email' => $request->email]);
+    }
+
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $validated = $request->validated();
+        $email = $validated['email'];
+
+        $record = DB::table('password_reset_tokens')->where('email', $email)->first();
+
+        if (!$record || !Hash::check($validated['token'], $record->token)) {
+            return back()->withInput()->withErrors(['email' => 'Liên kết khôi phục không hợp lệ hoặc đã hết hạn.']);
+        }
+
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return back()->withInput()->withErrors(['email' => 'Tài khoản không tồn tại.']);
+        }
+
+        $user->password = Hash::make($validated['password']);
+        $user->save();
+
+        DB::table('password_reset_tokens')->where('email', $email)->delete();
+
+        return redirect()->route('login')->with('success', 'Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập bằng mật khẩu mới.');
     }
 }

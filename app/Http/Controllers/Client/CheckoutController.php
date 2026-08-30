@@ -431,7 +431,7 @@ class CheckoutController extends Controller
             $label    = $coupon->discount_value . '%';
         } else {
             $discount = min((float) $coupon->discount_value, $subtotal);
-            $label    = number_format($coupon->discount_value, 0, ',', '.') . 'đ';
+            $label    = format_price($coupon->discount_value);
         }
 
         return response()->json([

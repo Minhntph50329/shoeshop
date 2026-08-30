@@ -97,7 +97,7 @@
                 </div>
                 <div class="text-right flex-shrink-0">
                     <p class="text-xs font-bold text-slate-800">x{{ $item->quantity }}</p>
-                    <p class="text-xs text-indigo-600 font-semibold">{{ number_format($item->effective_price * $item->quantity, 0, ',', '.') }}đ</p>
+                    <p class="text-xs text-indigo-600 font-semibold">{{ format_price($item->effective_price * $item->quantity) }}</p>
                 </div>
             </div>
             @endforeach
@@ -106,16 +106,16 @@
             @if($order->discount_amount > 0)
             <div class="flex justify-between text-xs text-emerald-600">
                 <span>Giảm giá</span>
-                <span>-{{ number_format($order->discount_amount, 0, ',', '.') }}đ</span>
+                <span>-{{ format_price($order->discount_amount) }}</span>
             </div>
             @endif
             <div class="flex justify-between text-xs text-slate-600">
                 <span>Phí vận chuyển</span>
-                <span>{{ number_format($order->shipping_fee, 0, ',', '.') }}đ</span>
+                <span>{{ format_price($order->shipping_fee) }}</span>
             </div>
             <div class="flex justify-between font-black text-sm text-slate-800 pt-2 border-t border-slate-200">
                 <span>Tổng cộng</span>
-                <span class="text-indigo-600">{{ number_format($order->grand_total, 0, ',', '.') }}đ</span>
+                <span class="text-indigo-600">{{ format_price($order->grand_total) }}</span>
             </div>
         </div>
     </div>

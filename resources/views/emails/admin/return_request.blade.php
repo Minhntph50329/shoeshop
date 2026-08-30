@@ -41,7 +41,7 @@
                                             </tr>
                                             <tr>
                                                 <td style="padding:6px 0;color:#64748b;font-size:13px;border-top:1px solid #e2e8f0;">Số tiền hoàn lại</td>
-                                                <td style="padding:6px 0;color:#e11d48;font-size:14px;font-weight:800;text-align:right;border-top:1px solid #e2e8f0;">{{ number_format($refund->total_amount, 0, ',', '.') }}đ</td>
+                                                <td style="padding:6px 0;color:#e11d48;font-size:14px;font-weight:800;text-align:right;border-top:1px solid #e2e8f0;">{{ format_price($refund->total_amount) }}</td>
                                             </tr>
                                         </table>
                                     </td>

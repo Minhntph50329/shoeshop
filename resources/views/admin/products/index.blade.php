@@ -98,9 +98,9 @@
                 <div class="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4">
                     <div class="min-w-0">
                         <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Giá bán</p>
-                        <p class="mt-1 text-xs font-bold text-slate-800">{{ number_format($product->final_price) }}đ</p>
+                        <p class="mt-1 text-xs font-bold text-slate-800">{{ format_price($product->final_price) }}</p>
                         @if($product->discount > 0)
-                            <p class="text-[11px] text-slate-400 line-through">{{ number_format($product->price) }}đ</p>
+                            <p class="text-[11px] text-slate-400 line-through">{{ format_price($product->price) }}</p>
                         @endif
                     </div>
                     <div class="min-w-0">
@@ -206,9 +206,9 @@
                             </td>
                             <td class="py-3 px-4 font-mono text-xs text-slate-500">{{ $product->sku ?? 'N/A' }}</td>
                             <td class="py-3 px-4">
-                                <div class="font-bold text-slate-800">{{ number_format($product->final_price) }}đ</div>
+                                <div class="font-bold text-slate-800">{{ format_price($product->final_price) }}</div>
                                 @if($product->discount > 0)
-                                    <div class="text-xs text-slate-400 line-through">{{ number_format($product->price) }}đ</div>
+                                    <div class="text-xs text-slate-400 line-through">{{ format_price($product->price) }}</div>
                                 @endif
                             </td>
                             <td class="py-3 px-4">

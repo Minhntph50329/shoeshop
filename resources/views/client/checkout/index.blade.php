@@ -133,7 +133,7 @@
                                         <p class="font-bold text-sm text-slate-800">Tiêu chuẩn</p>
                                         <p class="text-xs text-slate-500">{{ \App\Models\Setting::get('shipping_time', '3-5 ngày làm việc') }}</p>
                                     </div>
-                                    <span class="font-bold text-sm text-indigo-600">{{ $standardFee == 0 ? 'Miễn phí' : number_format($standardFee, 0, ',', '.') . 'đ' }}</span>
+                                    <span class="font-bold text-sm text-indigo-600">{{ $standardFee == 0 ? 'Miễn phí' : format_price($standardFee) }}</span>
                                 </div>
                             </div>
                         </label>
@@ -145,7 +145,7 @@
                                         <p class="font-bold text-sm text-slate-800">Nhanh</p>
                                         <p class="text-xs text-slate-500">1-2 ngày làm việc</p>
                                     </div>
-                                    <span class="font-bold text-sm text-indigo-600">{{ number_format($expressFee, 0, ',', '.') . 'đ' }}</span>
+                                    <span class="font-bold text-sm text-indigo-600">{{ format_price($expressFee) }}</span>
                                 </div>
                             </div>
                         </label>
@@ -232,7 +232,7 @@
                                         </div>
                                     @endif
                                 </div>
-                                <p class="text-xs font-bold text-slate-800 flex-shrink-0">{{ number_format($price * $item->quantity, 0, ',', '.') }}đ</p>
+                                <p class="text-xs font-bold text-slate-800 flex-shrink-0">{{ format_price($price * $item->quantity) }}</p>
                             </div>
                             @endforeach
                         </div>
@@ -254,7 +254,7 @@
                         <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 space-y-2">
                             <div class="flex justify-between text-xs text-slate-600">
                                 <span>Tạm tính</span>
-                                <span id="subtotalEl">{{ number_format($subtotal, 0, ',', '.') }}đ</span>
+                                <span id="subtotalEl">{{ format_price($subtotal) }}</span>
                             </div>
                             <div class="flex justify-between text-xs text-emerald-600" id="discountRow" style="display:none!important">
                                 <span>Giảm giá</span>
@@ -262,11 +262,11 @@
                             </div>
                             <div class="flex justify-between text-xs text-slate-600">
                                 <span>Phí vận chuyển</span>
-                                <span id="shippingEl">{{ $standardFee == 0 ? 'Miễn phí' : number_format($standardFee, 0, ',', '.') . 'đ' }}</span>
+                                <span id="shippingEl">{{ $standardFee == 0 ? 'Miễn phí' : format_price($standardFee) }}</span>
                             </div>
                             <div class="flex justify-between font-black text-sm text-slate-800 pt-2 border-t border-slate-200">
                                 <span>Tổng cộng</span>
-                                <span id="grandTotalEl" class="text-indigo-600">{{ number_format($subtotal + $standardFee, 0, ',', '.') }}đ</span>
+                                <span id="grandTotalEl" class="text-indigo-600">{{ format_price($subtotal + $standardFee) }}</span>
                             </div>
                         </div>
 

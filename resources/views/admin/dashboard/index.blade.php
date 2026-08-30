@@ -66,7 +66,7 @@
                     <i data-lucide="trending-up" class="w-5 h-5 text-emerald-600"></i>
                 </div>
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Doanh thu tháng {{ date('m/Y') }}</span>
-                <h3 class="text-2xl font-black text-slate-800 mt-1">{{ number_format($revenueThisMonth, 0, ',', '.') }}đ</h3>
+                <h3 class="text-2xl font-black text-slate-800 mt-1">{{ format_price($revenueThisMonth) }}</h3>
             </div>
         </div>
 
@@ -178,7 +178,7 @@
                         </div>
                         <div class="text-right shrink-0">
                             <p class="text-xs font-black text-indigo-600">{{ $item->total_sold }} đã bán</p>
-                            <p class="text-[10px] text-slate-400">{{ number_format($item->product->price ?? 0, 0, ',', '.') }}đ</p>
+                            <p class="text-[10px] text-slate-400">{{ format_price($item->product->price ?? 0) }}</p>
                         </div>
                     </div>
                 @empty
@@ -219,7 +219,7 @@
                             </div>
                             <p class="text-[10px] text-slate-400 mt-0.5">{{ $order->user->fullname ?? $order->fullname }} • {{ $order->created_at->diffForHumans() }}</p>
                         </div>
-                        <span class="text-xs font-bold text-slate-800 shrink-0">{{ number_format($order->grand_total, 0, ',', '.') }}đ</span>
+                        <span class="text-xs font-bold text-slate-800 shrink-0">{{ format_price($order->grand_total) }}</span>
                     </a>
                 @empty
                     <div class="p-8 text-center text-xs text-slate-400">Chưa có đơn hàng nào</div>
@@ -272,7 +272,7 @@
                                 {{ $product->stock }}
                             </span>
                         </td>
-                        <td class="py-3 px-6 text-center text-xs font-semibold text-slate-700">{{ number_format($product->price, 0, ',', '.') }}đ</td>
+                        <td class="py-3 px-6 text-center text-xs font-semibold text-slate-700">{{ format_price($product->price) }}</td>
                         <td class="py-3 px-6 text-center">
                             @if($product->stock == 0)
                                 <span class="text-[10px] font-bold text-red-600">HẾT HÀNG</span>

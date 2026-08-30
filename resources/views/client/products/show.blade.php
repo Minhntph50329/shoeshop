@@ -27,7 +27,7 @@
 
                 @if($product->discount > 0)
                     <span class="absolute top-4 left-4 bg-rose-500 text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow">
-                        Giảm {{ number_format($product->discount) }}đ
+                        Giảm {{ format_price($product->discount) }}
                     </span>
                 @endif
             </div>
@@ -99,9 +99,9 @@
 
                 <!-- Price Box -->
                 <div class="flex items-baseline gap-3">
-                    <span class="text-3xl font-black text-indigo-600">{{ number_format($product->final_price) }}đ</span>
+                    <span class="text-3xl font-black text-indigo-600">{{ format_price($product->final_price) }}</span>
                     @if($product->discount > 0)
-                        <span class="text-base text-slate-400 line-through font-semibold">{{ number_format($product->price) }}đ</span>
+                        <span class="text-base text-slate-400 line-through font-semibold">{{ format_price($product->price) }}</span>
                     @endif
                 </div>
 
@@ -139,7 +139,7 @@
                                             @endforeach
                                         </div>
                                         <div class="text-xs font-bold text-indigo-600 mt-1">
-                                            {{ number_format($variant->price ?? $product->final_price) }}đ
+                                            {{ format_price($variant->price ?? $product->final_price) }}
                                         </div>
                                     </label>
                                 @endforeach
@@ -348,7 +348,7 @@
                                     <h4 class="font-bold text-xs text-slate-800 group-hover:text-indigo-600 transition truncate">
                                         <a href="{{ route('products.show', $rel->slug) }}">{{ $rel->name }}</a>
                                     </h4>
-                                    <div class="font-bold text-indigo-600 text-xs mt-1">{{ number_format($rel->final_price) }}đ</div>
+                                    <div class="font-bold text-indigo-600 text-xs mt-1">{{ format_price($rel->final_price) }}</div>
                                 </div>
                                 
                                 {{-- Wishlist Button on related items --}}

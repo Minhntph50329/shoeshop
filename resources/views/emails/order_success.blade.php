@@ -249,10 +249,10 @@
                     @if ($variantLabel)
                         <div class="product-variant-text">Phân loại: {{ $variantLabel }}</div>
                     @endif
-                    <div class="product-price-text">{{ number_format($item->effective_price, 0, ',', '.') }}đ × {{ $item->quantity }}</div>
+                    <div class="product-price-text">{{ format_price($item->effective_price) }} × {{ $item->quantity }}</div>
                 </div>
                 <div class="product-price-cell">
-                    {{ number_format($item->line_total, 0, ',', '.') }}đ
+                    {{ format_price($item->line_total) }}
                 </div>
             </div>
         @endforeach
@@ -261,21 +261,21 @@
         <div class="total-box">
             <div class="total-row">
                 <span>Tạm tính</span>
-                <span>{{ number_format($order->total_amount, 0, ',', '.') }}đ</span>
+                <span>{{ format_price($order->total_amount) }}</span>
             </div>
             @if ((float)$order->discount_amount > 0)
             <div class="total-row">
                 <span>Giảm giá</span>
-                <span class="discount-val">- {{ number_format($order->discount_amount, 0, ',', '.') }}đ</span>
+                <span class="discount-val">- {{ format_price($order->discount_amount) }}</span>
             </div>
             @endif
             <div class="total-row">
                 <span>Phí vận chuyển</span>
-                <span>{{ number_format($order->shipping_fee, 0, ',', '.') }}đ</span>
+                <span>{{ format_price($order->shipping_fee) }}</span>
             </div>
             <div class="total-row">
                 <span>Tổng cộng</span>
-                <span>{{ number_format($order->grand_total, 0, ',', '.') }}đ</span>
+                <span>{{ format_price($order->grand_total) }}</span>
             </div>
         </div>
 

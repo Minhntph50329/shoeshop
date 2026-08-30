@@ -126,15 +126,15 @@
                                 <span class="text-xs text-slate-500 font-bold">x{{ $item->quantity }}</span>
                             </div>
                             <div class="text-right flex-shrink-0 w-28">
-                                <p class="font-bold text-indigo-600 text-xs">{{ number_format($item->effective_price, 0, ',', '.') }}đ</p>
-                                <p class="text-[10px] text-slate-400">= {{ number_format($item->line_total, 0, ',', '.') }}đ</p>
+                                <p class="font-bold text-indigo-600 text-xs">{{ format_price($item->effective_price) }}</p>
+                                <p class="text-[10px] text-slate-400">= {{ format_price($item->line_total) }}</p>
                             </div>
                         </div>
                     @endforeach
                 </div>
                 <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between font-black text-sm text-slate-800">
                     <span>Tổng tiền hoàn trả:</span>
-                    <span class="text-indigo-600 text-base">{{ number_format($refund->total_amount, 0, ',', '.') }}đ</span>
+                    <span class="text-indigo-600 text-base">{{ format_price($refund->total_amount) }}</span>
                 </div>
             </div>
 

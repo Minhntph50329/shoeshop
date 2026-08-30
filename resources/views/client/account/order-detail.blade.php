@@ -257,7 +257,7 @@ $doneIds = $order->statusHistories->pluck('order_status_id')->unique()->toArray(
                                         </div>
                                         <div class="text-right">
                                             <p class="font-bold text-indigo-600">x{{ $refItem->quantity }}</p>
-                                            <p class="text-[10px] text-slate-400">{{ number_format($refItem->effective_price, 0, ',', '.') }}đ/sp</p>
+                                            <p class="text-[10px] text-slate-400">{{ format_price($refItem->effective_price) }}/sp</p>
                                         </div>
                                     </div>
                                 @endforeach
@@ -299,7 +299,7 @@ $doneIds = $order->statusHistories->pluck('order_status_id')->unique()->toArray(
 
                         <div class="flex justify-between items-center pt-3 border-t border-slate-100 font-bold text-sm">
                             <span class="text-slate-600">Tổng tiền hoàn:</span>
-                            <span class="text-indigo-600 text-base">{{ number_format($refund->total_amount, 0, ',', '.') }}đ</span>
+                            <span class="text-indigo-600 text-base">{{ format_price($refund->total_amount) }}</span>
                         </div>
                     </div>
                 </div>
@@ -357,9 +357,9 @@ $doneIds = $order->statusHistories->pluck('order_status_id')->unique()->toArray(
                         </div>
                         <div class="text-right flex-shrink-0">
                             @if($item->old_price && $item->old_price > $item->effective_price)
-                                <p class="text-[11px] text-slate-300 line-through">{{ number_format($item->old_price, 0, ',', '.') }}đ</p>
+                                <p class="text-[11px] text-slate-300 line-through">{{ format_price($item->old_price) }}</p>
                             @endif
-                            <p class="font-bold text-indigo-600 text-sm">{{ number_format($item->effective_price, 0, ',', '.') }}đ</p>
+                            <p class="font-bold text-indigo-600 text-sm">{{ format_price($item->effective_price) }}</p>
                         </div>
                     </div>
                     @endforeach
@@ -368,21 +368,21 @@ $doneIds = $order->statusHistories->pluck('order_status_id')->unique()->toArray(
                 <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 space-y-2">
                     <div class="flex justify-between text-xs text-slate-600">
                         <span>Tạm tính</span>
-                        <span>{{ number_format($order->total_amount, 0, ',', '.') }}đ</span>
+                        <span>{{ format_price($order->total_amount) }}</span>
                     </div>
                     @if($order->discount_amount > 0)
                     <div class="flex justify-between text-xs text-emerald-600">
                         <span>Giảm giá {{ $order->coupon ? '(' . $order->coupon->code . ')' : '' }}</span>
-                        <span>-{{ number_format($order->discount_amount, 0, ',', '.') }}đ</span>
+                        <span>-{{ format_price($order->discount_amount) }}</span>
                     </div>
                     @endif
                     <div class="flex justify-between text-xs text-slate-600">
                         <span>Phí vận chuyển</span>
-                        <span>{{ number_format($order->shipping_fee, 0, ',', '.') }}đ</span>
+                        <span>{{ format_price($order->shipping_fee) }}</span>
                     </div>
                     <div class="flex justify-between font-black text-sm text-slate-800 pt-2 border-t border-slate-200">
                         <span>Tổng cộng</span>
-                        <span class="text-indigo-600">{{ number_format($order->grand_total, 0, ',', '.') }}đ</span>
+                        <span class="text-indigo-600">{{ format_price($order->grand_total) }}</span>
                     </div>
                 </div>
             </div>
