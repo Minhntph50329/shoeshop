@@ -3,226 +3,313 @@
 @section('title', $product->name . ' - Veloce ShoeShop')
 
 @section('content')
-<div class="space-y-12">
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-xs text-slate-400">
-        <a href="{{ route('home') }}" class="hover:text-indigo-600">Trang chủ</a>
-        <i data-lucide="chevron-right" class="w-3 h-3"></i>
-        <a href="{{ route('shop') }}" class="hover:text-indigo-600">Cửa hàng</a>
-        <i data-lucide="chevron-right" class="w-3 h-3"></i>
-        <span class="text-slate-700 font-semibold truncate max-w-xs">{{ $product->name }}</span>
+<div class="space-y-8 sm:space-y-10 lg:space-y-12">
+
+    {{-- Breadcrumb --}}
+    <div class="flex items-center gap-2 overflow-hidden text-xs text-slate-400">
+        <a href="{{ route('home') }}" class="shrink-0 transition hover:text-indigo-600">Trang chủ</a>
+        <i data-lucide="chevron-right" class="h-3 w-3 shrink-0"></i>
+        <a href="{{ route('shop') }}" class="shrink-0 transition hover:text-indigo-600">Cửa hàng</a>
+        <i data-lucide="chevron-right" class="h-3 w-3 shrink-0"></i>
+        <span class="truncate font-semibold text-slate-700">{{ $product->name }}</span>
     </div>
 
-    <!-- Product Main Detail Card -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 bg-white p-6 md:p-10 rounded-3xl border border-slate-100 shadow-sm">
-        
-        <!-- Cột Ảnh sản phẩm (Gallery) -->
-        <div class="space-y-4">
-            <div class="relative h-[380px] md:h-[450px] bg-slate-50 rounded-2xl overflow-hidden border border-slate-100">
+    {{-- PRODUCT DETAIL --}}
+    <div class="grid grid-cols-1 gap-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:grid-cols-2 lg:gap-10 lg:p-8">
+
+        {{-- Gallery --}}
+        <div class="space-y-3 sm:space-y-4">
+            <div class="relative aspect-square overflow-hidden rounded-2xl border border-slate-100 bg-slate-50">
                 @if($product->image)
-                    <img id="main_detail_image" src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-4">
+                    <img id="main_detail_image" src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="h-full w-full object-contain p-3 transition duration-300 sm:p-5">
                 @else
-                    <div class="w-full h-full flex items-center justify-center text-slate-400 font-medium">Chưa có hình ảnh</div>
+                    <div class="flex h-full w-full items-center justify-center text-sm font-medium text-slate-400">
+                        Chưa có hình ảnh
+                    </div>
                 @endif
 
                 @if($product->discount > 0)
-                    <span class="absolute top-4 left-4 bg-rose-500 text-white font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow">
+                    <span class="absolute left-3 top-3 rounded-full bg-rose-500 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-white shadow-sm">
                         Giảm {{ format_price($product->discount) }}
                     </span>
                 @endif
             </div>
 
-            <!-- Thư viện ảnh nhỏ (Gallery thumbnails) -->
             @if(!empty($product->gallery) && is_array($product->gallery))
-                <div class="flex items-center gap-3 overflow-x-auto pb-2">
+                <div class="flex gap-2 overflow-x-auto pb-1 sm:gap-3">
                     @if($product->image)
-                        <button type="button" onclick="document.getElementById('main_detail_image').src = '{{ asset($product->image) }}'" class="w-16 h-16 rounded-xl border border-indigo-500 bg-slate-50 p-1 shrink-0 focus:outline-none">
-                            <img src="{{ asset($product->image) }}" alt="Main" class="w-full h-full object-cover rounded-lg">
+                        <button type="button"
+                            onclick="document.getElementById('main_detail_image').src='{{ asset($product->image) }}'"
+                            class="h-14 w-14 shrink-0 rounded-xl border-2 border-indigo-500 bg-slate-50 p-1 sm:h-16 sm:w-16">
+                            <img src="{{ asset($product->image) }}" alt="Main" class="h-full w-full rounded-lg object-cover">
                         </button>
                     @endif
+
                     @foreach($product->gallery as $gImg)
-                        <button type="button" onclick="document.getElementById('main_detail_image').src = '{{ asset($gImg) }}'" class="w-16 h-16 rounded-xl border border-slate-200 hover:border-indigo-500 bg-slate-50 p-1 shrink-0 transition focus:outline-none">
-                            <img src="{{ asset($gImg) }}" alt="Gallery" class="w-full h-full object-cover rounded-lg">
+                        <button type="button"
+                            onclick="document.getElementById('main_detail_image').src='{{ asset($gImg) }}'"
+                            class="h-14 w-14 shrink-0 rounded-xl border border-slate-200 bg-slate-50 p-1 transition hover:border-indigo-500 sm:h-16 sm:w-16">
+                            <img src="{{ asset($gImg) }}" alt="Gallery" class="h-full w-full rounded-lg object-cover">
                         </button>
                     @endforeach
                 </div>
             @endif
         </div>
 
-        <!-- Cột Thông tin & Mua hàng -->
-        <div class="space-y-6 flex flex-col justify-between">
+        {{-- Product Information --}}
+        <div class="flex flex-col justify-between gap-6">
             <div class="space-y-4">
-                
-                <!-- Brand & Categories Badges -->
+
+                {{-- Brand + Categories --}}
                 <div class="flex flex-wrap items-center gap-2">
                     @if($product->brand)
-                        <a href="{{ route('shop', ['brand' => $product->brand->slug]) }}" class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold hover:bg-indigo-100 transition">
+                        <a href="{{ route('shop', ['brand' => $product->brand->slug]) }}"
+                            class="rounded-full bg-indigo-50 px-3 py-1.5 text-[10px] font-bold text-indigo-700 transition hover:bg-indigo-100">
                             {{ $product->brand->name }}
                         </a>
                     @endif
+
                     @foreach($product->categories as $cat)
-                        <a href="{{ route('shop', ['category' => $cat->slug]) }}" class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-medium hover:bg-slate-200 transition">
+                        <a href="{{ route('shop', ['category' => $cat->slug]) }}"
+                            class="rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-200">
                             {{ $cat->name }}
                         </a>
                     @endforeach
                 </div>
 
-                <!-- Product Title -->
-                <h1 class="text-2xl md:text-3xl font-black text-slate-900 leading-tight">
+                {{-- Title --}}
+                <h1 class="text-2xl font-black leading-tight tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
                     {{ $product->name }}
                 </h1>
 
-                <!-- SKU & Views & Stock -->
-                <div class="flex flex-wrap items-center gap-4 text-xs text-slate-500 border-b border-slate-100 pb-4">
-                    <span>Mã SKU: <strong class="text-slate-700 font-mono">{{ $product->sku ?? 'N/A' }}</strong></span>
-                    <span>•</span>
-                    <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3.5 h-3.5"></i> {{ number_format($product->views) }} lượt xem</span>
-                    <span>•</span>
+                {{-- Stats --}}
+                <div class="flex flex-wrap gap-x-4 gap-y-2 border-y border-slate-100 py-3 text-[10px] text-slate-500 sm:text-xs">
+                    <span>SKU: <strong class="font-mono text-slate-700">{{ $product->sku ?? 'N/A' }}</strong></span>
+
+                    <span class="flex items-center gap-1">
+                        <i data-lucide="eye" class="h-3.5 w-3.5"></i>
+                        {{ number_format($product->views) }} lượt xem
+                    </span>
+
                     <span class="flex items-center gap-1">
                         <span class="flex text-amber-400">
                             @for($i = 1; $i <= 5; $i++)
-                                <svg class="w-3.5 h-3.5 {{ $i <= round($product->average_rating) ? 'fill-current text-amber-400' : 'text-slate-200' }}" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                <svg class="h-3.5 w-3.5 {{ $i <= round($product->average_rating) ? 'fill-current' : 'text-slate-200' }}" viewBox="0 0 24 24">
+                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                </svg>
                             @endfor
                         </span>
-                        <strong class="text-slate-700 font-semibold ml-1">{{ $product->average_rating }}</strong>
-                        <span class="text-slate-400">({{ $product->reviews_count }} đánh giá)</span>
+                        <strong class="text-slate-700">{{ $product->average_rating }}</strong>
+                        <span>({{ $product->reviews_count }})</span>
                     </span>
-                    <span>•</span>
-                    <span>Tình trạng: 
+
+                    <span>
                         @if($product->stock > 0)
-                            <strong class="text-emerald-600 font-bold">Còn hàng ({{ $product->stock }})</strong>
+                            <strong class="text-emerald-600">● Còn hàng ({{ $product->stock }})</strong>
                         @else
-                            <strong class="text-rose-600 font-bold">Hết hàng</strong>
+                            <strong class="text-rose-600">● Hết hàng</strong>
                         @endif
                     </span>
                 </div>
 
-                <!-- Price Box -->
-                <div class="flex items-baseline gap-3">
-                    <span class="text-3xl font-black text-indigo-600">{{ format_price($product->final_price) }}</span>
+                {{-- Price --}}
+                <div class="flex flex-wrap items-baseline gap-3">
+                    <span class="text-3xl font-black text-indigo-600 sm:text-4xl">
+                        {{ format_price($product->final_price) }}
+                    </span>
+
                     @if($product->discount > 0)
-                        <span class="text-base text-slate-400 line-through font-semibold">{{ format_price($product->price) }}</span>
+                        <span class="text-sm font-semibold text-slate-400 line-through sm:text-base">
+                            {{ format_price($product->price) }}
+                        </span>
                     @endif
                 </div>
 
-                <!-- Short Description -->
+                {{-- Short Description --}}
                 @if($product->short_description)
-                    <p class="text-sm text-slate-600 leading-relaxed bg-slate-50/70 p-4 rounded-2xl border border-slate-100">
+                    <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs leading-relaxed text-slate-600 sm:text-sm">
                         {{ $product->short_description }}
-                    </p>
+                    </div>
                 @endif
             </div>
 
-            <form action="{{ route('cart.add') }}" method="POST" class="space-y-4 pt-2">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+            {{-- Add To Cart --}}
+            <form action="{{ route('cart.add') }}" method="POST" class="space-y-4">
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                    <!-- Product Variants (Biến thể) -->
-                    @if($product->variants && $product->variants->count() > 0)
-                        <div class="space-y-3">
-                            <label class="block text-xs font-bold uppercase text-slate-800 tracking-wider">Tùy chọn sản phẩm (Biến thể)</label>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                                @foreach($product->variants as $index => $variant)
-                                    <label class="flex flex-col p-3 rounded-xl border border-slate-200 hover:border-indigo-500 cursor-pointer transition">
-                                        <div class="flex items-center justify-between">
-                                            <input type="radio" name="product_variant_id" value="{{ $variant->id }}" {{ $index === 0 ? 'checked' : '' }} data-image="{{ $variant->image ? asset($variant->image) : asset($product->image) }}" class="w-4 h-4 text-indigo-600">
-                                            <span class="text-[10px] text-slate-400 font-mono">SKU: {{ $variant->sku }}</span>
-                                        </div>
-                                        <div class="mt-2 text-xs font-bold text-slate-800">
-                                            @foreach($variant->attributeValues as $val)
-                                                <span class="inline-flex items-center gap-1 mr-1">
-                                                    @if($val->color_code)
-                                                        <span class="w-2.5 h-2.5 rounded-full inline-block border border-slate-300" style="background-color: {{ $val->color_code }}"></span>
-                                                    @endif
-                                                    {{ $val->value }}
-                                                </span>
-                                            @endforeach
-                                        </div>
-                                        <div class="text-xs font-bold text-indigo-600 mt-1">
-                                            {{ format_price($variant->price ?? $product->final_price) }}
-                                        </div>
-                                    </label>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
+                {{-- Variants --}}
+                @if($product->variants && $product->variants->count() > 0)
+                    <div class="space-y-3">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-800">
+                            Tùy chọn sản phẩm
+                        </label>
 
-                    <div class="flex items-center gap-3">
-                        <div class="flex items-center border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 shrink-0">
-                            <button type="button" onclick="const input = document.getElementById('prod_qty'); input.value = Math.max(1, parseInt(input.value || 1) - 1);" class="w-10 h-11 flex items-center justify-center text-slate-700 hover:bg-indigo-600 hover:text-white transition font-black text-base active:scale-95">
-                                -
-                            </button>
-                            <input type="number" id="prod_qty" name="quantity" value="1" min="1" max="{{ $product->stock > 0 ? $product->stock : 1 }}" 
-                                class="w-12 text-center py-2 text-xs font-black text-slate-900 bg-white border-x border-slate-200 focus:outline-none">
-                            <button type="button" onclick="const input = document.getElementById('prod_qty'); input.value = parseInt(input.value || 1) + 1;" class="w-10 h-11 flex items-center justify-center text-slate-700 hover:bg-indigo-600 hover:text-white transition font-black text-base active:scale-95">
-                                +
-                            </button>
+                        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            @foreach($product->variants as $index => $variant)
+                                <label class="cursor-pointer rounded-xl border border-slate-200 p-3 transition hover:border-indigo-500 hover:bg-indigo-50/30">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="flex items-center gap-2">
+                                            <input type="radio"
+                                                name="product_variant_id"
+                                                value="{{ $variant->id }}"
+                                                {{ $index === 0 ? 'checked' : '' }}
+                                                data-image="{{ $variant->image ? asset($variant->image) : asset($product->image) }}"
+                                                class="h-4 w-4 text-indigo-600">
+
+                                            <div class="text-xs font-bold text-slate-800">
+                                                @foreach($variant->attributeValues as $val)
+                                                    <span class="mr-1 inline-flex items-center gap-1">
+                                                        @if($val->color_code)
+                                                            <span class="h-2.5 w-2.5 rounded-full border border-slate-300"
+                                                                style="background-color: {{ $val->color_code }}"></span>
+                                                        @endif
+                                                        {{ $val->value }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        </div>
+
+                                        <span class="text-[9px] text-slate-400">SKU: {{ $variant->sku }}</span>
+                                    </div>
+
+                                    <div class="mt-2 text-xs font-bold text-indigo-600">
+                                        {{ format_price($variant->price ?? $product->final_price) }}
+                                    </div>
+                                </label>
+                            @endforeach
                         </div>
-                        <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-2xl transition shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
-                            <i data-lucide="shopping-bag" class="w-5 h-5"></i> Thêm vào giỏ hàng
-                        </button>
                     </div>
-                </form>
+                @endif
+{{-- Quantity + Cart --}}
+<div class="flex flex-col gap-3 sm:flex-row sm:items-stretch">
 
-                {{-- Wishlist Heart Button --}}
-                <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST">
-                    @csrf
-                    <button type="submit"
-                        class="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-2xl border-2 font-bold text-sm transition
-                            {{ $isWishlisted
-                                ? 'border-rose-400 bg-rose-50 text-rose-600 hover:bg-rose-100'
-                                : 'border-slate-200 bg-white text-slate-500 hover:border-rose-400 hover:text-rose-500 hover:bg-rose-50' }}">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
-                            fill="{{ $isWishlisted ? 'currentColor' : 'none' }}"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                        </svg>
-                        {{ $isWishlisted ? 'Đã yêu thích — Xóa khỏi danh sách' : 'Thêm vào yêu thích' }}
-                    </button>
-                </form>
+    {{-- Quantity --}}
+    <div class="flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 sm:w-[140px] sm:shrink-0">
 
-        </div>
+        <button type="button"
+            onclick="const input=document.getElementById('prod_qty');input.value=Math.max(1,parseInt(input.value||1)-1);"
+            class="flex h-full w-14 items-center justify-center text-lg font-black text-slate-700 transition hover:bg-indigo-600 hover:text-white active:scale-95">
+            -
+        </button>
+
+        <input type="number"
+            id="prod_qty"
+            name="quantity"
+            value="1"
+            min="1"
+            max="{{ $product->stock > 0 ? $product->stock : 1 }}"
+            class="h-full flex-1 border-x border-slate-200 bg-white text-center text-sm font-black text-slate-900 outline-none">
+
+        <button type="button"
+            onclick="const input=document.getElementById('prod_qty');input.value=Math.min({{ $product->stock > 0 ? $product->stock : 1 }},parseInt(input.value||1)+1);"
+            class="flex h-full w-14 items-center justify-center text-lg font-black text-slate-700 transition hover:bg-indigo-600 hover:text-white active:scale-95">
+            +
+        </button>
 
     </div>
 
-    <!-- Description Details Tab/Box -->
-    @if($product->description)
-        <div class="bg-white p-6 md:p-10 rounded-3xl border border-slate-100 shadow-sm space-y-4">
-            <h3 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-4 flex items-center gap-2">
-                <i data-lucide="file-text" class="w-5 h-5 text-indigo-600"></i> Mô tả chi tiết sản phẩm
-            </h3>
-            <div class="prose prose-slate max-w-none text-sm text-slate-700 leading-relaxed whitespace-pre-line">
-                {!! nl2br(e($product->description)) !!}
-            </div>
+    {{-- Add To Cart --}}
+    @if($product->stock > 0)
+
+        <button type="submit"
+            class="flex min-h-[56px] w-full flex-1 items-center justify-center gap-3 rounded-2xl bg-indigo-600 px-6 text-sm font-black text-white shadow-lg shadow-indigo-600/30 transition duration-200 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30 active:translate-y-0 active:scale-[0.99] sm:text-base">
+
+            <i data-lucide="shopping-bag" class="h-5 w-5"></i>
+
+            <span>Thêm vào giỏ hàng</span>
+
+        </button>
+
+    @else
+
+        <button type="button"
+            disabled
+            class="flex min-h-[56px] w-full flex-1 cursor-not-allowed items-center justify-center gap-3 rounded-2xl bg-slate-200 px-6 text-sm font-black text-slate-500 sm:text-base">
+
+            <i data-lucide="x-circle" class="h-5 w-5"></i>
+
+            <span>Sản phẩm đã hết hàng</span>
+
+        </button>
+
     @endif
 
-    <!-- Two-column bottom section -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <!-- Left Column: Reviews (2/3 width) -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Reviews Section -->
-            <div class="bg-white p-6 md:p-10 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-                <h3 class="text-xl font-bold text-slate-900 border-b border-slate-100 pb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                    Đánh giá từ khách hàng
-                </h3>
+</div>
+            </form>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center bg-slate-50/50 p-6 rounded-2xl border border-slate-100">
-                    {{-- Average Score --}}
-                    <div class="text-center space-y-2 md:border-r border-slate-200/60 py-2">
-                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Đánh giá trung bình</p>
-                        <div class="text-5xl font-black text-indigo-600">{{ $product->average_rating }}</div>
-                        <div class="flex justify-center text-amber-400">
+            {{-- Wishlist --}}
+            <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST">
+                @csrf
+                <button type="submit"
+                    class="flex w-full items-center justify-center gap-2 rounded-xl border py-3 text-xs font-bold transition
+                    {{ $isWishlisted
+                        ? 'border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100'
+                        : 'border-slate-200 bg-white text-slate-500 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
+                        fill="{{ $isWishlisted ? 'currentColor' : 'none' }}"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                    {{ $isWishlisted ? 'Đã yêu thích — Xóa khỏi danh sách' : 'Thêm vào yêu thích' }}
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {{-- DESCRIPTION --}}
+    @if($product->description)
+        <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+            <div class="mb-5 flex items-center gap-2 border-b border-slate-100 pb-4">
+                <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                    <i data-lucide="file-text" class="h-4 w-4"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-900 sm:text-lg">Mô tả chi tiết sản phẩm</h3>
+            </div>
+
+            <div class="prose prose-slate max-w-none whitespace-pre-line text-sm leading-relaxed text-slate-700">
+                {!! nl2br(e($product->description)) !!}
+            </div>
+        </div>
+    @endif
+
+    {{-- REVIEWS + RELATED PRODUCTS --}}
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+
+        {{-- Reviews --}}
+        <div class="space-y-6 lg:col-span-2">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+                <div class="mb-6 flex items-center gap-2 border-b border-slate-100 pb-4">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                        <i data-lucide="message-circle" class="h-4 w-4"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-900 sm:text-lg">Đánh giá từ khách hàng</h3>
+                </div>
+
+                {{-- Rating Summary --}}
+                <div class="grid grid-cols-1 gap-6 rounded-2xl border border-slate-100 bg-slate-50/70 p-4 sm:p-6 md:grid-cols-3">
+                    <div class="space-y-2 text-center md:border-r md:border-slate-200">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Đánh giá trung bình</p>
+
+                        <div class="text-4xl font-black text-indigo-600 sm:text-5xl">
+                            {{ $product->average_rating }}
+                        </div>
+
+                        <div class="flex justify-center">
                             @for($i = 1; $i <= 5; $i++)
-                                <svg class="w-4 h-4 {{ $i <= round($product->average_rating) ? 'fill-current text-amber-400' : 'text-slate-200' }}" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                <svg class="h-4 w-4 {{ $i <= round($product->average_rating) ? 'fill-current text-amber-400' : 'text-slate-200' }}" viewBox="0 0 24 24">
+                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                </svg>
                             @endfor
                         </div>
-                        <p class="text-xs text-slate-400 font-medium">Có tất cả {{ $product->reviews_count }} lượt đánh giá</p>
+
+                        <p class="text-[10px] text-slate-400">
+                            {{ $product->reviews_count }} lượt đánh giá
+                        </p>
                     </div>
 
-                    {{-- Rating Breakdown --}}
-                    <div class="md:col-span-2 space-y-2.5 px-0 md:px-6">
+                    {{-- Breakdown --}}
+                    <div class="space-y-2.5 md:col-span-2 md:px-4">
                         @php
                             $breakdown = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
                             foreach($product->activeReviews as $rev) {
@@ -232,19 +319,28 @@
                             }
                             $totalRevs = $product->reviews_count ?: 1;
                         @endphp
-                        @foreach([5, 4, 3, 2, 1] as $star)
+
+                        @foreach([5,4,3,2,1] as $star)
                             @php
                                 $count = $breakdown[$star];
                                 $percent = ($count / $totalRevs) * 100;
                             @endphp
-                            <div class="flex items-center gap-3 text-xs">
-                                <span class="font-bold text-slate-600 w-10 text-right flex items-center justify-end gap-1">
-                                    {{ $star }} <svg class="w-3.5 h-3.5 fill-current text-amber-400" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+
+                            <div class="flex items-center gap-2 text-[10px] sm:text-xs">
+                                <span class="flex w-8 items-center justify-end gap-1 font-bold text-slate-600">
+                                    {{ $star }}
+                                    <svg class="h-3 w-3 fill-current text-amber-400" viewBox="0 0 24 24">
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                    </svg>
                                 </span>
-                                <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-indigo-600 rounded-full" style="width: {{ $percent }}%"></div>
+
+                                <div class="h-2 flex-1 overflow-hidden rounded-full bg-slate-200">
+                                    <div class="h-full rounded-full bg-indigo-600" style="width: {{ $percent }}%"></div>
                                 </div>
-                                <span class="text-slate-400 w-12 font-medium">{{ $count }} ({{ round($percent) }}%)</span>
+
+                                <span class="w-12 text-right text-slate-400">
+                                    {{ $count }} ({{ round($percent) }}%)
+                                </span>
                             </div>
                         @endforeach
                     </div>
@@ -252,63 +348,67 @@
 
                 {{-- Reviews List --}}
                 @if($product->activeReviews->count() > 0)
-                    <div class="divide-y divide-slate-100 space-y-6 pt-4">
+                    <div class="mt-6 divide-y divide-slate-100">
                         @foreach($product->activeReviews->sortByDesc('created_at') as $review)
                             @php
                                 $fullname = $review->user->fullname ?? 'Khách hàng';
-                                $maskedName = mb_strlen($fullname) > 2 
+                                $maskedName = mb_strlen($fullname) > 2
                                     ? mb_substr($fullname, 0, 1) . str_repeat('*', mb_strlen($fullname) - 2) . mb_substr($fullname, -1)
                                     : mb_substr($fullname, 0, 1) . '*';
                             @endphp
-                            <div class="pt-6 first:pt-0 space-y-3">
-                                <div class="flex items-start justify-between">
+
+                            <div class="space-y-3 py-5 first:pt-0">
+                                <div class="flex items-start justify-between gap-3">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center font-black text-sm border border-indigo-100">
+                                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-indigo-100 bg-indigo-50 text-xs font-black text-indigo-700">
                                             {{ mb_strtoupper(mb_substr($fullname, 0, 1)) }}
                                         </div>
+
                                         <div>
-                                            <h5 class="font-bold text-sm text-slate-800">{{ $maskedName }}</h5>
-                                            <div class="flex items-center gap-2 mt-0.5">
-                                                <div class="flex text-amber-400">
+                                            <h5 class="text-xs font-bold text-slate-800">{{ $maskedName }}</h5>
+
+                                            <div class="mt-1 flex flex-wrap items-center gap-2">
+                                                <div class="flex">
                                                     @for($i = 1; $i <= 5; $i++)
-                                                        <svg class="w-3.5 h-3.5 {{ $i <= $review->rating ? 'fill-current text-amber-400' : 'text-slate-200' }}" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                                        <svg class="h-3.5 w-3.5 {{ $i <= $review->rating ? 'fill-current text-amber-400' : 'text-slate-200' }}" viewBox="0 0 24 24">
+                                                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                                        </svg>
                                                     @endfor
                                                 </div>
-                                                <span class="text-[10px] text-slate-400">{{ $review->created_at->format('H:i d/m/Y') }}</span>
+
+                                                <span class="text-[10px] text-slate-400">
+                                                    {{ $review->created_at->format('H:i d/m/Y') }}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {{-- Review Text --}}
-                                <p class="text-xs text-slate-700 leading-relaxed font-medium">
+                                <p class="text-xs leading-relaxed text-slate-700">
                                     {{ $review->review_text }}
                                 </p>
 
-                                {{-- Review Images --}}
                                 @if($review->images->count() > 0)
-                                    <div class="flex flex-wrap gap-2 pt-1">
+                                    <div class="flex flex-wrap gap-2">
                                         @foreach($review->images as $img)
-                                            <a href="{{ asset($img->image_path) }}" target="_blank" class="w-16 h-16 rounded-xl overflow-hidden border border-slate-100 hover:border-indigo-500 transition bg-slate-50 shrink-0">
-                                                <img src="{{ asset($img->image_path) }}" class="w-full h-full object-cover">
+                                            <a href="{{ asset($img->image_path) }}" target="_blank"
+                                                class="h-16 w-16 overflow-hidden rounded-xl border border-slate-100 bg-slate-50 transition hover:border-indigo-400">
+                                                <img src="{{ asset($img->image_path) }}" class="h-full w-full object-cover">
                                             </a>
                                         @endforeach
                                     </div>
                                 @endif
 
-                                {{-- Store Replies --}}
                                 @if($review->replies->count() > 0)
-                                    <div class="mt-3 pl-4 border-l-2 border-indigo-500 space-y-3">
+                                    <div class="space-y-3 border-l-2 border-indigo-500 pl-4">
                                         @foreach($review->replies as $reply)
-                                            <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-50/70 space-y-1">
-                                                <div class="flex items-center justify-between">
-                                                    <span class="text-xs font-black text-indigo-700 flex items-center gap-1">
-                                                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                                                        Phản hồi từ Cửa hàng
-                                                    </span>
-                                                    <span class="text-[10px] text-slate-400">{{ $reply->created_at->format('H:i d/m/Y') }}</span>
+                                            <div class="rounded-xl border border-indigo-100 bg-indigo-50/60 p-3">
+                                                <div class="mb-1 flex items-center justify-between gap-3">
+                                                    <span class="text-[10px] font-bold text-indigo-700">Phản hồi từ Cửa hàng</span>
+                                                    <span class="text-[9px] text-slate-400">{{ $reply->created_at->format('H:i d/m/Y') }}</span>
                                                 </div>
-                                                <p class="text-xs text-slate-700 leading-relaxed font-medium">
+
+                                                <p class="text-xs leading-relaxed text-slate-700">
                                                     {{ $reply->review_text }}
                                                 </p>
                                             </div>
@@ -319,50 +419,58 @@
                         @endforeach
                     </div>
                 @else
-                    <div class="text-center py-8 text-slate-400 text-sm font-medium">
-                        Sản phẩm này chưa có đánh giá nào. Hãy mua sản phẩm và viết đánh giá đầu tiên nhé!
+                    <div class="py-10 text-center text-xs text-slate-400">
+                        Sản phẩm này chưa có đánh giá nào.
                     </div>
                 @endif
             </div>
         </div>
 
-        <!-- Right Column: Related Products (1/3 width) -->
+        {{-- Related Products --}}
         <div class="space-y-6">
             @if(isset($relatedProducts) && $relatedProducts->count() > 0)
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-                    <h3 class="text-lg font-bold text-slate-900 border-b border-slate-100 pb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                        Sản phẩm liên quan
-                    </h3>
-                    <div class="space-y-4">
+                <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                    <div class="mb-5 flex items-center gap-2 border-b border-slate-100 pb-4">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                            <i data-lucide="shopping-bag" class="h-4 w-4"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900">Sản phẩm liên quan</h3>
+                    </div>
+
+                    <div class="space-y-3">
                         @foreach($relatedProducts as $rel)
-                            <div class="group flex items-center gap-4 p-2 rounded-2xl hover:bg-slate-50 transition border border-transparent hover:border-slate-100">
-                                <div class="w-16 h-16 rounded-xl overflow-hidden bg-slate-50 border border-slate-100 shrink-0 relative">
+                            <div class="group flex items-center gap-3 rounded-2xl border border-transparent p-2 transition hover:border-slate-100 hover:bg-slate-50">
+                                <a href="{{ route('products.show', $rel->slug) }}" class="h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
                                     @if($rel->image)
-                                        <img src="{{ asset($rel->image) }}" alt="{{ $rel->name }}" class="w-full h-full object-cover">
+                                        <img src="{{ asset($rel->image) }}" alt="{{ $rel->name }}" class="h-full w-full object-cover">
                                     @else
-                                        <div class="w-full h-full flex items-center justify-center text-slate-400 text-[10px]">No Image</div>
+                                        <div class="flex h-full w-full items-center justify-center text-[9px] text-slate-400">No Image</div>
                                     @endif
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="font-bold text-xs text-slate-800 group-hover:text-indigo-600 transition truncate">
+                                </a>
+
+                                <div class="min-w-0 flex-1">
+                                    <h4 class="truncate text-xs font-bold text-slate-800 transition group-hover:text-indigo-600">
                                         <a href="{{ route('products.show', $rel->slug) }}">{{ $rel->name }}</a>
                                     </h4>
-                                    <div class="font-bold text-indigo-600 text-xs mt-1">{{ format_price($rel->final_price) }}</div>
+
+                                    <div class="mt-1 text-xs font-black text-indigo-600">
+                                        {{ format_price($rel->final_price) }}
+                                    </div>
                                 </div>
-                                
-                                {{-- Wishlist Button on related items --}}
+
+                                {{-- Small Wishlist Button --}}
                                 <form action="{{ route('wishlist.toggle', $rel->id) }}" method="POST" class="shrink-0">
                                     @csrf
                                     <button type="submit"
                                         title="{{ in_array($rel->id, $wishlistIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}"
-                                        class="w-7 h-7 rounded-full flex items-center justify-center border shadow-sm transition
-                                            {{ in_array($rel->id, $wishlistIds ?? []) 
-                                                ? 'bg-rose-500 border-rose-500 text-white hover:bg-rose-600' 
-                                                : 'bg-white border-slate-200 text-slate-400 hover:text-rose-500 hover:bg-slate-50' }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24"
+                                        class="flex h-8 w-8 items-center justify-center rounded-full border shadow-sm transition hover:scale-105
+                                        {{ in_array($rel->id, $wishlistIds ?? [])
+                                            ? 'border-rose-500 bg-rose-500 text-white hover:bg-rose-600'
+                                            : 'border-slate-200 bg-white text-slate-400 hover:border-rose-300 hover:text-rose-500' }}">
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 24 24"
                                             fill="{{ in_array($rel->id, $wishlistIds ?? []) ? 'currentColor' : 'none' }}"
-                                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                                         </svg>
                                     </button>
@@ -373,29 +481,31 @@
                 </div>
             @endif
         </div>
-        
     </div>
 
+    {{-- Variant Image Script --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const variantRadios = document.querySelectorAll('input[name="product_variant_id"]');
             const mainImage = document.getElementById('main_detail_image');
-            
-            if (variantRadios.length > 0 && mainImage) {
+
+            if (variantRadios.length && mainImage) {
                 function updateVariantImage() {
                     const checkedRadio = document.querySelector('input[name="product_variant_id"]:checked');
+
                     if (checkedRadio && checkedRadio.dataset.image) {
                         mainImage.src = checkedRadio.dataset.image;
                     }
                 }
-                
+
                 variantRadios.forEach(radio => {
                     radio.addEventListener('change', updateVariantImage);
                 });
-                
-                // Initial update
+
                 updateVariantImage();
             }
         });
     </script>
+
+</div>
 @endsection

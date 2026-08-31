@@ -3,144 +3,494 @@
 @section('title', 'Tin tức & Blog Thời trang - Veloce')
 
 @section('content')
-<div class="max-w-7xl mx-auto space-y-8">
-    <div class="border-b border-slate-100 pb-4">
-        <h1 class="text-2xl font-black text-slate-900 tracking-tight">Tin tức & Blog Thời trang</h1>
-        <p class="text-xs text-slate-500">Cập nhật những bài viết, xu hướng phối đồ và tin tức mới nhất về thế giới Sneaker</p>
-    </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+<div class="max-w-7xl mx-auto space-y-6 sm:space-y-8">
 
-        <!-- Left: Blog Sidebar -->
-        <div class="space-y-6">
-            
-            <!-- Search Box -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 space-y-4">
-                <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Tìm kiếm tin tức</h3>
-                <form action="{{ route('blog') }}" method="GET">
-                    <div class="relative">
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Nhập từ khóa..." class="w-full py-2.5 pl-3 pr-9 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600">
-                        <button type="submit" class="absolute right-2.5 top-2.5 text-slate-400 hover:text-indigo-600">
-                            <i data-lucide="search" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </form>
+    <!-- Tiêu đề -->
+    <div class="flex flex-col gap-2 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+            <div class="mb-2 flex items-center gap-2">
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                    <i data-lucide="newspaper" class="h-4 w-4"></i>
+                </span>
+
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-500">
+                    Veloce Blog
+                </span>
             </div>
 
-            <!-- Categories List -->
-            @if(isset($categories) && $categories->count() > 0)
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 space-y-4">
-                    <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Danh mục tin tức</h3>
-                    <ul class="space-y-2 text-xs">
-                        <li>
-                            <a href="{{ route('blog') }}" class="flex items-center justify-between py-1.5 px-3 rounded-xl {{ !request('category') ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-slate-600 hover:bg-slate-50' }}">
-                                <span>Tất cả tin tức</span>
-                            </a>
-                        </li>
-                        @foreach($categories as $cat)
-                            <li>
-                                <a href="{{ route('blog', ['category' => $cat->id]) }}" class="flex items-center justify-between py-1.5 px-3 rounded-xl {{ request('category') == $cat->id ? 'bg-indigo-50 text-indigo-600 font-bold' : 'text-slate-600 hover:bg-slate-50' }}">
-                                    <span>{{ $cat->name }}</span>
-                                    <span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full text-[10px] font-bold">{{ $cat->posts_count }}</span>
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
+            <h1 class="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+                Tin tức & Blog Thời trang
+            </h1>
+
+            <p class="mt-1 text-xs leading-relaxed text-slate-500 sm:text-sm">
+                Cập nhật những bài viết, xu hướng phối đồ và tin tức mới nhất về thế giới Sneaker
+            </p>
+        </div>
+    </div>
+
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-4 lg:gap-8">
+
+
+        <!-- ================= SIDEBAR ================= -->
+        <aside class="space-y-5 lg:sticky lg:top-24 lg:h-fit">
+
+
+            <!-- Tìm kiếm -->
+            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
+
+                <div class="flex items-center gap-2 border-b border-slate-100 px-5 py-4">
+                    <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+                        <i data-lucide="search" class="h-4 w-4"></i>
+                    </span>
+
+                    <h3 class="text-sm font-bold text-slate-800">
+                        Tìm kiếm
+                    </h3>
                 </div>
+
+                <div class="p-4">
+                    <form action="{{ route('blog') }}" method="GET">
+
+                        <div class="relative">
+
+                            <i data-lucide="search"
+                                class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400">
+                            </i>
+
+                            <input
+                                type="text"
+                                name="q"
+                                value="{{ request('q') }}"
+                                placeholder="Nhập từ khóa..."
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-xs text-slate-700 transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10">
+
+                        </div>
+
+                    </form>
+                </div>
+
+            </div>
+
+
+            <!-- Danh mục -->
+            @if(isset($categories) && $categories->count() > 0)
+
+                <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
+
+                    <div class="flex items-center gap-2 border-b border-slate-100 px-5 py-4">
+
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+                            <i data-lucide="layout-grid" class="h-4 w-4"></i>
+                        </span>
+
+                        <h3 class="text-sm font-bold text-slate-800">
+                            Danh mục
+                        </h3>
+
+                    </div>
+
+
+                    <div class="p-3">
+
+                        <ul class="space-y-1.5 text-xs">
+
+                            <!-- Tất cả -->
+                            <li>
+
+                                <a
+                                    href="{{ route('blog') }}"
+                                    class="flex items-center justify-between rounded-xl px-3 py-2.5 transition
+                                    {{ !request('category')
+                                        ? 'bg-indigo-600 font-bold text-white shadow-sm'
+                                        : 'text-slate-600 hover:bg-slate-50 hover:text-indigo-600' }}">
+
+                                    <span>Tất cả tin tức</span>
+
+                                    @if(!request('category'))
+                                        <i data-lucide="check" class="h-3.5 w-3.5"></i>
+                                    @endif
+
+                                </a>
+
+                            </li>
+
+
+                            <!-- Danh mục -->
+                            @foreach($categories as $cat)
+
+                                <li>
+
+                                    <a
+                                        href="{{ route('blog', ['category' => $cat->id]) }}"
+                                        class="flex items-center justify-between rounded-xl px-3 py-2.5 transition
+                                        {{ request('category') == $cat->id
+                                            ? 'bg-indigo-600 font-bold text-white shadow-sm'
+                                            : 'text-slate-600 hover:bg-slate-50 hover:text-indigo-600' }}">
+
+                                        <span class="truncate">
+                                            {{ $cat->name }}
+                                        </span>
+
+
+                                        @if(request('category') == $cat->id)
+
+                                            <i data-lucide="check" class="h-3.5 w-3.5 shrink-0"></i>
+
+                                        @else
+
+                                            <span class="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">
+                                                {{ $cat->posts_count }}
+                                            </span>
+
+                                        @endif
+
+                                    </a>
+
+                                </li>
+
+                            @endforeach
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
             @endif
 
-            <!-- Recent Posts -->
+
+            <!-- Bài viết gần đây -->
             @if(isset($recentPosts) && $recentPosts->count() > 0)
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 space-y-4">
-                    <h3 class="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Bài viết gần đây</h3>
-                    <div class="space-y-3">
+
+                <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md">
+
+                    <div class="flex items-center gap-2 border-b border-slate-100 px-5 py-4">
+
+                        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                            <i data-lucide="clock-3" class="h-4 w-4"></i>
+                        </span>
+
+                        <h3 class="text-sm font-bold text-slate-800">
+                            Bài viết gần đây
+                        </h3>
+
+                    </div>
+
+
+                    <div class="space-y-3 p-4">
+
                         @foreach($recentPosts as $rPost)
-                            <a href="{{ route('blog.show', $rPost->slug) }}" class="flex items-center gap-3 group">
-                                <div class="w-14 h-14 bg-slate-100 rounded-xl overflow-hidden shrink-0">
+
+                            <a
+                                href="{{ route('blog.show', $rPost->slug) }}"
+                                class="group flex items-center gap-3 rounded-xl p-1.5 transition hover:bg-slate-50">
+
+                                <!-- Thumbnail -->
+
+                                <div class="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-slate-100">
+
                                     @if($rPost->thumbnail)
-                                        <img src="{{ asset($rPost->thumbnail) }}" alt="{{ $rPost->title }}" class="w-full h-full object-cover">
+
+                                        <img
+                                            src="{{ asset($rPost->thumbnail) }}"
+                                            alt="{{ $rPost->title }}"
+                                            class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
+
                                     @else
-                                        <div class="w-full h-full flex items-center justify-center text-slate-300">
-                                            <i data-lucide="newspaper" class="w-6 h-6"></i>
+
+                                        <div class="flex h-full w-full items-center justify-center text-slate-300">
+                                            <i data-lucide="newspaper" class="h-5 w-5"></i>
                                         </div>
+
                                     @endif
+
                                 </div>
-                                <div class="space-y-1">
-                                    <h4 class="font-bold text-xs text-slate-800 group-hover:text-indigo-600 transition line-clamp-2 leading-snug">
+
+
+                                <!-- Nội dung -->
+
+                                <div class="min-w-0 flex-1">
+
+                                    <h4 class="line-clamp-2 text-xs font-bold leading-snug text-slate-700 transition group-hover:text-indigo-600">
                                         {{ $rPost->title }}
                                     </h4>
-                                    <span class="text-[10px] text-slate-400 block">{{ $rPost->created_at ? $rPost->created_at->format('d/m/Y') : '' }}</span>
+
+                                    <div class="mt-1 flex items-center gap-1 text-[10px] text-slate-400">
+
+                                        <i data-lucide="calendar" class="h-3 w-3"></i>
+
+                                        {{ $rPost->created_at ? $rPost->created_at->format('d/m/Y') : '' }}
+
+                                    </div>
+
                                 </div>
+
                             </a>
+
                         @endforeach
+
                     </div>
+
                 </div>
+
             @endif
 
-        </div>
+        </aside>
 
-        <!-- Right: Blog Posts Grid -->
-        <div class="lg:col-span-3 space-y-6">
-            @if(isset($posts) && $posts->count() > 0)
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach($posts as $post)
-                        <div class="group bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-xl shadow-slate-100/50 hover:shadow-2xl transition duration-300 flex flex-col justify-between">
-                            <div>
-                                <div class="relative h-48 bg-slate-100 overflow-hidden">
-                                    @if($post->thumbnail)
-                                        <img src="{{ asset($post->thumbnail) }}" alt="{{ $post->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center text-slate-300 bg-slate-100">
-                                            <i data-lucide="newspaper" class="w-10 h-10"></i>
-                                        </div>
-                                    @endif
-                                    @if($post->category)
-                                        <span class="absolute top-3 left-3 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
-                                            {{ $post->category->name }}
-                                        </span>
-                                    @endif
-                                </div>
 
-                                <div class="p-5 space-y-2">
-                                    <div class="flex items-center gap-3 text-[11px] text-slate-400 font-medium">
-                                        <span class="flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> {{ $post->created_at ? $post->created_at->format('d/m/Y') : 'N/A' }}</span>
-                                        <span>•</span>
-                                        <span class="flex items-center gap-1"><i data-lucide="eye" class="w-3.5 h-3.5"></i> {{ number_format($post->views) }} lượt xem</span>
-                                    </div>
-                                    <h3 class="font-bold text-sm text-slate-900 group-hover:text-indigo-600 transition line-clamp-2 leading-snug">
-                                        <a href="{{ route('blog.show', $post->slug) }}">{{ $post->title }}</a>
-                                    </h3>
-                                    <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                                        {{ Str::limit(strip_tags($post->content), 100) }}
-                                    </p>
-                                </div>
-                            </div>
 
-                            <div class="p-5 pt-0">
-                                <a href="{{ route('blog.show', $post->slug) }}" class="inline-flex items-center gap-2 text-xs font-bold text-indigo-600 group-hover:text-indigo-700 hover:underline">
-                                    Đọc tiếp <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                                </a>
-                            </div>
-                        </div>
-                    @endforeach
+        <!-- ================= DANH SÁCH BÀI VIẾT ================= -->
+
+        <div class="space-y-6 lg:col-span-3">
+
+
+            <!-- Header danh sách -->
+
+            <div class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+
+                <div>
+
+                    <div class="text-[10px] font-bold uppercase tracking-[0.16em] text-indigo-500">
+                        Danh sách bài viết
+                    </div>
+
+                    <div class="mt-1 flex items-baseline gap-2">
+
+                        <span class="text-xl font-black text-slate-900">
+                            {{ isset($posts) ? $posts->total() : 0 }}
+                        </span>
+
+                        <span class="text-xs text-slate-500">
+                            bài viết đang hiển thị
+                        </span>
+
+                    </div>
+
                 </div>
+
+
+                <div class="flex items-center gap-2 text-xs text-slate-400">
+
+                    <i data-lucide="newspaper" class="h-4 w-4"></i>
+
+                    <span>
+                        Khám phá tin tức mới nhất
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            @if(isset($posts) && $posts->count() > 0)
+
+
+                <!-- Grid bài viết -->
+
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+
+                    @foreach($posts as $post)
+
+
+                        <article
+                            class="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+
+
+                            <!-- Ảnh -->
+
+                            <div class="relative h-48 overflow-hidden bg-slate-100">
+
+                                @if($post->thumbnail)
+
+                                    <img
+                                        src="{{ asset($post->thumbnail) }}"
+                                        alt="{{ $post->title }}"
+                                        class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
+
+                                @else
+
+                                    <div class="flex h-full w-full items-center justify-center text-slate-300">
+
+                                        <i data-lucide="newspaper" class="h-10 w-10"></i>
+
+                                    </div>
+
+                                @endif
+
+
+                                <!-- Overlay nhẹ -->
+
+                                <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/20 to-transparent"></div>
+
+
+                                <!-- Category -->
+
+                                @if($post->category)
+
+                                    <span class="absolute left-3 top-3 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-bold text-indigo-600 shadow-sm backdrop-blur">
+
+                                        {{ $post->category->name }}
+
+                                    </span>
+
+                                @endif
+
+                            </div>
+
+
+
+                            <!-- Nội dung -->
+
+                            <div class="flex flex-1 flex-col p-5">
+
+
+                                <!-- Thông tin -->
+
+                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-400">
+
+                                    <span class="flex items-center gap-1">
+
+                                        <i data-lucide="calendar" class="h-3 w-3"></i>
+
+                                        {{ $post->created_at ? $post->created_at->format('d/m/Y') : 'N/A' }}
+
+                                    </span>
+
+
+                                    <span class="flex items-center gap-1">
+
+                                        <i data-lucide="eye" class="h-3 w-3"></i>
+
+                                        {{ number_format($post->views) }}
+
+                                    </span>
+
+                                </div>
+
+
+
+                                <!-- Tiêu đề -->
+
+                                <h3 class="mt-3 line-clamp-2 text-sm font-bold leading-snug text-slate-800 transition group-hover:text-indigo-600">
+
+                                    <a href="{{ route('blog.show', $post->slug) }}">
+
+                                        {{ $post->title }}
+
+                                    </a>
+
+                                </h3>
+
+
+
+                                <!-- Mô tả -->
+
+                                <p class="mt-2 line-clamp-3 text-xs leading-relaxed text-slate-500">
+
+                                    {{ Str::limit(strip_tags($post->content), 120) }}
+
+                                </p>
+
+
+
+                                <!-- Đọc tiếp -->
+
+                                <div class="mt-auto pt-5">
+
+                                    <a
+                                        href="{{ route('blog.show', $post->slug) }}"
+                                        class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 transition hover:gap-2.5 hover:text-indigo-700">
+
+                                        Đọc tiếp
+
+                                        <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i>
+
+                                    </a>
+
+                                </div>
+
+
+                            </div>
+
+                        </article>
+
+
+                    @endforeach
+
+                </div>
+
+
+
+                <!-- Phân trang -->
 
                 @if($posts->hasPages())
-                    <div class="pt-4">
+
+                    <div class="pt-3">
+
                         {{ $posts->links() }}
+
                     </div>
+
                 @endif
+
+
+
             @else
-                <div class="bg-white p-12 rounded-3xl border border-slate-100 shadow-sm text-center max-w-md mx-auto space-y-4">
-                    <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto">
-                        <i data-lucide="newspaper" class="w-10 h-10"></i>
+
+
+                <!-- Không có bài viết -->
+
+                <div class="rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
+
+                    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+
+                        <i data-lucide="newspaper" class="h-8 w-8"></i>
+
                     </div>
-                    <h3 class="text-xl font-black text-slate-900">Chưa có bài viết nào!</h3>
-                    <p class="text-xs text-slate-500 leading-relaxed">Hiện tại chưa có bài viết tin tức nào được đăng tải. Vui lòng quay lại sau.</p>
+
+
+                    <h3 class="mt-5 text-lg font-black text-slate-800">
+
+                        Chưa có bài viết nào!
+
+                    </h3>
+
+
+                    <p class="mx-auto mt-2 max-w-sm text-xs leading-relaxed text-slate-500">
+
+                        Hiện tại chưa có bài viết tin tức nào được đăng tải.
+                        Vui lòng quay lại sau.
+
+                    </p>
+
+
+                    @if(request()->anyFilled(['q', 'category']))
+
+                        <a
+                            href="{{ route('blog') }}"
+                            class="mt-5 inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-4 py-2.5 text-xs font-bold text-indigo-600 transition hover:bg-indigo-100">
+
+                            <i data-lucide="rotate-ccw" class="h-3.5 w-3.5"></i>
+
+                            Xóa bộ lọc
+
+                        </a>
+
+                    @endif
+
                 </div>
+
+
             @endif
+
+
         </div>
 
     </div>
+
 </div>
+
 @endsection

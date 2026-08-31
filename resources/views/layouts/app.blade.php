@@ -293,35 +293,292 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div class="space-y-4">
-                <a href="{{ route('home') }}" class="text-white font-black text-lg">{!! \App\Models\Setting::get('site_name', 'VELOCE') !!}</a>
-                <p class="text-xs leading-relaxed">{!! \App\Models\Setting::get('site_description', 'Trải nghiệm mua sắm thời trang công nghệ đẳng cấp nhất với Veloce Store.') !!}</p>
+    <footer class="border-t border-slate-800 bg-slate-950 text-slate-400">
+
+        <!-- Nội dung chính -->
+        <div class="max-w-7xl mx-auto px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
+
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
+
+
+                <!-- Thông tin website -->
+                <div class="space-y-4">
+
+                    <a href="{{ route('home') }}"
+                        class="inline-block text-xl font-black tracking-tight text-white transition hover:text-indigo-400">
+
+                        {!! \App\Models\Setting::get('site_name', 'VELOCE') !!}
+
+                    </a>
+
+
+                    <p class="max-w-sm text-xs leading-6 text-slate-400">
+
+                        {!! \App\Models\Setting::get(
+                            'site_description',
+                            'Trải nghiệm mua sắm thời trang công nghệ đẳng cấp nhất với Veloce Store.'
+                        ) !!}
+
+                    </p>
+
+
+                    <!-- Dòng trang trí -->
+                    <div class="flex items-center gap-2 pt-1">
+
+                        <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
+
+                        <span class="h-px w-10 bg-slate-700"></span>
+
+                        <span class="text-[10px] font-semibold uppercase tracking-widest text-slate-500">
+                            Veloce Store
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Danh mục sản phẩm -->
+                <div>
+
+                    <h4 class="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white">
+
+                        <span class="h-5 w-1 rounded-full bg-indigo-500"></span>
+
+                        Danh mục sản phẩm
+
+                    </h4>
+
+
+                    <ul class="space-y-2.5 text-xs">
+
+                        @foreach(\App\Models\Category::take(6)->get() as $category)
+
+                            <li>
+
+                                <a href="{{ route('shop', ['category' => $category->slug]) }}"
+                                    class="group inline-flex items-center gap-2 text-slate-400 transition hover:text-white">
+
+                                    <span class="h-1 w-1 rounded-full bg-slate-600 transition group-hover:bg-indigo-400"></span>
+
+                                    {{ $category->name }}
+
+                                </a>
+
+                            </li>
+
+                        @endforeach
+
+                    </ul>
+
+                </div>
+
+
+
+                <!-- Chính sách -->
+                <div>
+
+                    <h4 class="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white">
+
+                        <span class="h-5 w-1 rounded-full bg-indigo-500"></span>
+
+                        Chính sách
+
+                    </h4>
+
+
+                    <ul class="space-y-2.5 text-xs">
+
+                        <li>
+
+                            <a href="#"
+                                class="group inline-flex items-center gap-2 text-slate-400 transition hover:text-white">
+
+                                <span class="h-1 w-1 rounded-full bg-slate-600 transition group-hover:bg-indigo-400"></span>
+
+                                Chính sách đổi trả
+
+                            </a>
+
+                        </li>
+
+
+                        <li>
+
+                            <a href="#"
+                                class="group inline-flex items-center gap-2 text-slate-400 transition hover:text-white">
+
+                                <span class="h-1 w-1 rounded-full bg-slate-600 transition group-hover:bg-indigo-400"></span>
+
+                                Chính sách bảo hành
+
+                            </a>
+
+                        </li>
+
+
+                        <li>
+
+                            <a href="#"
+                                class="group inline-flex items-center gap-2 text-slate-400 transition hover:text-white">
+
+                                <span class="h-1 w-1 rounded-full bg-slate-600 transition group-hover:bg-indigo-400"></span>
+
+                                Điều khoản sử dụng
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+
+                <!-- Liên hệ -->
+                <div>
+
+                    <h4 class="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white">
+
+                        <span class="h-5 w-1 rounded-full bg-indigo-500"></span>
+
+                        Liên hệ
+
+                    </h4>
+
+
+                    <div class="space-y-3 text-xs">
+
+
+                        <!-- Email -->
+                        <div class="flex items-start gap-2.5">
+
+                            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-indigo-400">
+
+                                <i data-lucide="mail" class="h-3.5 w-3.5"></i>
+
+                            </div>
+
+
+                            <div class="min-w-0">
+
+                                <p class="mb-0.5 text-[10px] text-slate-500">
+                                    Email
+                                </p>
+
+                                <p class="break-all text-slate-300">
+
+                                    {{ \App\Models\Setting::get('site_email', 'contact@veloce.vn') }}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Phone -->
+                        <div class="flex items-start gap-2.5">
+
+                            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-indigo-400">
+
+                                <i data-lucide="phone" class="h-3.5 w-3.5"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <p class="mb-0.5 text-[10px] text-slate-500">
+                                    Điện thoại
+                                </p>
+
+                                <p class="text-slate-300">
+
+                                    {{ \App\Models\Setting::get('site_phone', '0123456789') }}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- Address -->
+                        <div class="flex items-start gap-2.5">
+
+                            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-indigo-400">
+
+                                <i data-lucide="map-pin" class="h-3.5 w-3.5"></i>
+
+                            </div>
+
+
+                            <div class="min-w-0">
+
+                                <p class="mb-0.5 text-[10px] text-slate-500">
+                                    Địa chỉ
+                                </p>
+
+                                <p class="leading-relaxed text-slate-300">
+
+                                    {{ \App\Models\Setting::get('site_address', 'Hà Nội') }}
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
             </div>
-            <div>
-                <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-4">Danh mục sản phẩm</h4>
-                <ul class="space-y-2 text-xs">
-                    @foreach(\App\Models\Category::take(6)->get() as $category)
-                        <li><a href="{{ route('shop', ['category' => $category->slug]) }}" class="hover:text-white">{{ $category->name }}</a></li>
-                    @endforeach
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-4">Chính sách</h4>
-                <ul class="space-y-2 text-xs">
-                    <li><a href="#" class="hover:text-white">Chính sách đổi trả</a></li>
-                    <li><a href="#" class="hover:text-white">Chính sách bảo hành</a></li>
-                    <li><a href="#" class="hover:text-white">Điều khoản sử dụng</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-white text-xs font-bold uppercase tracking-wider mb-4">Liên hệ</h4>
-                <p class="text-xs">Email: {{ \App\Models\Setting::get('site_email', 'contact@veloce.vn') }}</p>
-                <p class="text-xs">Phone: {{ \App\Models\Setting::get('site_phone', '0123456789') }}</p>
-                <p class="text-xs mt-1">Địa chỉ: {{ \App\Models\Setting::get('site_address', 'Hà Nội') }}</p>
-            </div>
+
         </div>
+
+
+
+        <!-- Footer Bottom -->
+        <div class="border-t border-slate-800 bg-slate-950">
+
+            <div class="max-w-7xl mx-auto flex flex-col gap-3 px-4 py-5 text-center sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:text-left lg:px-8">
+
+                <p class="text-[11px] text-slate-500">
+
+                    © {{ date('Y') }}
+
+                    {!! \App\Models\Setting::get('site_name', 'VELOCE') !!}.
+
+                    All rights reserved.
+
+                </p>
+
+
+                <div class="flex items-center justify-center gap-2 text-[10px] text-slate-600 sm:justify-end">
+
+                    <span>Fashion</span>
+
+                    <span class="h-1 w-1 rounded-full bg-slate-700"></span>
+
+                    <span>Sneaker</span>
+
+                    <span class="h-1 w-1 rounded-full bg-slate-700"></span>
+
+                    <span>Veloce</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </footer>
 
     <!-- Toast Notification -->
