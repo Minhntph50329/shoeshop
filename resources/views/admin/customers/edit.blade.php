@@ -25,7 +25,7 @@
             
             <div class="flex items-center gap-4 py-2">
                 @if($customer->avatar)
-                    <img src="{{ asset('storage/' . $customer->avatar) }}" alt="{{ $customer->fullname }}" class="w-16 h-16 rounded-full object-cover border-2 border-indigo-100">
+                    <img src="{{ asset($customer->avatar) }}" alt="{{ $customer->fullname }}" class="w-16 h-16 rounded-full object-cover border-2 border-indigo-100">
                 @else
                     <div class="w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 font-black flex items-center justify-center text-xl uppercase border-2 border-indigo-200">
                         {{ substr($customer->fullname ?? $customer->email, 0, 1) }}

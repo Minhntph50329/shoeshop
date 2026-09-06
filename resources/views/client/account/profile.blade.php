@@ -27,7 +27,7 @@
             <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-100/50 text-center space-y-4">
                 <div class="relative w-24 h-24 mx-auto">
                     @if($user->avatar)
-                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->fullname }}" class="w-full h-full rounded-3xl object-cover border-4 border-indigo-50 shadow-md">
+                        <img src="{{ asset($user->avatar) }}" alt="{{ $user->fullname }}" class="w-full h-full rounded-3xl object-cover border-4 border-indigo-50 shadow-md">
                     @else
                         <div class="w-full h-full rounded-3xl bg-indigo-600 text-white font-black flex items-center justify-center text-3xl uppercase border-4 border-indigo-50 shadow-md">
                             {{ substr($user->fullname ?? $user->email, 0, 1) }}

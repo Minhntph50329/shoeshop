@@ -14,6 +14,7 @@ class CheckoutRequest extends FormRequest
             'fullname'     => 'required|string|max:255',
             'phone'        => 'required|string|max:20',
             'email'        => 'required|email|max:255',
+            'province'     => 'required|string|max:100',
             'address'      => 'required|string|max:500',
             'payment_id'   => 'required|exists:payments,id',
             'shipping_type'=> 'required|in:standard,express',

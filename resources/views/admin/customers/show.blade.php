@@ -26,7 +26,7 @@
         <!-- Profile Card -->
         <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4 text-center md:text-left flex flex-col items-center md:items-start">
             @if($customer->avatar)
-                <img src="{{ asset('storage/' . $customer->avatar) }}" alt="{{ $customer->fullname }}" class="w-24 h-24 rounded-2xl object-cover border-4 border-indigo-50 shadow-md">
+                <img src="{{ asset($customer->avatar) }}" alt="{{ $customer->fullname }}" class="w-24 h-24 rounded-2xl object-cover border-4 border-indigo-50 shadow-md">
             @else
                 <div class="w-24 h-24 rounded-2xl bg-indigo-100 text-indigo-600 font-black flex items-center justify-center text-3xl uppercase border-4 border-indigo-50 shadow-md">
                     {{ substr($customer->fullname ?? $customer->email, 0, 1) }}

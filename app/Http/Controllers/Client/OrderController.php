@@ -218,6 +218,7 @@ class OrderController extends Controller
             'fullname'     => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
             'email'        => 'required|email|max:255',
+            'province'     => 'required|string|max:100',
             'address'      => 'required|string|max:500',
         ]);
 
@@ -228,11 +229,27 @@ class OrderController extends Controller
             return back()->with('error', 'Chỉ có thể thay đổi địa chỉ khi đơn hàng ở trạng thái Chờ xác nhận.');
         }
 
+        // Tính lại phí ship theo tỉnh mới (ShippingService đã gộp base + region fee)
+        $shippingService = app(\App\Services\ShippingService::class);
+        $baseShippingFee = $shippingService->calculateFee($request->province);
+
+        // Kiểm tra free shipping
+        $freeShippingMin = (int) \App\Models\Setting::get('free_shipping_min', 500000);
+        if ($order->total_amount >= $freeShippingMin) {
+            $baseShippingFee = 0;
+        }
+
+        // Cộng thêm phí nhanh nếu đơn dùng giao nhanh
+        $newShippingFee = $order->shipping_type === 'express'
+            ? $baseShippingFee + 20000
+            : $baseShippingFee;
+
         $order->update([
             'fullname'     => $request->fullname,
             'phone_number' => $request->phone_number,
             'email'        => $request->email,
-            'address'      => $request->address,
+            'address'      => $request->address, // đã là địa chỉ đầy đủ từ hidden input
+            'shipping_fee' => $newShippingFee,
         ]);
 
         // Ghi lại lịch sử cập nhật
@@ -240,11 +257,11 @@ class OrderController extends Controller
             'order_id'        => $order->id,
             'order_status_id' => 1,
             'modifier_id'     => auth()->id(),
-            'note'            => 'Khách hàng thay đổi địa chỉ nhận hàng',
+            'note'            => 'Khách hàng thay đổi địa chỉ nhận hàng (Phí ship: ' . number_format($newShippingFee) . 'đ)',
             'is_current'      => true,
         ]);
 
         return redirect()->route('client.orders.show', $id)
-            ->with('success', 'Cập nhật địa chỉ nhận hàng thành công.');
+            ->with('success', 'Cập nhật địa chỉ & phí ship thành công. Phí ship mới: ' . number_format($newShippingFee) . 'đ');
     }
 }

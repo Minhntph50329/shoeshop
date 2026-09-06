@@ -67,7 +67,8 @@ class CustomerController extends Controller
         $validated = $request->validated();
 
         if ($request->hasFile('avatar')) {
-            $validated['avatar'] = $request->file('avatar')->store('users', 'public');
+            $path = $request->file('avatar')->store('users', 'public');
+            $validated['avatar'] = 'storage/' . $path;
         }
 
         $validated['password'] = Hash::make($validated['password']);
@@ -122,9 +123,11 @@ class CustomerController extends Controller
 
         if ($request->hasFile('avatar')) {
             if ($customer->avatar) {
-                Storage::disk('public')->delete($customer->avatar);
+                $oldPath = str_replace('storage/', '', $customer->avatar);
+                Storage::disk('public')->delete($oldPath);
             }
-            $validated['avatar'] = $request->file('avatar')->store('users', 'public');
+            $path = $request->file('avatar')->store('users', 'public');
+            $validated['avatar'] = 'storage/' . $path;
         }
 
         if (!empty($validated['password'])) {
@@ -210,7 +213,8 @@ class CustomerController extends Controller
         $customer = User::onlyTrashed()->findOrFail($id);
 
         if ($customer->avatar) {
-            Storage::disk('public')->delete($customer->avatar);
+            $oldPath = str_replace('storage/', '', $customer->avatar);
+            Storage::disk('public')->delete($oldPath);
         }
 
         $customer->forceDelete();

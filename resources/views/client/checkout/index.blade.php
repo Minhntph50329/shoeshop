@@ -63,9 +63,13 @@
                                     <option value="{{ $addr->id }}" 
                                         data-fullname="{{ $addr->fullname }}" 
                                         data-phone="{{ $addr->phone_number }}" 
-                                        data-address="{{ $addr->full_address }}"
+                                        data-address="{{ $addr->full_address ?? $addr->address }}"
+                                        data-province="{{ $addr->province }}"
+                                        data-district="{{ $addr->district }}"
+                                        data-ward="{{ $addr->ward }}"
+                                        data-street="{{ $addr->street }}"
                                         {{ $addresses && $addresses->id == $addr->id ? 'selected' : '' }}>
-                                        {{ $addr->fullname }} ({{ $addr->phone_number }}) - {{ $addr->full_address }}
+                                        {{ $addr->fullname }} ({{ $addr->phone_number }}) - {{ $addr->full_address ?? $addr->address }}
                                     </option>
                                 @endforeach
                             </select>
@@ -91,12 +95,42 @@
                                 class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
                                 placeholder="example@email.com">
                         </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Địa chỉ giao hàng <span class="text-red-500">*</span></label>
-                            <input type="text" name="address" value="{{ old('address', $addresses?->full_address) }}" required
-                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
-                                placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành">
+                        {{-- Province / District / Ward autocomplete --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            {{-- Province --}}
+                            <div class="relative">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Tỉnh/Thành phố <span class="text-red-500">*</span></label>
+                                <input type="text" id="checkoutProvinceInput" name="province" required autocomplete="off"
+                                    placeholder="Gõ để tìm tỉnh..."
+                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
+                                <div id="checkoutProvinceList" class="absolute left-0 w-full max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
+                            </div>
+                            {{-- District --}}
+                            <div class="relative">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Quận/Huyện <span class="text-red-500">*</span></label>
+                                <input type="text" id="checkoutDistrictInput" name="district" required disabled autocomplete="off"
+                                    placeholder="Chọn tỉnh trước..."
+                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition disabled:bg-slate-50 disabled:cursor-not-allowed">
+                                <div id="checkoutDistrictList" class="absolute left-0 w-full max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
+                            </div>
+                            {{-- Ward --}}
+                            <div class="relative">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Phường/Xã <span class="text-red-500">*</span></label>
+                                <input type="text" id="checkoutWardInput" name="ward" required disabled autocomplete="off"
+                                    placeholder="Chọn huyện trước..."
+                                    class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition disabled:bg-slate-50 disabled:cursor-not-allowed">
+                                <div id="checkoutWardList" class="absolute left-0 w-full max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
+                            </div>
                         </div>
+                        {{-- Street --}}
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Số nhà, tên đường <span class="text-red-500">*</span></label>
+                            <input type="text" id="checkoutStreetInput" name="street" required disabled
+                                placeholder="Nhập số nhà, ngõ, tên đường..."
+                                class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition disabled:bg-slate-50 disabled:cursor-not-allowed">
+                        </div>
+                        {{-- Hidden compiled address --}}
+                        <input type="hidden" name="address" id="checkoutAddressCompiled" value="{{ old('address', $addresses?->full_address) }}">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Ghi chú đơn hàng</label>
                             <textarea name="note" rows="2" placeholder="Ghi chú cho người giao hàng (nếu có)..."
@@ -133,7 +167,7 @@
                                         <p class="font-bold text-sm text-slate-800">Tiêu chuẩn</p>
                                         <p class="text-xs text-slate-500">{{ \App\Models\Setting::get('shipping_time', '3-5 ngày làm việc') }}</p>
                                     </div>
-                                    <span class="font-bold text-sm text-indigo-600">{{ $standardFee == 0 ? 'Miễn phí' : format_price($standardFee) }}</span>
+                                    <span class="font-bold text-sm text-indigo-600" id="standardFeeEl">{{ $standardFee == 0 ? 'Miễn phí' : format_price($standardFee) }}</span>
                                 </div>
                             </div>
                         </label>
@@ -145,7 +179,7 @@
                                         <p class="font-bold text-sm text-slate-800">Nhanh</p>
                                         <p class="text-xs text-slate-500">1-2 ngày làm việc</p>
                                     </div>
-                                    <span class="font-bold text-sm text-indigo-600">{{ format_price($expressFee) }}</span>
+                                    <span class="font-bold text-sm text-indigo-600" id="expressFeeEl">{{ format_price($expressFee) }}</span>
                                 </div>
                             </div>
                         </label>
@@ -301,12 +335,12 @@ function formatVND(n) {
 
 function recalcTotal() {
     const grand = SUBTOTAL + shippingFee - discountAmt;
-    document.getElementById('shippingEl').textContent   = formatVND(shippingFee);
+    document.getElementById('shippingEl').textContent   = shippingFee === 0 ? 'Miễn phí' : formatVND(shippingFee);
     document.getElementById('grandTotalEl').textContent = formatVND(grand);
 }
 
 function updateShipping(radio) {
-    shippingFee = parseInt(radio.closest('label').dataset.fee);
+    shippingFee = parseInt(radio.closest('label').getAttribute('data-fee'));
     document.querySelectorAll('.shipping-option').forEach(el => {
         el.classList.remove('border-indigo-500', 'bg-indigo-50/50');
         el.classList.add('border-slate-200');
@@ -356,19 +390,223 @@ async function applyCoupon() {
     }
 }
 
-// Auto-fill address on selection change
-const addressSelect = document.getElementById('savedAddressSelect');
-if (addressSelect) {
-    addressSelect.addEventListener('change', function() {
-        const option = this.options[this.selectedIndex];
-        const fullname = option.getAttribute('data-fullname') || '';
-        const phone = option.getAttribute('data-phone') || '';
-        const address = option.getAttribute('data-address') || '';
+// ============================================================
+// Province / District / Ward autocomplete for Checkout
+// ============================================================
+document.addEventListener('DOMContentLoaded', function () {
+    const provinceInput  = document.getElementById('checkoutProvinceInput');
+    const provinceList   = document.getElementById('checkoutProvinceList');
+    const districtInput  = document.getElementById('checkoutDistrictInput');
+    const districtList   = document.getElementById('checkoutDistrictList');
+    const wardInput      = document.getElementById('checkoutWardInput');
+    const wardList       = document.getElementById('checkoutWardList');
+    const streetInput    = document.getElementById('checkoutStreetInput');
+    const compiledInput  = document.getElementById('checkoutAddressCompiled');
 
-        document.querySelector('input[name="fullname"]').value = fullname;
-        document.querySelector('input[name="phone"]').value = phone;
-        document.querySelector('input[name="address"]').value = address;
+    if (!provinceInput) return;
+
+    let allProvinces = [];
+    let districts    = [];
+    let wards        = [];
+
+    // Fetch provinces on load
+    fetch('https://provinces.open-api.vn/api/?depth=1')
+        .then(r => r.json())
+        .then(data => { allProvinces = data; })
+        .catch(err => console.error('Lỗi tải tỉnh thành:', err));
+
+    // Generic autocomplete helper
+    function renderSuggestions(inputEl, listEl, getData, onSelect) {
+        function filterAndShow() {
+            const list   = getData();
+            const q      = inputEl.value.trim().toLowerCase();
+            const result = list.filter(i => i.name.toLowerCase().includes(q));
+
+            if (result.length > 0) {
+                listEl.innerHTML = result.map(i =>
+                    `<div class="px-4 py-2.5 text-xs text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 cursor-pointer font-medium transition" data-code="${i.code}">${i.name}</div>`
+                ).join('');
+                listEl.classList.remove('hidden');
+                listEl.querySelectorAll('[data-code]').forEach(el => {
+                    el.addEventListener('click', () => {
+                        inputEl.value = el.innerText.trim();
+                        listEl.classList.add('hidden');
+                        onSelect(el.getAttribute('data-code'), el.innerText.trim());
+                    });
+                });
+            } else {
+                listEl.innerHTML = `<div class="px-4 py-2.5 text-xs text-slate-400">Không tìm thấy kết quả</div>`;
+                listEl.classList.remove('hidden');
+            }
+        }
+        inputEl.addEventListener('focus', filterAndShow);
+        inputEl.addEventListener('input', filterAndShow);
+        document.addEventListener('click', e => {
+            if (!inputEl.contains(e.target) && !listEl.contains(e.target)) listEl.classList.add('hidden');
+        });
+    }
+
+    function updateCompiledAddress() {
+        const parts = [];
+        const s = streetInput.value.trim();
+        const w = wardInput.value.trim();
+        const d = districtInput.value.trim();
+        const p = provinceInput.value.trim();
+        if (s) parts.push(s);
+        if (w) parts.push(w);
+        if (d) parts.push(d);
+        if (p) parts.push(p);
+        compiledInput.value = parts.join(', ');
+    }
+
+    function setupWardSuggestions() {
+        renderSuggestions(wardInput, wardList, () => wards, (code, name) => {
+            streetInput.disabled = false;
+            streetInput.placeholder = 'Nhập số nhà, ngõ, tên đường...';
+            updateCompiledAddress();
+        });
+    }
+
+    function setupDistrictSuggestions() {
+        renderSuggestions(districtInput, districtList, () => districts, (code, name) => {
+            wardInput.value = '';
+            wardInput.disabled = true;
+            wardInput.placeholder = 'Đang tải phường/xã...';
+            wardList.classList.add('hidden');
+            streetInput.value = '';
+            streetInput.disabled = true;
+            updateCompiledAddress();
+
+            fetch(`https://provinces.open-api.vn/api/d/${code}?depth=2`)
+                .then(r => r.json())
+                .then(data => {
+                    wards = data.wards || [];
+                    wardInput.disabled = false;
+                    wardInput.placeholder = 'Gõ để tìm phường/xã...';
+                    setupWardSuggestions();
+                })
+                .catch(err => {
+                    console.error('Lỗi tải phường/xã:', err);
+                    wardInput.placeholder = 'Không thể tải';
+                });
+        });
+    }
+
+    renderSuggestions(provinceInput, provinceList, () => allProvinces, async (code, name) => {
+        // Reset downstream
+        districtInput.value = '';
+        districtInput.disabled = true;
+        districtInput.placeholder = 'Đang tải quận/huyện...';
+        districtList.classList.add('hidden');
+        wardInput.value = '';
+        wardInput.disabled = true;
+        wardInput.placeholder = 'Chọn huyện trước...';
+        wardList.classList.add('hidden');
+        streetInput.value = '';
+        streetInput.disabled = true;
+        updateCompiledAddress();
+
+        // Fetch shipping fee
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            let feeUrl = '/checkout/shipping-fee?province=' + encodeURIComponent(name);
+            if (urlParams.has('items')) {
+                feeUrl += '&items=' + urlParams.get('items');
+            }
+            const res = await fetch(feeUrl);
+            const data = await res.json();
+            if (data.success) {
+                const standardRadio = document.querySelector('input[name="shipping_type"][value="standard"]');
+                const expressRadio  = document.querySelector('input[name="shipping_type"][value="express"]');
+                if (standardRadio && expressRadio) {
+                    standardRadio.closest('label').setAttribute('data-fee', data.fee);
+                    expressRadio.closest('label').setAttribute('data-fee', data.express_fee);
+                    document.getElementById('standardFeeEl').textContent = data.fee === 0 ? 'Miễn phí' : formatVND(data.fee);
+                    document.getElementById('expressFeeEl').textContent  = formatVND(data.express_fee);
+                    
+                    const selectedRadio = document.querySelector('input[name="shipping_type"]:checked');
+                    if (selectedRadio) updateShipping(selectedRadio);
+                }
+            }
+        } catch(e) { console.error('Lỗi lấy phí ship:', e); }
+
+        // Fetch districts
+        fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`)
+            .then(r => r.json())
+            .then(data => {
+                districts = data.districts || [];
+                districtInput.disabled = false;
+                districtInput.placeholder = 'Gõ để tìm quận/huyện...';
+                setupDistrictSuggestions();
+            })
+            .catch(err => {
+                console.error('Lỗi tải quận/huyện:', err);
+                districtInput.placeholder = 'Không thể tải';
+            });
     });
-}
+
+    streetInput.addEventListener('input', updateCompiledAddress);
+
+    // Auto-fill from saved address dropdown
+    const addressSelect = document.getElementById('savedAddressSelect');
+    if (addressSelect) {
+        addressSelect.addEventListener('change', function () {
+            const option     = this.options[this.selectedIndex];
+            if (!option.value) return;
+
+            const fullname   = option.getAttribute('data-fullname') || '';
+            const phone      = option.getAttribute('data-phone')    || '';
+            const addressFull = option.getAttribute('data-address') || '';
+            const prov       = option.getAttribute('data-province') || '';
+            const dist       = option.getAttribute('data-district') || '';
+            const wrd        = option.getAttribute('data-ward') || '';
+            const strt       = option.getAttribute('data-street') || '';
+
+            document.querySelector('input[name="fullname"]').value = fullname;
+            document.querySelector('input[name="phone"]').value    = phone;
+
+            compiledInput.value = addressFull;
+
+            if (prov) {
+                provinceInput.value = prov;
+                districtInput.value = dist;
+                districtInput.disabled = false;
+                wardInput.value = wrd;
+                wardInput.disabled = false;
+                streetInput.value = strt;
+                streetInput.disabled = false;
+                
+                // Fetch shipping fee based on saved address province
+                const urlParams = new URLSearchParams(window.location.search);
+                let feeUrl = '/checkout/shipping-fee?province=' + encodeURIComponent(prov);
+                if (urlParams.has('items')) {
+                    feeUrl += '&items=' + urlParams.get('items');
+                }
+                fetch(feeUrl)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            const standardRadio = document.querySelector('input[name="shipping_type"][value="standard"]');
+                            const expressRadio  = document.querySelector('input[name="shipping_type"][value="express"]');
+                            if (standardRadio && expressRadio) {
+                                standardRadio.closest('label').setAttribute('data-fee', data.fee);
+                                expressRadio.closest('label').setAttribute('data-fee', data.express_fee);
+                                document.getElementById('standardFeeEl').textContent = data.fee === 0 ? 'Miễn phí' : formatVND(data.fee);
+                                document.getElementById('expressFeeEl').textContent  = formatVND(data.express_fee);
+                                const selectedRadio = document.querySelector('input[name="shipping_type"]:checked');
+                                if (selectedRadio) updateShipping(selectedRadio);
+                            }
+                        }
+                    })
+                    .catch(e => console.error('Lỗi lấy phí ship từ địa chỉ lưu:', e));
+            }
+        });
+
+        // Trigger on load if there's a selected address
+        if (addressSelect.value) {
+            addressSelect.dispatchEvent(new Event('change'));
+        }
+    }
+});
 </script>
 @endsection

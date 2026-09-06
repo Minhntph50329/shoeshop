@@ -126,7 +126,17 @@ class CheckoutController extends Controller
         // Calculate totals
         $subtotal      = 0;
         $discountAmount = 0;
-        $baseShippingFee = (int) \App\Models\Setting::get('shipping_fee', 30000);
+        
+        // Calculate subtotal FIRST
+        foreach ($cart->items as $item) {
+            $price     = $item->price_at_time ?? ($item->variant ? (float) $item->variant->price : (float) $item->product->price);
+            $subtotal += $price * $item->quantity;
+        }
+
+        $shippingService = app(\App\Services\ShippingService::class);
+        $province = $request->input('province', 'Hà Nội'); // Fallback to Hanoi if not provided
+        $baseShippingFee = $shippingService->calculateFee($province);
+        
         $freeShippingMin = (int) \App\Models\Setting::get('free_shipping_min', 500000);
 
         if ($subtotal >= $freeShippingMin) {
@@ -135,11 +145,6 @@ class CheckoutController extends Controller
         
         $shippingFee = $request->shipping_type === 'express' ? $baseShippingFee + 20000 : $baseShippingFee;
         $couponId      = null;
-
-        foreach ($cart->items as $item) {
-            $price     = $item->price_at_time ?? ($item->variant ? (float) $item->variant->price : (float) $item->product->price);
-            $subtotal += $price * $item->quantity;
-        }
 
         // Apply coupon
         if ($request->filled('coupon_code')) {
@@ -438,6 +443,49 @@ class CheckoutController extends Controller
             'success'  => true,
             'discount' => $discount,
             'message'  => "Áp dụng thành công! Giảm {$label}",
+        ]);
+    }
+
+    /**
+     * AJAX: Get shipping fee based on province
+     */
+    public function getShippingFee(Request $request, \App\Services\ShippingService $shippingService)
+    {
+        $province = $request->input('province');
+        if (!$province) {
+            return response()->json(['success' => false, 'message' => 'Vui lòng chọn tỉnh/thành.']);
+        }
+
+        $fee = $shippingService->calculateFee($province);
+
+        // Apply free shipping logic here for the preview if needed
+        // Assuming we need to know cart subtotal for accurate fee preview
+        $user = auth()->user();
+        $selectedItemIds = $request->query('items') ? explode(',', $request->query('items')) : [];
+        $cart = Cart::with(['items' => function($q) use ($selectedItemIds) {
+            if (!empty($selectedItemIds)) {
+                $q->whereIn('id', $selectedItemIds);
+            }
+        }, 'items.product', 'items.variant'])
+            ->where('user_id', $user->id)->where('status', 'active')->first();
+
+        $subtotal = 0;
+        if ($cart) {
+            foreach ($cart->items as $item) {
+                $price = $item->price_at_time ?? ($item->variant ? (float) $item->variant->price : (float) $item->product->price);
+                $subtotal += $price * $item->quantity;
+            }
+        }
+
+        $freeShippingMin = (int) \App\Models\Setting::get('free_shipping_min', 500000);
+        if ($subtotal >= $freeShippingMin) {
+            $fee = 0;
+        }
+
+        return response()->json([
+            'success' => true,
+            'fee' => $fee,
+            'express_fee' => $fee == 0 ? 20000 : $fee + 20000,
         ]);
     }
 }

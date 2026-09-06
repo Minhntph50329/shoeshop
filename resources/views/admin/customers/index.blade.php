@@ -112,7 +112,7 @@
                 <!-- User -->
                 <div class="flex min-w-0 items-start gap-3">
                     @if($user->avatar)
-                        <img src="{{ asset('storage/' . $user->avatar) }}"
+                        <img src="{{ asset($user->avatar) }}"
                              alt="{{ $user->fullname }}"
                              class="h-11 w-11 shrink-0 rounded-full border border-slate-200 object-cover">
                     @else
@@ -300,7 +300,7 @@
                             <td class="p-4">
                                 <div class="flex min-w-[230px] items-center gap-3">
                                     @if($user->avatar)
-                                        <img src="{{ asset('storage/' . $user->avatar) }}"
+                                        <img src="{{ asset($user->avatar) }}"
                                              alt="{{ $user->fullname }}"
                                              class="h-10 w-10 shrink-0 rounded-full border border-slate-200 object-cover">
                                     @else

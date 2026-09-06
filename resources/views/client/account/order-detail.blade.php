@@ -486,7 +486,7 @@ $doneIds = $order->statusHistories->pluck('order_status_id')->unique()->toArray(
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <div>
                 <h3 class="font-black text-slate-800">Cập nhật địa chỉ nhận hàng</h3>
-                <p class="text-[10px] text-slate-400 mt-0.5">Vui lòng chọn Tỉnh/Thành, Quận/Huyện, Phường/Xã từ gợi ý</p>
+                <p class="text-[10px] text-slate-400 mt-0.5">Vui lòng chọn đầy đủ Tỉnh/Thành, Quận/Huyện, Phường/Xã</p>
             </div>
             <button onclick="closeEditAddressModal()" class="p-2 hover:bg-slate-100 rounded-lg transition">
                 <i data-lucide="x" class="w-4 h-4 text-slate-500"></i>
@@ -512,44 +512,55 @@ $doneIds = $order->statusHistories->pluck('order_status_id')->unique()->toArray(
                 </div>
             </div>
 
+            {{-- Province / District / Ward autocomplete --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {{-- Province Input --}}
+                {{-- Province --}}
                 <div class="relative">
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Tỉnh / Thành phố <span class="text-rose-500">*</span></label>
-                    <input type="text" id="modalProvinceInput" name="province" required autocomplete="off" placeholder="Gõ để tìm kiếm..." 
+                    <input type="text" id="modalProvinceInput" name="province" required autocomplete="off"
+                        placeholder="Gõ để tìm tỉnh..."
                         class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition">
-                    <div id="modalProvinceList" class="absolute left-0 w-full max-h-40 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
+                    <div id="modalProvinceList" class="absolute left-0 w-full max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
                 </div>
-
-                {{-- District Input --}}
+                {{-- District --}}
                 <div class="relative">
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Quận / Huyện <span class="text-rose-500">*</span></label>
-                    <input type="text" id="modalDistrictInput" name="district" required disabled autocomplete="off" placeholder="Chọn tỉnh trước..." 
+                    <input type="text" id="modalDistrictInput" name="district" required disabled autocomplete="off"
+                        placeholder="Chọn tỉnh trước..."
                         class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition disabled:bg-slate-50 disabled:cursor-not-allowed">
-                    <div id="modalDistrictList" class="absolute left-0 w-full max-h-40 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
+                    <div id="modalDistrictList" class="absolute left-0 w-full max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
                 </div>
-
-                {{-- Ward Input --}}
+                {{-- Ward --}}
                 <div class="relative">
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Phường / Xã <span class="text-rose-500">*</span></label>
-                    <input type="text" id="modalWardInput" name="ward" required disabled autocomplete="off" placeholder="Chọn huyện trước..." 
+                    <input type="text" id="modalWardInput" name="ward" required disabled autocomplete="off"
+                        placeholder="Chọn huyện trước..."
                         class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition disabled:bg-slate-50 disabled:cursor-not-allowed">
-                    <div id="modalWardList" class="absolute left-0 w-full max-h-40 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
+                    <div id="modalWardList" class="absolute left-0 w-full max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-lg z-50 mt-1 hidden divide-y divide-slate-50"></div>
                 </div>
             </div>
 
             {{-- Street --}}
             <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Tên đường, Tòa nhà, Số nhà <span class="text-rose-500">*</span></label>
-                <input type="text" id="modalStreetInput" name="street" required disabled placeholder="Nhập số nhà, tên đường cụ thể..." 
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Số nhà, tên đường <span class="text-rose-500">*</span></label>
+                <input type="text" id="modalStreetInput" name="street" required disabled
+                    placeholder="Nhập số nhà, ngõ ngách, tên đường..."
                     class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition disabled:bg-slate-50 disabled:cursor-not-allowed">
             </div>
 
-            {{-- Compiled Address (Gửi đi chi tiết địa chỉ đầy đủ) --}}
-            <div>
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Địa chỉ hiển thị đầy đủ</label>
-                <input type="text" id="modalCompiledAddressInput" name="address" value="{{ old('address', $order->address) }}" required readonly placeholder="Địa chỉ sẽ tự động tạo..." 
-                    class="w-full py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-500 cursor-not-allowed">
+            {{-- Compiled address (hidden) --}}
+            <input type="hidden" name="address" id="modalCompiledAddressInput" value="{{ old('address', $order->address) }}">
+
+            {{-- Shipping fee preview --}}
+            <div id="shippingFeePreview" class="hidden p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-xs">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-500 flex items-center gap-1.5">
+                        <i data-lucide="truck" class="w-3.5 h-3.5 text-indigo-500"></i>
+                        Phí ship mới (tiêu chuẩn):
+                    </span>
+                    <strong id="modalNewFeeText" class="text-indigo-600 text-sm"></strong>
+                </div>
+                <p class="text-[10px] text-slate-400 mt-1">Phí ship sẽ được cập nhật sau khi bạn lưu địa chỉ mới.</p>
             </div>
 
             <div class="flex gap-3 pt-2">
@@ -558,8 +569,8 @@ $doneIds = $order->statusHistories->pluck('order_status_id')->unique()->toArray(
                     Hủy bỏ
                 </button>
                 <button type="submit"
-                    class="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition">
-                    Cập nhật
+                    class="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition flex items-center justify-center gap-1.5">
+                    <i data-lucide="save" class="w-3.5 h-3.5"></i> Lưu &amp; Cập nhật phí ship
                 </button>
             </div>
         </form>
@@ -663,10 +674,16 @@ function closeEditAddressModal() {
     const modal = document.getElementById('editAddressModal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
+    // Reset fee preview
+    document.getElementById('shippingFeePreview').classList.add('hidden');
+    document.getElementById('modalProvinceSelect').value = '';
 }
 document.getElementById('editAddressModal').addEventListener('click', function(e) {
     if (e.target === this) closeEditAddressModal();
 });
+
+// Fetch shipping fee preview when province selected in modal
+// (Handled by DOMContentLoaded autocomplete below)
 
 function showAllHistory() {
     document.querySelectorAll('.history-item').forEach(item => item.classList.remove('hidden'));
@@ -755,17 +772,19 @@ document.getElementById('review_images_input').addEventListener('change', functi
 
 document.addEventListener('DOMContentLoaded', function () {
     const provinceInput = document.getElementById('modalProvinceInput');
-    const provinceList = document.getElementById('modalProvinceList');
+    const provinceList  = document.getElementById('modalProvinceList');
     const districtInput = document.getElementById('modalDistrictInput');
-    const districtList = document.getElementById('modalDistrictList');
-    const wardInput = document.getElementById('modalWardInput');
-    const wardList = document.getElementById('modalWardList');
-    const streetInput = document.getElementById('modalStreetInput');
+    const districtList  = document.getElementById('modalDistrictList');
+    const wardInput     = document.getElementById('modalWardInput');
+    const wardList      = document.getElementById('modalWardList');
+    const streetInput   = document.getElementById('modalStreetInput');
     const compiledInput = document.getElementById('modalCompiledAddressInput');
 
+    if (!provinceInput) return;
+
     let allProvinces = [];
-    let districts = [];
-    let wards = [];
+    let districts    = [];
+    let wards        = [];
 
     let selectedProvinceCode = null;
     let selectedDistrictCode = null;
@@ -824,9 +843,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    renderSuggestions(provinceInput, provinceList, () => allProvinces, (code, name) => {
+    renderSuggestions(provinceInput, provinceList, () => allProvinces, async (code, name) => {
         selectedProvinceCode = code;
-        
+
         districtInput.value = '';
         districtInput.disabled = true;
         districtInput.placeholder = 'Đang tải danh sách...';
@@ -842,13 +861,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateCompiledAddress();
 
+        // Fetch shipping fee preview
+        try {
+            const res = await fetch('/checkout/shipping-fee?province=' + encodeURIComponent(name));
+            const data = await res.json();
+            if (data.success) {
+                const feeText    = document.getElementById('modalNewFeeText');
+                const previewBox = document.getElementById('shippingFeePreview');
+                feeText.textContent = data.fee === 0 ? 'Miễn phí' : data.fee.toLocaleString('vi-VN') + 'đ';
+                previewBox.classList.remove('hidden');
+            }
+        } catch(e) { console.error('Lỗi lấy phí ship:', e); }
+
         fetch(`https://provinces.open-api.vn/api/p/${code}?depth=2`)
             .then(res => res.json())
             .then(data => {
                 districts = data.districts || [];
                 districtInput.disabled = false;
                 districtInput.placeholder = 'Gõ để tìm quận/huyện...';
-                
+
                 setupDistrictSuggestions();
             })
             .catch(err => {
@@ -891,7 +922,7 @@ document.addEventListener('DOMContentLoaded', function () {
         renderSuggestions(wardInput, wardList, () => wards, (code, name) => {
             streetInput.disabled = false;
             streetInput.placeholder = 'Nhập số nhà, ngõ ngách, tên đường...';
-            
+
             updateCompiledAddress();
         });
     }

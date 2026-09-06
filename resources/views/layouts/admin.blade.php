@@ -82,7 +82,7 @@
                     <i data-lucide="layout-dashboard"
                         class="h-5 w-5 transition-transform duration-200 group-hover:scale-110"></i>
 
-                    <span class="font-medium">Dashboard</span>
+                    <span class="font-medium">Tổng quan</span>
 
                     @if(request()->routeIs('admin.dashboard'))
                         <span class="absolute right-3 h-2 w-2 rounded-full bg-white"></span>
@@ -179,6 +179,18 @@
                         class="h-5 w-5 transition-transform group-hover:scale-110"></i>
 
                     <span class="font-medium">Khách hàng</span>
+                </a>
+
+                <a href="{{ route('admin.shipping-rates.index') }}"
+                    class="group flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-200
+                    {{ request()->routeIs('admin.shipping-rates.*')
+                        ? 'bg-slate-800 text-white shadow-md'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="truck"
+                        class="h-5 w-5 transition-transform group-hover:scale-110"></i>
+
+                    <span class="font-medium">Phí vận chuyển</span>
                 </a>
             </div>
 
@@ -306,12 +318,12 @@
                     class="absolute right-0 top-12 z-50 hidden w-52 overflow-hidden rounded-xl border border-slate-200 bg-white py-2 shadow-xl">
 
                     <div class="border-b border-slate-100 px-4 py-3">
-                        <p class="text-sm font-semibold text-slate-800">
-                            Admin Account
+                        <p class="text-xs text-slate-500">
+                            Admin: <span class="font-semibold text-slate-800">{{ Auth::user()->fullname }}</span>
                         </p>
 
                         <p class="mt-0.5 text-xs text-slate-500">
-                            Quản trị viên
+                            {{ Auth::user()->email }}
                         </p>
                     </div>
 

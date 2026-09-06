@@ -41,7 +41,7 @@
                             <td class="p-4">
                                 <div class="flex items-center gap-3">
                                     @if($user->avatar)
-                                        <img src="{{ asset('storage/' . $user->avatar) }}" alt="{{ $user->fullname }}" class="w-9 h-9 rounded-full object-cover border border-slate-200">
+                                        <img src="{{ asset($user->avatar) }}" alt="{{ $user->fullname }}" class="w-9 h-9 rounded-full object-cover border border-slate-200">
                                     @else
                                         <div class="w-9 h-9 rounded-full bg-slate-200 text-slate-600 font-black flex items-center justify-center text-xs uppercase">
                                             {{ substr($user->fullname ?? $user->email, 0, 1) }}

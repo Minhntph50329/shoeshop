@@ -66,6 +66,7 @@ Route::post('/checkout/payment-online/{order_id}', [CheckoutController::class, '
 Route::get('/checkout/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('checkout.vnpay.return');
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.apply-coupon');
+Route::get('/checkout/shipping-fee', [CheckoutController::class, 'getShippingFee'])->name('checkout.shipping-fee');
 
 // User Profile Routes
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -135,11 +136,16 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::post('/orders/{id}/update-address', [OrderController::class, 'updateAddress'])->name('orders.updateAddress');
 
     // Refund Management
     Route::get('/refunds', [\App\Http\Controllers\Admin\RefundController::class, 'index'])->name('refunds.index');
     Route::get('/refunds/{id}', [\App\Http\Controllers\Admin\RefundController::class, 'show'])->name('refunds.show');
     Route::post('/refunds/{id}/action', [\App\Http\Controllers\Admin\RefundController::class, 'handleAction'])->name('refunds.action');
+
+    // Shipping Rates
+    Route::get('/shipping-rates', [\App\Http\Controllers\Admin\ShippingRateController::class, 'index'])->name('shipping-rates.index');
+    Route::post('/shipping-rates', [\App\Http\Controllers\Admin\ShippingRateController::class, 'store'])->name('shipping-rates.store');
 
     // Customers (Users Management: CRUD + Soft Delete + Trash + Restore + Force Delete)
     Route::get('/customers/trash', [CustomerController::class, 'trash'])->name('customers.trash');

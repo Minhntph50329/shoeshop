@@ -39,9 +39,12 @@ class ProfileController extends Controller
 
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
+                // avatar được lưu với tiền tố 'storage/', cần bỏ tiền tố khi xóa
+                $oldPath = str_replace('storage/', '', $user->avatar);
+                Storage::disk('public')->delete($oldPath);
             }
-            $validated['avatar'] = $request->file('avatar')->store('users', 'public');
+            $path = $request->file('avatar')->store('users', 'public');
+            $validated['avatar'] = 'storage/' . $path;
         }
 
         $user->update($validated);
