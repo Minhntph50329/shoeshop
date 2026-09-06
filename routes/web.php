@@ -28,11 +28,8 @@ use App\Http\Controllers\Client\OrderController as ClientOrderController;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [ClientController::class, 'index'])->name('home');
-Route::get('/shop', [ClientController::class, 'shop'])->name('shop');
-Route::get('/products/{product}', [ClientController::class, 'productDetail'])->name('products.show');
 
-// Authentication Routes
+// Authentication Routes (ngoài maintenance để admin vẫn login được khi bật bảo trì)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -44,55 +41,65 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
-// Cart Routes
-Route::get('/cart', [CartController::class, 'index'])->name('cart');
-Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
-Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/cart/remove-multiple', [CartController::class, 'removeMultiple'])->name('cart.removeMultiple');
-Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
-Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+// Client Routes - được bảo vệ bởi maintenance middleware
+Route::middleware('maintenance')->group(function () {
 
-// Wishlist Routes
-Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
-Route::post('/wishlist/toggle/{productId}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::get('/', [ClientController::class, 'index'])->name('home');
+    Route::get('/shop', [ClientController::class, 'shop'])->name('shop');
+    Route::get('/products/{product}', [ClientController::class, 'productDetail'])->name('products.show');
 
-// Checkout
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
-Route::get('/checkout/address/create', [CheckoutController::class, 'createAddress'])->name('checkout.address.create');
-Route::post('/checkout/address/create', [CheckoutController::class, 'storeAddress'])->name('checkout.address.store');
-Route::get('/checkout/payment-online/{order_id}', [CheckoutController::class, 'paymentOnline'])->name('checkout.payment.online');
-Route::post('/checkout/payment-online/{order_id}', [CheckoutController::class, 'processOnlinePayment'])->name('checkout.payment.online.submit');
-Route::get('/checkout/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('checkout.vnpay.return');
-Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
-Route::get('/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.apply-coupon');
-Route::get('/checkout/shipping-fee', [CheckoutController::class, 'getShippingFee'])->name('checkout.shipping-fee');
+    // Cart Routes
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
+    Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+    Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/remove-multiple', [CartController::class, 'removeMultiple'])->name('cart.removeMultiple');
+    Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
-// User Profile Routes
-Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
-Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
-Route::post('/profile/address', [ProfileController::class, 'storeAddress'])->name('profile.address.store');
-Route::delete('/profile/address/{id}', [ProfileController::class, 'destroyAddress'])->name('profile.address.destroy');
+    // Wishlist Routes
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
+    Route::post('/wishlist/toggle/{productId}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
-// Client Order Routes
-Route::get('/my-orders', [ClientOrderController::class, 'index'])->name('my-orders');
-Route::get('/my-orders/{id}', [ClientOrderController::class, 'show'])->name('client.orders.show');
-Route::post('/my-orders/{id}/cancel', [ClientOrderController::class, 'cancel'])->name('client.orders.cancel');
-Route::post('/my-orders/{id}/confirm', [ClientOrderController::class, 'confirm'])->name('client.orders.confirm');
-Route::post('/my-orders/{id}/update-address', [ClientOrderController::class, 'updateAddress'])->name('client.orders.updateAddress');
-Route::get('/my-orders/{id}/refund', [\App\Http\Controllers\Client\RefundController::class, 'create'])->name('client.orders.refund');
-Route::post('/my-orders/{id}/refund', [\App\Http\Controllers\Client\RefundController::class, 'store'])->name('client.orders.refund.store');
-Route::post('/reviews', [\App\Http\Controllers\Client\ReviewController::class, 'store'])->name('reviews.store');
+    // Checkout
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/checkout/address/create', [CheckoutController::class, 'createAddress'])->name('checkout.address.create');
+    Route::post('/checkout/address/create', [CheckoutController::class, 'storeAddress'])->name('checkout.address.store');
+    Route::get('/checkout/payment-online/{order_id}', [CheckoutController::class, 'paymentOnline'])->name('checkout.payment.online');
+    Route::post('/checkout/payment-online/{order_id}', [CheckoutController::class, 'processOnlinePayment'])->name('checkout.payment.online.submit');
+    Route::get('/checkout/vnpay-return', [CheckoutController::class, 'vnpayReturn'])->name('checkout.vnpay.return');
+    Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+    Route::get('/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->name('checkout.apply-coupon');
+    Route::get('/checkout/shipping-fee', [CheckoutController::class, 'getShippingFee'])->name('checkout.shipping-fee');
 
-// Client Blog Routes
-Route::get('/blog', [BlogController::class, 'index'])->name('blog');
-Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
-Route::post('/blog/{id}/comment', [BlogController::class, 'storeComment'])->name('blog.comment.store');
+    // User Profile Routes
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    Route::post('/profile/address', [ProfileController::class, 'storeAddress'])->name('profile.address.store');
+    Route::delete('/profile/address/{id}', [ProfileController::class, 'destroyAddress'])->name('profile.address.destroy');
 
-Route::get('/contact', [\App\Http\Controllers\Client\ContactController::class, 'index'])->name('contact');
-Route::post('/contact', [\App\Http\Controllers\Client\ContactController::class, 'store'])->name('contact.store');
-Route::get('/my-contacts', [\App\Http\Controllers\Client\ContactController::class, 'myContacts'])->middleware('auth')->name('my-contacts');
+    // Client Order Routes
+    Route::get('/my-orders', [ClientOrderController::class, 'index'])->name('my-orders');
+    Route::get('/my-orders/{id}', [ClientOrderController::class, 'show'])->name('client.orders.show');
+    Route::post('/my-orders/{id}/cancel', [ClientOrderController::class, 'cancel'])->name('client.orders.cancel');
+    Route::post('/my-orders/{id}/confirm', [ClientOrderController::class, 'confirm'])->name('client.orders.confirm');
+    Route::post('/my-orders/{id}/update-address', [ClientOrderController::class, 'updateAddress'])->name('client.orders.updateAddress');
+    Route::get('/my-orders/{id}/refund', [\App\Http\Controllers\Client\RefundController::class, 'create'])->name('client.orders.refund');
+    Route::post('/my-orders/{id}/refund', [\App\Http\Controllers\Client\RefundController::class, 'store'])->name('client.orders.refund.store');
+    Route::post('/reviews', [\App\Http\Controllers\Client\ReviewController::class, 'store'])->name('reviews.store');
+
+    // Client Blog Routes
+    Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+    Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+    Route::post('/blog/{id}/comment', [BlogController::class, 'storeComment'])->name('blog.comment.store');
+
+    Route::get('/contact', [\App\Http\Controllers\Client\ContactController::class, 'index'])->name('contact');
+    Route::post('/contact', [\App\Http\Controllers\Client\ContactController::class, 'store'])->name('contact.store');
+    Route::get('/my-contacts', [\App\Http\Controllers\Client\ContactController::class, 'myContacts'])->middleware('auth')->name('my-contacts');
+
+});
+
 
 
 /*
