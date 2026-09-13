@@ -58,6 +58,11 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
+    public function infoAttributeValues()
+    {
+        return $this->belongsToMany(AttributeValue::class, 'attribute_value_product');
+    }
+
     // Dynamic attribute: calculate final price considering discount and valid dates
     public function getFinalPriceAttribute()
     {

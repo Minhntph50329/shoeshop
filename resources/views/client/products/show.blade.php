@@ -131,6 +131,26 @@
                         {{ $product->short_description }}
                     </div>
                 @endif
+
+                {{-- Information Attributes --}}
+                @if($product->infoAttributeValues && $product->infoAttributeValues->count() > 0)
+                    <div class="rounded-2xl border border-slate-100 bg-white p-4 text-xs sm:text-sm space-y-2">
+                        <div class="font-bold text-slate-800 mb-2">Thông tin thêm:</div>
+                        @foreach($product->infoAttributeValues->groupBy('attribute_id') as $attrId => $values)
+                            @php
+                                $attr = $values->first()->attribute;
+                            @endphp
+                            @if($attr)
+                                <div class="flex items-start gap-2">
+                                    <span class="font-semibold text-slate-600 w-24 shrink-0">{{ $attr->name }}:</span>
+                                    <span class="text-slate-700 font-medium">
+                                        {{ $values->pluck('value')->implode(', ') }}
+                                    </span>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                @endif
             </div>
 
             {{-- Add To Cart --}}
@@ -138,48 +158,210 @@
                 @csrf
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                {{-- Variants --}}
+                {{-- Variants: Grouped by Attribute --}}
                 @if($product->variants && $product->variants->count() > 0)
-                    <div class="space-y-3">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-800">
-                            Tùy chọn sản phẩm
-                        </label>
+                    @php
+                        // Collect all unique attribute values across variants, grouped by attribute
+                        $groupedAttrs = [];
+                        foreach ($product->variants as $variant) {
+                            foreach ($variant->attributeValues as $val) {
+                                $attrName = $val->attribute->name ?? 'Unknown';
+                                $attrId   = $val->attribute_id;
+                                if (!isset($groupedAttrs[$attrId])) {
+                                    $groupedAttrs[$attrId] = [
+                                        'name'   => $attrName,
+                                        'values' => [],
+                                    ];
+                                }
+                                // Add unique values only
+                                $groupedAttrs[$attrId]['values'][$val->id] = $val;
+                            }
+                        }
+                        // Build variant map: combination of selected value IDs -> variant
+                        $variantMap = [];
+                        foreach ($product->variants as $variant) {
+                            $key = $variant->attributeValues->pluck('id')->sort()->implode('-');
+                            $variantMap[$key] = $variant;
+                        }
+                    @endphp
 
-                        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                            @foreach($product->variants as $index => $variant)
-                                <label class="cursor-pointer rounded-xl border border-slate-200 p-3 transition hover:border-indigo-500 hover:bg-indigo-50/30">
-                                    <div class="flex items-start justify-between gap-2">
-                                        <div class="flex items-center gap-2">
-                                            <input type="radio"
-                                                name="product_variant_id"
-                                                value="{{ $variant->id }}"
-                                                {{ $index === 0 ? 'checked' : '' }}
-                                                data-image="{{ $variant->image ? asset($variant->image) : asset($product->image) }}"
-                                                class="h-4 w-4 text-indigo-600">
+                    <div id="variant_selector" class="space-y-4">
+                        @foreach($groupedAttrs as $attrId => $group)
+                            @php
+                                $isColor = in_array(strtolower($group['name']), ['màu sắc', 'mau sac', 'color', 'colour', 'màu']);
+                            @endphp
 
-                                            <div class="text-xs font-bold text-slate-800">
-                                                @foreach($variant->attributeValues as $val)
-                                                    <span class="mr-1 inline-flex items-center gap-1">
-                                                        @if($val->color_code)
-                                                            <span class="h-2.5 w-2.5 rounded-full border border-slate-300"
-                                                                style="background-color: {{ $val->color_code }}"></span>
-                                                        @endif
-                                                        {{ $val->value }}
-                                                    </span>
-                                                @endforeach
-                                            </div>
-                                        </div>
+                            <div class="variant-group">
+                                <div class="mb-2 flex items-center gap-2">
+                                    <span class="text-xs font-black uppercase tracking-wide text-slate-800">{{ $group['name'] }}</span>
+                                    <span id="selected_label_{{ $attrId }}" class="text-xs font-semibold text-indigo-600"></span>
+                                </div>
 
-                                        <span class="text-[9px] text-slate-400">SKU: {{ $variant->sku }}</span>
-                                    </div>
+                                <div class="flex flex-wrap items-center gap-2" data-attr-id="{{ $attrId }}">
+                                    @foreach($group['values'] as $val)
+                                        @if($isColor)
+                                            <button type="button"
+                                                data-attr-id="{{ $attrId }}"
+                                                data-value-id="{{ $val->id }}"
+                                                data-label="{{ $val->value }}"
+                                                title="{{ $val->value }}"
+                                                aria-label="{{ $val->value }}"
+                                                class="variant-opt variant-color-opt relative h-7 w-7 shrink-0 rounded-full border-2 border-white shadow-sm ring-1 ring-slate-200 transition duration-150 hover:scale-105 hover:ring-2 hover:ring-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                                                @if($val->color_code)
+                                                    style="background-color: {{ $val->color_code }}"
+                                                @else
+                                                    style="background: linear-gradient(135deg, #e2e8f0 50%, #cbd5e1 50%)"
+                                                @endif>
+                                                <span class="pointer-events-none absolute inset-0 rounded-full opacity-0 ring-1 ring-white"></span>
+                                                <span class="variant-color-check pointer-events-none absolute -right-1 -top-1 hidden h-3.5 w-3.5 items-center justify-center rounded-full bg-indigo-600 text-white shadow-sm">
+                                                    <i data-lucide="check" class="h-2 w-2"></i>
+                                                </span>
+                                            </button>
+                                        @else
+                                            <button type="button"
+                                                data-attr-id="{{ $attrId }}"
+                                                data-value-id="{{ $val->id }}"
+                                                data-label="{{ $val->value }}"
+                                                class="variant-opt min-w-[58px] rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition duration-150 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                                                {{ $val->value }}
+                                            </button>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
 
-                                    <div class="mt-2 text-xs font-bold text-indigo-600">
-                                        {{ format_price($variant->price ?? $product->final_price) }}
-                                    </div>
-                                </label>
-                            @endforeach
+                        {{-- Hidden input that stores the resolved variant ID --}}
+                        <input type="hidden" name="product_variant_id" id="selected_variant_id" value="">
+
+                        {{-- Variant info display --}}
+                        <div id="variant_info" class="hidden rounded-xl border border-indigo-100 bg-indigo-50/50 px-3.5 py-2.5">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="min-w-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
+                                    <span class="font-semibold text-slate-400">SKU <span id="variant_sku" class="ml-1 font-mono font-bold text-slate-700"></span></span>
+                                    <span class="text-slate-300">•</span>
+                                    <span class="font-semibold text-slate-400">Tồn kho <span id="variant_stock" class="ml-1 font-bold text-emerald-600"></span></span>
+                                </div>
+                                <div id="variant_price" class="shrink-0 text-base font-black text-indigo-600 sm:text-lg"></div>
+                            </div>
                         </div>
                     </div>
+
+                    {{-- Variant Data + Selection Logic --}}
+                    @php
+                        $variantData = $product->variants->load('attributeValues')->mapWithKeys(function($v) use ($product) {
+                            return [$v->id => [
+                                'id'    => $v->id,
+                                'sku'   => $v->sku,
+                                'price' => $v->price ?? $product->final_price,
+                                'stock' => $v->stock,
+                                'image' => $v->image ? asset($v->image) : null,
+                                'key'   => $v->attributeValues->pluck('id')->sort()->values()->implode('-'),
+                            ]];
+                        })->toArray();
+                    @endphp
+                    <style>
+                        #variant_selector .variant-opt.border-indigo-500 {
+                            border-color: rgb(99 102 241);
+                            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.12);
+                        }
+
+                        #variant_selector .variant-opt.border-indigo-500.variant-color-opt {
+                            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.18);
+                        }
+
+                        #variant_selector .variant-opt.border-indigo-500 .variant-color-check {
+                            display: flex;
+                        }
+
+                        #variant_selector .variant-color-opt {
+                            width: 28px;
+                            height: 28px;
+                        }
+                    </style>
+
+                    <script>
+                    (function() {
+                        const allVariants = @json($variantData);
+                        const selected = {};
+
+                        function formatPrice(p) {
+                            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
+                        }
+
+                        function resolveVariant() {
+                            const sortedIds = Object.values(selected).map(Number).sort((a,b) => a-b).join('-');
+                            let found = null;
+                            for (const v of Object.values(allVariants)) {
+                                if (v.key === sortedIds) { found = v; break; }
+                            }
+
+                            const infoBox      = document.getElementById('variant_info');
+                            const varInput     = document.getElementById('selected_variant_id');
+                            const mainImg      = document.getElementById('main_detail_image');
+                            const addToCartBtn = document.getElementById('add_to_cart_btn');
+
+                            if (found) {
+                                varInput.value = found.id;
+                                document.getElementById('variant_sku').textContent   = found.sku || '—';
+                                document.getElementById('variant_stock').textContent = found.stock + ' đôi';
+                                document.getElementById('variant_price').textContent = formatPrice(found.price);
+                                infoBox.classList.remove('hidden');
+                                if (found.image && mainImg) mainImg.src = found.image;
+                                
+                                if (addToCartBtn) {
+                                    if (found.stock > 0) {
+                                        addToCartBtn.disabled = false;
+                                        addToCartBtn.querySelector('span').textContent = 'Thêm vào giỏ hàng';
+                                    } else {
+                                        addToCartBtn.disabled = true;
+                                        addToCartBtn.querySelector('span').textContent = 'Phân loại này đã hết hàng';
+                                    }
+                                }
+                            } else {
+                                varInput.value = '';
+                                infoBox.classList.add('hidden');
+                                if (addToCartBtn) {
+                                    addToCartBtn.disabled = true;
+                                    addToCartBtn.querySelector('span').textContent = 'Phân loại không tồn tại';
+                                }
+                            }
+                        }
+
+                        document.querySelectorAll('.variant-opt').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const attrId  = this.dataset.attrId;
+                                const valueId = this.dataset.valueId;
+                                const label   = this.dataset.label;
+
+                                // Deselect siblings
+                                document.querySelectorAll(`.variant-opt[data-attr-id="${attrId}"]`).forEach(b => {
+                                    b.classList.remove('border-indigo-500', 'bg-indigo-50', 'ring-2', 'ring-indigo-300', 'scale-110');
+                                });
+
+                                // Select this
+                                this.classList.add('border-indigo-500', 'ring-2', 'ring-indigo-300');
+
+                                // Update label
+                                const labelEl = document.getElementById('selected_label_' + attrId);
+                                if (labelEl) labelEl.textContent = label;
+
+                                selected[attrId] = parseInt(valueId);
+                                resolveVariant();
+                            });
+                        });
+
+                        // Auto-select first option of each attribute group
+                        const attrGroups = {};
+                        document.querySelectorAll('.variant-opt').forEach(btn => {
+                            const aid = btn.dataset.attrId;
+                            if (!attrGroups[aid]) {
+                                attrGroups[aid] = btn;
+                            }
+                        });
+                        Object.values(attrGroups).forEach(btn => btn.click());
+                    })();
+                    </script>
                 @endif
 {{-- Quantity + Cart --}}
 <div class="flex flex-col gap-3 sm:flex-row sm:items-stretch">
@@ -213,7 +395,8 @@
     @if($product->stock > 0)
 
         <button type="submit"
-            class="flex min-h-[56px] w-full flex-1 items-center justify-center gap-3 rounded-2xl bg-indigo-600 px-6 text-sm font-black text-white shadow-lg shadow-indigo-600/30 transition duration-200 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30 active:translate-y-0 active:scale-[0.99] sm:text-base">
+            id="add_to_cart_btn"
+            class="flex min-h-[56px] w-full flex-1 items-center justify-center gap-3 rounded-2xl bg-indigo-600 px-6 text-sm font-black text-white shadow-lg shadow-indigo-600/30 transition duration-200 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30 active:translate-y-0 active:scale-[0.99] sm:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:-translate-y-0 disabled:hover:shadow-none disabled:active:scale-100 disabled:bg-slate-400">
 
             <i data-lucide="shopping-bag" class="h-5 w-5"></i>
 

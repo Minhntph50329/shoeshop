@@ -133,6 +133,31 @@
                 <div id="gallery_preview" class="grid grid-cols-4 sm:grid-cols-6 gap-3 pt-2"></div>
             </div>
 
+            <!-- Thuộc tính thông tin (Không tạo biến thể) -->
+            @if(isset($infoAttributes) && $infoAttributes->count() > 0)
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-4">
+                <div class="border-b border-slate-100 pb-3">
+                    <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+                        <i data-lucide="info" class="w-5 h-5 text-indigo-600"></i> Thuộc tính thông tin (Không biến thể)
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-1">Các thuộc tính này sẽ được hiển thị ở phần thông tin thêm trên trang chi tiết sản phẩm.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach($infoAttributes as $infoAttr)
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">{{ $infoAttr->name }}</label>
+                            <select name="info_attribute_value_ids[]" multiple class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 h-24">
+                                @foreach($infoAttr->values as $val)
+                                    <option value="{{ $val->id }}">{{ $val->value }}</option>
+                                @endforeach
+                            </select>
+                            <p class="text-[10px] text-slate-400 mt-1">Giữ phím Ctrl/Cmd để chọn nhiều giá trị.</p>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <!-- Thuộc tính & Biến thể Sản phẩm -->
             <div id="variable_product_fields" class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -302,7 +327,7 @@
 
     // Variant Builder Logic
     let variantIndex = 0;
-    const attributesData = @json($attributes);
+    const attributesData = @json($variantAttributes);
 
     document.getElementById('add_variant_btn').addEventListener('click', function() {
         document.getElementById('no_variants_msg').classList.add('hidden');
@@ -329,8 +354,10 @@
             <button type="button" onclick="this.closest('.relative').remove()" class="absolute top-2 right-2 text-slate-400 hover:text-rose-500 text-xs">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                 ${attrSelectsHtml}
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-2 border-t border-slate-200">
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-500">Mã SKU biến thể</label>
                     <input type="text" name="variants[${variantIndex}][sku]" placeholder="Để trống tự sinh PRD..." class="w-full px-2.5 py-1.5 border border-slate-200 rounded text-xs">

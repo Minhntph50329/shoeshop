@@ -14,7 +14,7 @@ class StoreAttributeValueRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'value' => 'required|string|max:255',
+            'value' => 'required|string|max:255|regex:/^[^,]+$/',
             'color_code' => 'nullable|string|max:50',
         ];
     }
@@ -24,6 +24,7 @@ class StoreAttributeValueRequest extends FormRequest
         return [
             'value.required' => 'Vui lòng nhập giá trị thuộc tính.',
             'value.max' => 'Giá trị thuộc tính không được quá 255 ký tự.',
+            'value.regex' => 'Giá trị thuộc tính không được chứa dấu phẩy.',
         ];
     }
 }

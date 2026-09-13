@@ -137,6 +137,9 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::delete('/attributes/{id}/force-delete', [AttributeController::class, 'forceDelete'])->name('attributes.forceDelete');
     Route::post('/attributes/{attribute}/values', [AttributeController::class, 'storeValue'])->name('attributes.values.store');
     Route::delete('/attributes/values/{id}', [AttributeController::class, 'destroyValue'])->name('attributes.values.destroy');
+    Route::get('/attributes/values/trash', [AttributeController::class, 'valueTrash'])->name('attributes.values.trash');
+    Route::post('/attributes/values/{id}/restore', [AttributeController::class, 'valueRestore'])->name('attributes.values.restore');
+    Route::delete('/attributes/values/{id}/force-delete', [AttributeController::class, 'valueForceDelete'])->name('attributes.values.forceDelete');
     Route::resource('attributes', AttributeController::class);
 
     // Orders

@@ -57,9 +57,10 @@ class ProductController extends Controller
     {
         $brands = Brand::where('is_active', true)->get();
         $categories = Category::where('is_active', true)->whereNull('parent_id')->with('children')->get();
-        $attributes = Attribute::where('is_active', true)->with('values')->get();
+        $variantAttributes = Attribute::where('is_active', true)->where('is_variant', true)->with('values')->get();
+        $infoAttributes = Attribute::where('is_active', true)->where('is_variant', false)->with('values')->get();
 
-        return view('admin.products.create', compact('brands', 'categories', 'attributes'));
+        return view('admin.products.create', compact('brands', 'categories', 'variantAttributes', 'infoAttributes'));
     }
 
     /**
@@ -67,6 +68,21 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
+        // Check for duplicate variant attribute combinations
+        if ($request->product_type === 'variable' && $request->has('variants')) {
+            $combinations = [];
+            foreach ($request->variants as $variantData) {
+                if (empty($variantData['attribute_value_ids'])) continue;
+                $sortedIds = $variantData['attribute_value_ids'];
+                sort($sortedIds);
+                $comboKey = implode('-', $sortedIds);
+                if (in_array($comboKey, $combinations)) {
+                    return back()->withInput()->withErrors(['variants' => 'Các biến thể không được có cùng một tổ hợp thuộc tính. Vui lòng kiểm tra lại.']);
+                }
+                $combinations[] = $comboKey;
+            }
+        }
+
         $data = $request->only([
             'brand_id', 'name', 'price', 'stock', 'discount',
             'discount_start', 'discount_end', 'status',
@@ -116,6 +132,11 @@ class ProductController extends Controller
         // Gắn danh mục
         if ($request->filled('category_ids')) {
             $product->categories()->sync($request->category_ids);
+        }
+
+        // Gắn thuộc tính thông tin (is_variant = false)
+        if ($request->filled('info_attribute_value_ids')) {
+            $product->infoAttributeValues()->sync($request->info_attribute_value_ids);
         }
 
         // Xử lý biến thể sản phẩm (Variants) & Ảnh biến thể
@@ -169,12 +190,13 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Product::with(['categories', 'images', 'variants.attributeValues', 'variants.images'])->findOrFail($id);
+        $product = Product::with(['categories', 'images', 'infoAttributeValues', 'variants.attributeValues', 'variants.images'])->findOrFail($id);
         $brands = Brand::where('is_active', true)->get();
         $categories = Category::where('is_active', true)->whereNull('parent_id')->with('children')->get();
-        $attributes = Attribute::where('is_active', true)->with('values')->get();
+        $variantAttributes = Attribute::where('is_active', true)->where('is_variant', true)->with('values')->get();
+        $infoAttributes = Attribute::where('is_active', true)->where('is_variant', false)->with('values')->get();
 
-        return view('admin.products.edit', compact('product', 'brands', 'categories', 'attributes'));
+        return view('admin.products.edit', compact('product', 'brands', 'categories', 'variantAttributes', 'infoAttributes'));
     }
 
     /**
@@ -182,6 +204,21 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, $id)
     {
+        // Check for duplicate variant attribute combinations
+        if ($request->product_type === 'variable' && $request->has('variants')) {
+            $combinations = [];
+            foreach ($request->variants as $variantData) {
+                if (empty($variantData['attribute_value_ids'])) continue;
+                $sortedIds = $variantData['attribute_value_ids'];
+                sort($sortedIds);
+                $comboKey = implode('-', $sortedIds);
+                if (in_array($comboKey, $combinations)) {
+                    return back()->withInput()->withErrors(['variants' => 'Các biến thể không được có cùng một tổ hợp thuộc tính. Vui lòng kiểm tra lại.']);
+                }
+                $combinations[] = $comboKey;
+            }
+        }
+
         $product = Product::findOrFail($id);
 
         $data = $request->only([
@@ -228,6 +265,9 @@ class ProductController extends Controller
 
         // Sync danh mục
         $product->categories()->sync($request->category_ids ?? []);
+
+        // Sync thuộc tính thông tin
+        $product->infoAttributeValues()->sync($request->info_attribute_value_ids ?? []);
 
         // Cập nhật biến thể
         if ($request->product_type === 'variable' && $request->has('variants') && is_array($request->variants)) {

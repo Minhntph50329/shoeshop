@@ -101,4 +101,27 @@ class AttributeController extends Controller
         return redirect()->route('admin.attributes.trash')
             ->with('success', 'Đã xóa vĩnh viễn thuộc tính!');
     }
+    public function valueTrash()
+    {
+        $trashedValues = AttributeValue::onlyTrashed()->with('attribute')->latest()->paginate(20);
+        return view('admin.attribute.value_trash', compact('trashedValues'));
+    }
+
+    public function valueRestore($id)
+    {
+        $val = AttributeValue::onlyTrashed()->findOrFail($id);
+        $val->restore();
+
+        return redirect()->route('admin.attributes.values.trash')
+            ->with('success', 'Đã khôi phục giá trị thuộc tính!');
+    }
+
+    public function valueForceDelete($id)
+    {
+        $val = AttributeValue::onlyTrashed()->findOrFail($id);
+        $val->forceDelete();
+
+        return redirect()->route('admin.attributes.values.trash')
+            ->with('success', 'Đã xóa vĩnh viễn giá trị thuộc tính!');
+    }
 }

@@ -49,11 +49,29 @@ class CartController extends Controller
         ]);
 
         $product = Product::findOrFail($request->product_id);
+
+        if ($product->product_type === 'variable' && !$request->filled('product_variant_id')) {
+            if ($request->wantsJson()) {
+                return response()->json(['status' => 'error', 'message' => 'Vui lòng chọn đầy đủ phân loại (size, màu) sản phẩm.'], 400);
+            }
+            return back()->with('error', 'Vui lòng chọn đầy đủ phân loại (size, màu) sản phẩm.');
+        }
+
         $variant = null;
         $maxStock = $product->stock;
 
         if ($request->filled('product_variant_id')) {
-            $variant = ProductVariant::findOrFail($request->product_variant_id);
+            $variant = ProductVariant::where('id', $request->product_variant_id)
+                                     ->where('product_id', $product->id)
+                                     ->first();
+            
+            if (!$variant) {
+                if ($request->wantsJson()) {
+                    return response()->json(['status' => 'error', 'message' => 'Phân loại sản phẩm không hợp lệ hoặc không tồn tại.'], 400);
+                }
+                return back()->with('error', 'Phân loại sản phẩm không hợp lệ hoặc không tồn tại.');
+            }
+
             $priceAtTime = $variant->price ?? $product->price;
             $maxStock = $variant->stock;
         } else {
