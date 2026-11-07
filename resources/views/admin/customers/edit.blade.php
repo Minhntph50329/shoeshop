@@ -94,21 +94,12 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Vai trò (Role) <span class="text-rose-500">*</span></label>
-                    @php 
-                        $currentRole = $customer->roles->first()->name ?? $customer->role ?? 'Customer';
-                        $canEditRole = auth()->user()->hasRole('Super Admin') || (auth()->user()->hasRole('Admin') && !in_array($currentRole, ['Super Admin', 'Admin']));
-                    @endphp
-                    <select name="role" class="w-full py-2.5 px-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition"
-                        @if(!$canEditRole) disabled @endif>
-                        @foreach($roles as $role)
-                            <option value="{{ $role->name }}" {{ old('role', $currentRole) == $role->name ? 'selected' : '' }}>{{ $role->name }}</option>
-                        @endforeach
-                    </select>
-                    @if(!$canEditRole)
-                        <input type="hidden" name="role" value="{{ $currentRole }}">
-                        <p class="text-[10px] text-slate-500 mt-1 italic">* Bạn không có quyền đổi vai trò của tài khoản này</p>
-                    @endif
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Vai trò (Role)</label>
+                    <div class="flex items-center gap-2 py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-semibold">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
+                        <span>Khách hàng (Customer)</span>
+                    </div>
+                    <input type="hidden" name="role" value="Customer">
                 </div>
 
                 <div>

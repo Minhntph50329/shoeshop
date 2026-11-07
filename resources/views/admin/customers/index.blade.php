@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Quản lý người dùng - Veloce Admin')
-@section('page_title', 'Danh sách người dùng')
+@section('title', 'Quản lý khách hàng - Veloce Admin')
+@section('page_title', 'Danh sách khách hàng')
 
 @section('content')
 <div class="w-full max-w-full space-y-6 overflow-x-hidden">
@@ -9,9 +9,9 @@
     <!-- Header Actions -->
     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div class="min-w-0">
-            <h2 class="text-xl font-bold text-slate-800">Quản lý người dùng</h2>
+            <h2 class="text-xl font-bold text-slate-800">Quản lý khách hàng</h2>
             <p class="mt-1 text-sm leading-5 text-slate-500">
-                Quản lý tài khoản, phân quyền, trạng thái và xem chi tiết khách hàng
+                Danh sách tài khoản khách hàng, trạng thái hoạt động và lịch sử giao dịch
             </p>
         </div>
 
@@ -25,7 +25,7 @@
             <a href="{{ route('admin.customers.create') }}"
                class="flex min-w-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-3 py-2.5 text-xs font-bold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700 sm:px-4">
                 <i data-lucide="user-plus" class="h-4 w-4 shrink-0"></i>
-                <span>Thêm người dùng</span>
+                <span>Thêm khách hàng</span>
             </a>
         </div>
     </div>
@@ -49,9 +49,9 @@
     <div class="w-full rounded-2xl border border-slate-100 bg-white p-3 shadow-sm sm:p-4">
         <form method="GET"
               action="{{ route('admin.customers.index') }}"
-              class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              class="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-4">
 
-            <div class="relative min-w-0 sm:col-span-2">
+            <div class="relative min-w-0 sm:col-span-2 lg:col-span-3">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                     <i data-lucide="search" class="h-4 w-4"></i>
                 </span>
@@ -59,21 +59,8 @@
                 <input type="text"
                        name="search"
                        value="{{ request('search') }}"
-                       placeholder="Tìm theo tên, email, sđt..."
+                       placeholder="Tìm khách hàng theo tên, email, số điện thoại..."
                        class="w-full min-w-0 rounded-xl border border-slate-200 py-2.5 pl-9 pr-4 text-xs transition focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
-            </div>
-
-            <div class="min-w-0">
-                <select name="role"
-                        class="w-full min-w-0 rounded-xl border border-slate-200 px-3 py-2.5 text-xs transition focus:border-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
-                    <option value="">-- Tất cả vai trò --</option>
-                    <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>
-                        Admin (Quản trị)
-                    </option>
-                    <option value="client" {{ request('role') == 'client' ? 'selected' : '' }}>
-                        Client (Khách hàng)
-                    </option>
-                </select>
             </div>
 
             <div class="flex min-w-0 gap-2">
@@ -97,16 +84,10 @@
     </div>
 
     <!-- =========================
-         MOBILE: USER CARDS
+         MOBILE: CUSTOMER CARDS
          ========================= -->
     <div class="space-y-3 md:hidden">
         @forelse($customers as $user)
-            @php
-                $currentRole = $user->roles->first()->name ?? $user->role ?? 'Customer';
-                $canEditRole = auth()->user()->hasRole('Super Admin')
-                    || (auth()->user()->hasRole('Admin') && !in_array($currentRole, ['Super Admin', 'Admin']));
-            @endphp
-
             <div class="w-full overflow-hidden rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
 
                 <!-- User -->
@@ -144,7 +125,7 @@
 
                     <div class="min-w-0">
                         <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">
-                            Ngày tạo
+                            Ngày tham gia
                         </p>
                         <p class="mt-1 truncate text-xs font-semibold text-slate-700">
                             {{ $user->created_at ? $user->created_at->format('d/m/Y H:i') : 'N/A' }}
@@ -157,37 +138,10 @@
                         </p>
 
                         <div class="mt-1">
-                            @if($canEditRole)
-                                <form action="{{ route('admin.customers.updateRole', $user->id) }}"
-                                      method="POST"
-                                      class="w-full">
-                                    @csrf
-                                    @method('PUT')
-
-                                    <select name="role"
-                                            onchange="this.form.submit()"
-                                            class="w-full min-w-0 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-[11px] font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                                        @foreach($roles as $role)
-                                            <option value="{{ $role->name }}"
-                                                {{ ($user->roles->first()->name ?? $user->role) == $role->name ? 'selected' : '' }}>
-                                                {{ $role->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </form>
-                            @else
-                                @if(in_array($currentRole, ['Admin', 'Super Admin']))
-                                    <span class="inline-flex max-w-full items-center gap-1 rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-[11px] font-bold text-purple-700">
-                                        <i data-lucide="shield-check" class="h-3 w-3 shrink-0"></i>
-                                        <span class="truncate">{{ $currentRole }}</span>
-                                    </span>
-                                @else
-                                    <span class="inline-flex max-w-full items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
-                                        <i data-lucide="user" class="h-3 w-3 shrink-0"></i>
-                                        <span class="truncate">{{ $currentRole ?? 'Khách hàng' }}</span>
-                                    </span>
-                                @endif
-                            @endif
+                            <span class="inline-flex max-w-full items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+                                <i data-lucide="user" class="h-3 w-3 shrink-0"></i>
+                                <span class="truncate">Khách hàng</span>
+                            </span>
                         </div>
                     </div>
 
@@ -266,7 +220,7 @@
             </div>
         @empty
             <div class="rounded-2xl border border-slate-100 bg-white p-8 text-center text-xs text-slate-400 shadow-sm">
-                Không tìm thấy người dùng nào.
+                Không tìm thấy khách hàng nào.
             </div>
         @endforelse
     </div>
@@ -279,23 +233,17 @@
             <table class="w-full min-w-[900px] border-collapse text-left">
                 <thead>
                     <tr class="border-b border-slate-100 bg-slate-50/80 text-xs font-bold uppercase tracking-wider text-slate-500">
-                        <th class="p-4">Người dùng</th>
+                        <th class="p-4">Khách hàng</th>
                         <th class="p-4">Số điện thoại</th>
                         <th class="p-4">Vai trò</th>
                         <th class="p-4">Trạng thái</th>
-                        <th class="p-4">Ngày tạo</th>
+                        <th class="p-4">Ngày tham gia</th>
                         <th class="p-4 text-right">Hành động</th>
                     </tr>
                 </thead>
 
                 <tbody class="divide-y divide-slate-100 text-xs text-slate-600">
                     @forelse($customers as $user)
-                        @php
-                            $currentRole = $user->roles->first()->name ?? $user->role ?? 'Customer';
-                            $canEditRole = auth()->user()->hasRole('Super Admin')
-                                || (auth()->user()->hasRole('Admin') && !in_array($currentRole, ['Super Admin', 'Admin']));
-                        @endphp
-
                         <tr class="transition hover:bg-slate-50/50">
                             <td class="p-4">
                                 <div class="flex min-w-[230px] items-center gap-3">
@@ -325,37 +273,10 @@
                             </td>
 
                             <td class="p-4">
-                                @if($canEditRole)
-                                    <form action="{{ route('admin.customers.updateRole', $user->id) }}"
-                                          method="POST"
-                                          class="inline-block">
-                                        @csrf
-                                        @method('PUT')
-
-                                        <select name="role"
-                                                onchange="this.form.submit()"
-                                                class="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500">
-                                            @foreach($roles as $role)
-                                                <option value="{{ $role->name }}"
-                                                    {{ ($user->roles->first()->name ?? $user->role) == $role->name ? 'selected' : '' }}>
-                                                    {{ $role->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </form>
-                                @else
-                                    @if(in_array($currentRole, ['Admin', 'Super Admin']))
-                                        <span class="inline-flex items-center gap-1 rounded-full border border-purple-100 bg-purple-50 px-2.5 py-1 text-[11px] font-bold text-purple-700">
-                                            <i data-lucide="shield-check" class="h-3 w-3"></i>
-                                            {{ $currentRole }}
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
-                                            <i data-lucide="user" class="h-3 w-3"></i>
-                                            {{ $currentRole ?? 'Khách hàng' }}
-                                        </span>
-                                    @endif
-                                @endif
+                                <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+                                    <i data-lucide="user" class="h-3 w-3"></i>
+                                    Khách hàng
+                                </span>
                             </td>
 
                             <td class="whitespace-nowrap p-4">
@@ -432,7 +353,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="p-8 text-center text-slate-400">
-                                Không tìm thấy người dùng nào.
+                                Không tìm thấy khách hàng nào.
                             </td>
                         </tr>
                     @endforelse

@@ -1,17 +1,17 @@
 @extends('layouts.admin')
 
-@section('title', 'Thùng rác - Quản lý người dùng')
-@section('page_title', 'Thùng rác - Người dùng đã xóa')
+@section('title', 'Thùng rác - Quản lý khách hàng')
+@section('page_title', 'Thùng rác - Khách hàng đã xóa')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex items-center justify-between">
         <div>
-            <h2 class="text-xl font-bold text-slate-800">Thùng rác người dùng</h2>
+            <h2 class="text-xl font-bold text-slate-800">Thùng rác khách hàng</h2>
             <p class="text-sm text-slate-500">Khôi phục lại tài khoản hoặc xóa vĩnh viễn khỏi hệ thống</p>
         </div>
         <a href="{{ route('admin.customers.index') }}" class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
-            <i data-lucide="arrow-left" class="w-4 h-4"></i> Danh sách người dùng
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Danh sách khách hàng
         </a>
     </div>
 
@@ -75,7 +75,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-8 text-center text-slate-400">Thùng rác trống. không có người dùng nào bị xóa.</td>
+                            <td colspan="5" class="p-8 text-center text-slate-400">Thùng rác trống. Không có khách hàng nào bị xóa.</td>
                         </tr>
                     @endforelse
                 </tbody>

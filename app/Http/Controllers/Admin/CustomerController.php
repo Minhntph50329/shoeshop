@@ -15,11 +15,16 @@ use Illuminate\Validation\Rule;
 class CustomerController extends Controller
 {
     /**
-     * Danh sách người dùng
+     * Danh sách khách hàng (chỉ hiển thị tài khoản khách hàng)
      */
     public function index(Request $request)
     {
-        $query = User::query();
+        $staffRoleNames = ['Super Admin', 'Admin', 'Staff'];
+
+        // Chỉ hiển thị các tài khoản là khách hàng (không thuộc Super Admin, Admin, Staff)
+        $query = User::whereDoesntHave('roles', function ($q) use ($staffRoleNames) {
+            $q->whereIn('name', $staffRoleNames);
+        })->whereNotIn('role', ['admin', 'staff', 'Super Admin', 'Admin', 'Staff']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -30,37 +35,25 @@ class CustomerController extends Controller
             });
         }
 
-        if ($request->filled('role')) {
-            $query->where('role', $request->role);
-        }
-
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
         $customers = $query->latest()->paginate(10)->withQueryString();
-        $roles = Role::all();
-        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
-            $roles = $roles->filter(fn($r) => in_array($r->name, ['Customer', 'Staff']));
-        }
 
-        return view('admin.customers.index', compact('customers', 'roles'));
+        return view('admin.customers.index', compact('customers'));
     }
 
     /**
-     * Form tạo người dùng mới
+     * Form tạo khách hàng mới
      */
     public function create()
     {
-        $roles = Role::all();
-        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
-            $roles = $roles->filter(fn($r) => in_array($r->name, ['Customer', 'Staff']));
-        }
-        return view('admin.customers.create', compact('roles'));
+        return view('admin.customers.create');
     }
 
     /**
-     * Lưu người dùng mới
+     * Lưu khách hàng mới
      */
     public function store(StoreCustomerRequest $request)
     {
@@ -72,26 +65,16 @@ class CustomerController extends Controller
         }
 
         $validated['password'] = Hash::make($validated['password']);
-
-        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
-            if (in_array($validated['role'], ['Admin', 'Super Admin'])) {
-                return back()->with('error', 'Bạn không có quyền tạo tài khoản với vai trò này!')->withInput();
-            }
-        }
+        $validated['role'] = 'Customer';
 
         $user = User::create($validated);
-        
-        if (auth()->user()->hasAnyRole(['Super Admin', 'Admin'])) {
-            $user->assignRole($validated['role']);
-        } else {
-            $user->assignRole('Customer');
-        }
+        $user->assignRole('Customer');
 
-        return redirect()->route('admin.customers.index')->with('success', 'Thêm mới người dùng thành công!');
+        return redirect()->route('admin.customers.index')->with('success', 'Thêm mới khách hàng thành công!');
     }
 
     /**
-     * Chi tiết người dùng (Thông tin cá nhân, địa chỉ, đơn hàng, ngân hàng...)
+     * Chi tiết khách hàng (Thông tin cá nhân, địa chỉ, đơn hàng, ngân hàng...)
      */
     public function show($id)
     {
@@ -100,20 +83,20 @@ class CustomerController extends Controller
     }
 
     /**
-     * Form chỉnh sửa thông tin người dùng
+     * Form chỉnh sửa thông tin khách hàng
      */
     public function edit($id)
     {
-        $customer = User::findOrFail($id);
-        $roles = Role::all();
-        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
-            $roles = $roles->filter(fn($r) => in_array($r->name, ['Customer', 'Staff']));
-        }
-        return view('admin.customers.edit', compact('customer', 'roles'));
+        $staffRoleNames = ['Super Admin', 'Admin', 'Staff'];
+        $customer = User::whereDoesntHave('roles', function ($q) use ($staffRoleNames) {
+            $q->whereIn('name', $staffRoleNames);
+        })->whereNotIn('role', ['admin', 'staff', 'Super Admin', 'Admin', 'Staff'])->findOrFail($id);
+
+        return view('admin.customers.edit', compact('customer'));
     }
 
     /**
-     * Cập nhật thông tin người dùng
+     * Cập nhật thông tin khách hàng
      */
     public function update(UpdateCustomerRequest $request, $id)
     {
@@ -136,25 +119,11 @@ class CustomerController extends Controller
             unset($validated['password']);
         }
 
-        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
-            if ($customer->hasAnyRole(['Super Admin', 'Admin'])) {
-                unset($validated['role']); // Cannot change role of Admins
-            } elseif (isset($validated['role']) && in_array($validated['role'], ['Admin', 'Super Admin'])) {
-                return back()->with('error', 'Bạn không có quyền cấp vai trò này!')->withInput();
-            }
-        }
-
-        if (!auth()->user()->hasAnyRole(['Super Admin', 'Admin'])) {
-            unset($validated['role']);
-        }
+        unset($validated['role']); // Khách hàng luôn giữ vai trò Customer
 
         $customer->update($validated);
 
-        if (isset($validated['role'])) {
-            $customer->syncRoles([$validated['role']]);
-        }
-
-        return redirect()->route('admin.customers.index')->with('success', 'Cập nhật thông tin người dùng thành công!');
+        return redirect()->route('admin.customers.index')->with('success', 'Cập nhật thông tin khách hàng thành công!');
     }
 
     /**
@@ -170,15 +139,19 @@ class CustomerController extends Controller
 
         $customer->delete();
 
-        return redirect()->route('admin.customers.index')->with('success', 'Đã chuyển tài khoản người dùng vào thùng rác!');
+        return redirect()->route('admin.customers.index')->with('success', 'Đã chuyển tài khoản khách hàng vào thùng rác!');
     }
 
     /**
-     * Thùng rác tài khoản (Danh sách tài khoản đã xóa mềm)
+     * Thùng rác tài khoản khách hàng
      */
     public function trash(Request $request)
     {
-        $query = User::onlyTrashed();
+        $staffRoleNames = ['Super Admin', 'Admin', 'Staff'];
+
+        $query = User::onlyTrashed()->whereDoesntHave('roles', function ($q) use ($staffRoleNames) {
+            $q->whereIn('name', $staffRoleNames);
+        })->whereNotIn('role', ['admin', 'staff', 'Super Admin', 'Admin', 'Staff']);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -202,7 +175,7 @@ class CustomerController extends Controller
         $customer = User::onlyTrashed()->findOrFail($id);
         $customer->restore();
 
-        return redirect()->route('admin.customers.trash')->with('success', 'Khôi phục tài khoản thành công!');
+        return redirect()->route('admin.customers.trash')->with('success', 'Khôi phục tài khoản khách hàng thành công!');
     }
 
     /**
@@ -219,7 +192,7 @@ class CustomerController extends Controller
 
         $customer->forceDelete();
 
-        return redirect()->route('admin.customers.trash')->with('success', 'Xóa vĩnh viễn tài khoản thành công!');
+        return redirect()->route('admin.customers.trash')->with('success', 'Xóa vĩnh viễn tài khoản khách hàng thành công!');
     }
 
     /**
@@ -246,36 +219,5 @@ class CustomerController extends Controller
         $customer->save();
 
         return back()->with('success', $message);
-    }
-
-    /**
-     * Cập nhật vai trò (chỉ Super Admin)
-     */
-    public function updateRole(Request $request, $id)
-    {
-        if (!auth()->user()->hasAnyRole(['Super Admin', 'Admin'])) {
-            return back()->with('error', 'Bạn không có quyền thực hiện thao tác này!');
-        }
-
-        $customer = User::findOrFail($id);
-        
-        if ($customer->id === auth()->id()) {
-            return back()->with('error', 'Bạn không thể tự thay đổi vai trò của chính mình!');
-        }
-
-        if (auth()->user()->hasRole('Admin') && !auth()->user()->hasRole('Super Admin')) {
-            if ($customer->hasAnyRole(['Super Admin', 'Admin'])) {
-                return back()->with('error', 'Bạn không có quyền thay đổi vai trò của Quản trị viên khác!');
-            }
-            if (in_array($request->role, ['Super Admin', 'Admin'])) {
-                return back()->with('error', 'Bạn không có quyền cấp vai trò này!');
-            }
-        }
-
-        $request->validate(['role' => 'required|exists:roles,name']);
-        
-        $customer->syncRoles([$request->role]);
-
-        return back()->with('success', 'Đã cập nhật vai trò thành công!');
     }
 }

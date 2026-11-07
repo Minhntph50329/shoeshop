@@ -142,6 +142,18 @@
                     @endif
                 </a>
 
+                @php
+                    $compareCount = count(session()->get('compare', []));
+                @endphp
+                <a href="{{ route('compare.index') }}" class="relative p-2 hover:bg-slate-50 rounded-full text-slate-700" title="So sánh">
+                    <i data-lucide="bar-chart-2" class="w-5 h-5 {{ $compareCount > 0 ? 'text-indigo-600' : '' }}"></i>
+                    @if($compareCount > 0)
+                        <span class="absolute -top-1 -right-1 bg-indigo-600 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                            {{ $compareCount }}
+                        </span>
+                    @endif
+                </a>
+
                 @auth
                     <div class="relative group">
                         <button class="flex items-center gap-2 p-1 hover:bg-slate-50 rounded-full text-slate-700 transition focus:outline-none">

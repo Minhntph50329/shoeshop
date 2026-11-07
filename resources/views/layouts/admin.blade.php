@@ -257,6 +257,18 @@
 
             <div class="space-y-1 pb-5">
 
+                <a href="{{ route('admin.staffs.index') }}"
+                    class="group flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-200
+                    {{ request()->routeIs('admin.staffs.*')
+                        ? 'bg-slate-800 text-white shadow-md'
+                        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+
+                    <i data-lucide="shield-check"
+                        class="h-5 w-5 transition-transform group-hover:scale-110"></i>
+
+                    <span class="font-medium">Nhân viên</span>
+                </a>
+
                 <a href="{{ route('admin.contacts.index') }}"
                     class="group flex items-center gap-3 rounded-xl px-3 py-3 transition-all duration-200
                     {{ request()->routeIs('admin.contacts.*')

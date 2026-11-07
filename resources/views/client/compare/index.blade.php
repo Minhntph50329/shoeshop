@@ -1,12 +1,235 @@
 @extends('layouts.app')
 
-@section('title', 'So sánh sản phẩm - Veloce')
+@section('title', 'So sánh sản phẩm - Veloce ShoeShop')
 
 @section('content')
-<div class="space-y-6">
-    <h2 class="text-2xl font-extrabold tracking-tight">So sánh sản phẩm</h2>
-    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-center py-12">
-        <p class="text-sm font-semibold text-slate-500">Chọn tối thiểu 2 sản phẩm để so sánh thông số kĩ thuật</p>
+<div class="space-y-5 sm:space-y-6 lg:space-y-7">
+
+    {{-- Breadcrumb --}}
+    <div class="flex items-center gap-2 overflow-hidden text-xs text-slate-400">
+        <a href="{{ route('home') }}" class="shrink-0 transition hover:text-indigo-600">Trang chủ</a>
+        <i data-lucide="chevron-right" class="h-3 w-3 shrink-0"></i>
+        <span class="truncate font-semibold text-slate-700">So sánh sản phẩm</span>
+    </div>
+
+    <div class="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm">
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 p-5 sm:p-6 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+                    <i data-lucide="bar-chart-2" class="h-5 w-5"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black text-slate-900 sm:text-2xl">So sánh sản phẩm</h1>
+                    <p class="text-sm text-slate-500">Đối chiếu thông số, phân loại size & màu sắc của các sản phẩm bạn đã chọn</p>
+                </div>
+            </div>
+            
+            <a href="{{ route('shop') }}" class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200">
+                <i data-lucide="plus" class="h-4 w-4"></i>
+                Thêm sản phẩm khác
+            </a>
+        </div>
+
+        @if(session('success'))
+            <div class="mx-4 mt-4 rounded-xl sm:mx-6 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-600">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if(session('info'))
+            <div class="mx-4 mt-4 rounded-xl sm:mx-6 bg-indigo-50 px-4 py-3 text-sm font-bold text-indigo-600">
+                {{ session('info') }}
+            </div>
+        @endif
+        @if(session('warning'))
+            <div class="mx-4 mt-4 rounded-xl sm:mx-6 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-600">
+                {{ session('warning') }}
+            </div>
+        @endif
+
+        @if($products->count() > 0)
+            <div class="overflow-x-auto px-3 pb-5 pt-3 sm:px-5 sm:pb-6">
+                <table class="w-full min-w-[760px] border-separate border-spacing-0 text-sm">
+                    <thead>
+                        <tr>
+                            <th class="sticky left-0 z-20 w-[145px] border-b border-slate-200 bg-slate-50/95 p-3 text-left text-[10px] font-black uppercase tracking-[0.12em] text-slate-400 backdrop-blur sm:w-[170px] sm:p-4">
+                                Tiêu chí
+                            </th>
+                            @foreach($products as $item)
+                                <th class="w-[190px] min-w-[190px] border-b border-slate-200 p-2 align-top sm:w-[210px] sm:min-w-[210px] sm:p-3">
+                                    <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-2.5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-md sm:p-3">
+                                        {{-- Nút xóa theo key phân loại --}}
+                                        <form action="{{ route('compare.remove', $item->key) }}" method="POST" class="absolute -right-2 -top-2 z-10">
+                                            @csrf
+                                            <button type="submit" aria-label="Xóa sản phẩm" class="flex h-6 w-6 items-center justify-center rounded-full border border-white bg-rose-500 text-white shadow-md transition hover:scale-105 hover:bg-rose-600 mt-5 mr-4">
+                                                <i data-lucide="x" class="h-3 w-3"></i>
+                                            </button>
+                                        </form>
+
+                                        <a href="{{ route('products.show', $item->slug) }}" class="block aspect-[1.08/1] w-full overflow-hidden rounded-xl bg-slate-50 mb-2.5 sm:mb-3">
+                                            @if($item->image)
+                                                <img src="{{ asset($item->image) }}" alt="{{ $item->name }}" class="h-full w-full object-contain p-2 transition duration-300 hover:scale-105">
+                                            @else
+                                                <div class="flex h-full w-full items-center justify-center text-xs text-slate-400">Không có ảnh</div>
+                                            @endif
+                                        </a>
+
+                                        <a href="{{ route('products.show', $item->slug) }}" class="block truncate px-0.5 text-xs font-extrabold text-slate-800 transition hover:text-indigo-600 sm:text-sm">
+                                            {{ $item->name }}
+                                        </a>
+
+                                        {{-- Nhãn phân loại đã chọn --}}
+                                        @if($item->variant_label)
+                                            <div class="mt-1.5 flex items-center gap-1">
+                                                <span class="inline-flex items-center gap-1 rounded-md bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700 border border-indigo-100">
+                                                    <i data-lucide="layers" class="h-2.5 w-2.5"></i>
+                                                    {{ $item->variant_label }}
+                                                </span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </th>
+                            @endforeach
+                            
+                            {{-- Fill empty columns up to 4 --}}
+                            @for($i = $products->count(); $i < 4; $i++)
+                                <th class="w-[190px] min-w-[190px] border-b border-slate-200 p-2 sm:w-[210px] sm:min-w-[210px] sm:p-3">
+                                    <div class="flex h-full min-h-[174px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 text-slate-400 transition hover:border-indigo-200 hover:bg-indigo-50/40">
+                                        <i data-lucide="plus" class="mb-2 h-6 w-6"></i>
+                                        <span class="text-xs font-semibold">Trống</span>
+                                    </div>
+                                </th>
+                            @endfor
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {{-- Thương hiệu --}}
+                        <tr class="group">
+                            <td class="sticky left-0 z-10 border-b border-slate-100 bg-slate-50/95 p-3 font-extrabold text-slate-700 backdrop-blur sm:p-4">Thương hiệu</td>
+                            @foreach($products as $item)
+                                <td class="border-b border-slate-100 p-3 font-semibold text-slate-600 sm:p-4">{{ $item->brand_name }}</td>
+                            @endforeach
+                            @for($i = $products->count(); $i < 4; $i++) <td></td> @endfor
+                        </tr>
+
+                        {{-- Giá theo biến thể --}}
+                        <tr class="group">
+                            <td class="sticky left-0 z-10 border-b border-slate-100 bg-slate-50/95 p-3 font-extrabold text-slate-700 backdrop-blur sm:p-4">Giá</td>
+                            @foreach($products as $item)
+                                <td class="border-b border-slate-100 p-3 sm:p-4">
+                                    <div class="text-base font-black text-indigo-600 sm:text-lg">{{ format_price($item->price) }}</div>
+                                    @if($item->discount > 0 && $item->original_price > $item->price)
+                                        <div class="text-xs text-slate-400 line-through">{{ format_price($item->original_price) }}</div>
+                                    @endif
+                                </td>
+                            @endforeach
+                            @for($i = $products->count(); $i < 4; $i++) <td></td> @endfor
+                        </tr>
+
+                        {{-- Size đã chọn --}}
+                        <tr class="group">
+                            <td class="sticky left-0 z-10 border-b border-slate-100 bg-slate-50/95 p-3 font-extrabold text-slate-700 backdrop-blur sm:p-4">Kích thước (Size)</td>
+                            @foreach($products as $item)
+                                <td class="border-b border-slate-100 p-3 font-bold text-slate-800 sm:p-4">
+                                    @if($item->size !== '—')
+                                        <span class="inline-flex items-center rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-800">
+                                            {{ $item->size }}
+                                        </span>
+                                    @else
+                                        <span class="text-slate-400">—</span>
+                                    @endif
+                                </td>
+                            @endforeach
+                            @for($i = $products->count(); $i < 4; $i++) <td></td> @endfor
+                        </tr>
+
+                        {{-- Màu sắc đã chọn --}}
+                        <tr class="group">
+                            <td class="sticky left-0 z-10 border-b border-slate-100 bg-slate-50/95 p-3 font-extrabold text-slate-700 backdrop-blur sm:p-4">Màu sắc</td>
+                            @foreach($products as $item)
+                                <td class="border-b border-slate-100 p-3 font-bold text-slate-800 sm:p-4">
+                                    @if($item->color !== '—')
+                                        <span class="inline-flex items-center rounded-lg bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700 border border-indigo-100">
+                                            {{ $item->color }}
+                                        </span>
+                                    @else
+                                        <span class="text-slate-400">—</span>
+                                    @endif
+                                </td>
+                            @endforeach
+                            @for($i = $products->count(); $i < 4; $i++) <td></td> @endfor
+                        </tr>
+
+                        {{-- Chất liệu --}}
+                        <tr class="group">
+                            <td class="sticky left-0 z-10 border-b border-slate-100 bg-slate-50/95 p-3 font-extrabold text-slate-700 backdrop-blur sm:p-4">Chất liệu</td>
+                            @foreach($products as $item)
+                                <td class="border-b border-slate-100 p-3 font-medium text-slate-600 sm:p-4">{{ $item->material }}</td>
+                            @endforeach
+                            @for($i = $products->count(); $i < 4; $i++) <td></td> @endfor
+                        </tr>
+
+                        {{-- Tồn kho của biến thể --}}
+                        <tr class="group">
+                            <td class="sticky left-0 z-10 border-b border-slate-100 bg-slate-50/95 p-3 font-extrabold text-slate-700 backdrop-blur sm:p-4">Tình trạng</td>
+                            @foreach($products as $item)
+                                <td class="p-4 border-b border-slate-100">
+                                    @if($item->stock > 0)
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-600">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                            Còn hàng ({{ $item->stock }})
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-600">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span>
+                                            Hết hàng
+                                        </span>
+                                    @endif
+                                </td>
+                            @endforeach
+                            @for($i = $products->count(); $i < 4; $i++) <td class="border-b border-slate-100"></td> @endfor
+                        </tr>
+                        
+                        {{-- Nút Xem chi tiết --}}
+                        <tr>
+                            <td class="bg-slate-50 p-4"></td>
+                            @foreach($products as $item)
+                                <td class="border-b border-slate-100 p-3 sm:p-4">
+                                    <a href="{{ route('products.show', $item->slug) }}" class="flex w-full items-center justify-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-2.5 text-xs font-bold text-white shadow-sm transition hover:bg-indigo-700 hover:shadow-md">
+                                        <i data-lucide="shopping-bag" class="h-4 w-4"></i>
+                                        Xem chi tiết
+                                    </a>
+                                </td>
+                            @endforeach
+                            @for($i = $products->count(); $i < 4; $i++) <td></td> @endfor
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="flex flex-col items-center justify-center px-5 py-16 text-center">
+                <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-300">
+                    <i data-lucide="bar-chart-2" class="h-8 w-8"></i>
+                </div>
+                <h3 class="mb-2 text-lg font-black text-slate-800">Chưa có sản phẩm nào trong danh sách</h3>
+                <p class="mb-6 text-sm text-slate-500">Vui lòng quay lại cửa hàng để chọn sản phẩm và phân loại bạn muốn so sánh.</p>
+                <a href="{{ route('shop') }}" class="rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 shadow-md">
+                    Đến cửa hàng ngay
+                </a>
+            </div>
+        @endif
     </div>
 </div>
+
+<style>
+    .compare-table-wrap {
+        scrollbar-width: thin;
+    }
+
+    @media (max-width: 640px) {
+        .compare-table-wrap {
+            margin-inline: -0.25rem;
+        }
+    }
+</style>
+
 @endsection

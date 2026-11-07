@@ -18,7 +18,7 @@ class StoreCustomerRequest extends FormRequest
             'email' => 'required|email|max:255|unique:users,email',
             'phone_number' => 'nullable|string|max:20',
             'password' => 'required|string|min:6',
-            'role' => 'required|exists:roles,name',
+            'role' => 'nullable|string',
             'status' => 'required|in:active,locked',
             'gender' => 'nullable|in:male,female,other',
             'birthday' => 'nullable|date',

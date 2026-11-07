@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\NewsController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\WishlistController;
+use App\Http\Controllers\Client\CompareController;
 use App\Http\Controllers\Client\ProfileController;
 use App\Http\Controllers\Client\BlogController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
@@ -59,6 +61,11 @@ Route::middleware('maintenance')->group(function () {
     // Wishlist Routes
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist');
     Route::post('/wishlist/toggle/{productId}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
+    // Compare Routes
+    Route::get('/compare', [CompareController::class, 'index'])->name('compare.index');
+    Route::post('/compare/add/{productId}', [CompareController::class, 'add'])->name('compare.add');
+    Route::post('/compare/remove/{key}', [CompareController::class, 'remove'])->name('compare.remove');
 
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
@@ -164,6 +171,14 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     Route::put('/customers/{id}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('customers.toggle');
     Route::put('/customers/{id}/role', [CustomerController::class, 'updateRole'])->name('customers.updateRole');
     Route::resource('customers', CustomerController::class);
+
+    // Staffs (Super Admin, Admin, Staff Management: CRUD + Soft Delete + Trash + Restore + Force Delete)
+    Route::get('/staffs/trash', [StaffController::class, 'trash'])->name('staffs.trash');
+    Route::post('/staffs/{id}/restore', [StaffController::class, 'restore'])->name('staffs.restore');
+    Route::delete('/staffs/{id}/force-delete', [StaffController::class, 'forceDelete'])->name('staffs.forceDelete');
+    Route::put('/staffs/{id}/toggle-status', [StaffController::class, 'toggleStatus'])->name('staffs.toggle');
+    Route::put('/staffs/{id}/role', [StaffController::class, 'updateRole'])->name('staffs.updateRole');
+    Route::resource('staffs', StaffController::class);
 
     // Banner (CRUD + Soft Delete + Trash + Restore + Force Delete)
     Route::get('/banner/trash', [BannerController::class, 'trash'])->name('banner.trash');

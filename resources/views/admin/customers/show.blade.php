@@ -39,15 +39,9 @@
             </div>
 
             <div class="flex items-center gap-2 pt-2">
-                @if($customer->role === 'admin')
-                    <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-bold border border-purple-100">
-                        Admin (Quản trị)
-                    </span>
-                @else
-                    <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold">
-                        Khách hàng
-                    </span>
-                @endif
+                <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold inline-flex items-center gap-1">
+                    <i data-lucide="user" class="w-3.5 h-3.5"></i> Khách hàng
+                </span>
 
                 @if($customer->status === 'active')
                     <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-xs font-bold border border-emerald-100">

@@ -296,13 +296,15 @@
                                 if (v.key === sortedIds) { found = v; break; }
                             }
 
-                            const infoBox      = document.getElementById('variant_info');
-                            const varInput     = document.getElementById('selected_variant_id');
-                            const mainImg      = document.getElementById('main_detail_image');
-                            const addToCartBtn = document.getElementById('add_to_cart_btn');
+                            const infoBox         = document.getElementById('variant_info');
+                            const varInput        = document.getElementById('selected_variant_id');
+                            const compareVarInput = document.getElementById('compare_variant_id');
+                            const mainImg         = document.getElementById('main_detail_image');
+                            const addToCartBtn    = document.getElementById('add_to_cart_btn');
 
                             if (found) {
                                 varInput.value = found.id;
+                                if (compareVarInput) compareVarInput.value = found.id;
                                 document.getElementById('variant_sku').textContent   = found.sku || '—';
                                 document.getElementById('variant_stock').textContent = found.stock + ' đôi';
                                 document.getElementById('variant_price').textContent = formatPrice(found.price);
@@ -320,6 +322,7 @@
                                 }
                             } else {
                                 varInput.value = '';
+                                if (compareVarInput) compareVarInput.value = '';
                                 infoBox.classList.add('hidden');
                                 if (addToCartBtn) {
                                     addToCartBtn.disabled = true;
@@ -421,22 +424,34 @@
 </div>
             </form>
 
-            {{-- Wishlist --}}
-            <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST">
-                @csrf
-                <button type="submit"
-                    class="flex w-full items-center justify-center gap-2 rounded-xl border py-3 text-xs font-bold transition
-                    {{ $isWishlisted
-                        ? 'border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100'
-                        : 'border-slate-200 bg-white text-slate-500 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500' }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
-                        fill="{{ $isWishlisted ? 'currentColor' : 'none' }}"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                    </svg>
-                    {{ $isWishlisted ? 'Đã yêu thích — Xóa khỏi danh sách' : 'Thêm vào yêu thích' }}
-                </button>
-            </form>
+            {{-- Actions: Wishlist & Compare --}}
+            <div class="grid grid-cols-2 gap-3">
+                <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST">
+                    @csrf
+                    <button type="submit"
+                        class="flex w-full items-center justify-center gap-2 rounded-xl border py-3 text-xs font-bold transition
+                        {{ $isWishlisted
+                            ? 'border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100'
+                            : 'border-slate-200 bg-white text-slate-500 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-500' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24"
+                            fill="{{ $isWishlisted ? 'currentColor' : 'none' }}"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        {{ $isWishlisted ? 'Bỏ Yêu thích' : 'Yêu thích' }}
+                    </button>
+                </form>
+
+                <form action="{{ route('compare.add', $product->id) }}" method="POST" id="compare_form">
+                    @csrf
+                    <input type="hidden" name="variant_id" id="compare_variant_id" value="">
+                    <button type="submit"
+                        class="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3 text-xs font-bold text-slate-500 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600">
+                        <i data-lucide="bar-chart-2" class="h-4 w-4"></i>
+                        So sánh
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
