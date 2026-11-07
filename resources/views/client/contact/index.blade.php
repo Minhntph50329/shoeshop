@@ -159,7 +159,7 @@
                         </p>
 
                         <p class="mt-0.5 text-sm font-bold text-slate-800">
-                            1900 6789
+                            {{ \App\Models\Setting::get('site_phone', '0123456789') }}
                         </p>
 
                     </div>
@@ -189,7 +189,7 @@
                         </p>
 
                         <p class="mt-0.5 truncate text-sm font-bold text-slate-800">
-                            support@veloce.vn
+                            {{ \App\Models\Setting::get('site_email', 'contact@veloce.vn') }}
                         </p>
 
                     </div>
@@ -218,11 +218,11 @@
                     <div>
 
                         <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                            Khu vực hỗ trợ
+                            Địa chỉ / Khu vực hỗ trợ
                         </p>
 
                         <p class="mt-0.5 text-sm font-bold text-slate-800">
-                            Chương Mỹ, Hà Nội
+                            {{ \App\Models\Setting::get('site_address', 'Hà Nội') }}
                         </p>
 
                     </div>
@@ -258,7 +258,7 @@
                     </div>
 
                     <span class="text-[10px] text-slate-400">
-                        Chương Mỹ, Hà Nội
+                        {{ \App\Models\Setting::get('site_address', 'Hà Nội') }}
                     </span>
 
                 </div>
@@ -267,7 +267,7 @@
                 <div class="h-64 w-full sm:h-72">
 
                     <iframe
-                        src="https://www.google.com/maps?q=Ch%C6%B0%C6%A1ng%20M%E1%BB%B9,%20H%C3%A0%20N%E1%BB%99i&output=embed"
+                        src="https://www.google.com/maps?q={{ urlencode(\App\Models\Setting::get('site_address', 'Hà Nội')) }}&output=embed"
                         class="h-full w-full border-0"
                         loading="lazy"
                         allowfullscreen
